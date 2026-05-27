@@ -120,6 +120,7 @@ function EmployeeDetail() {
       full_name: emp.full_name ?? emp.name ?? "",
       email: emp.email ?? "",
       role: emp.role ?? "employee",
+      password: "",
       department: emp.department ?? "",
       manager_email: emp.manager_email ?? "",
       hr_email: emp.hr_email ?? "hr@aimploy.com",
@@ -355,6 +356,10 @@ function EmployeeDetail() {
                     <div className="space-y-1">
                       <Label htmlFor="edit_email">Login Email <span className="text-destructive">*</span></Label>
                       <Input id="edit_email" type="email" placeholder="john.doe@aimploy.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_password">Login Password</Label>
+                      <Input id="edit_password" type="password" placeholder="Leave blank to keep unchanged" value={form.password || ""} onChange={(e) => setForm({ ...form, password: e.target.value })} />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_role">System Role <span className="text-destructive">*</span></Label>
