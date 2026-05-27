@@ -376,7 +376,7 @@ function EmployeeDetail() {
                       <Input id="edit_designation" placeholder="e.g. Software Engineer" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_department">Department <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="edit_department">Department</Label>
                       <Input
                         id="edit_department"
                         list="edit-depts-list"
@@ -391,7 +391,7 @@ function EmployeeDetail() {
                       </datalist>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_manager_email">Manager Email <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="edit_manager_email">Manager Email</Label>
                       <select
                         id="edit_manager_email"
                         value={form.manager_email}
@@ -407,7 +407,7 @@ function EmployeeDetail() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_hr_email">HR Email <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="edit_hr_email">HR Email</Label>
                       <select
                         id="edit_hr_email"
                         value={form.hr_email}
@@ -559,7 +559,7 @@ function EmployeeDetail() {
 
                 <DialogFooter className="mt-4">
                   <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
-                  <Button onClick={() => updateEmployee.mutate()} disabled={!form.email || !form.full_name || !form.manager_email || updateEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
+                  <Button onClick={() => updateEmployee.mutate()} disabled={!form.email || !form.full_name || updateEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
                     {updateEmployee.isPending ? "Saving…" : "Save changes"}
                   </Button>
                 </DialogFooter>

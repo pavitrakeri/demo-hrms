@@ -432,7 +432,7 @@ function EmployeesPage() {
                       <Input id="designation" placeholder="e.g. Software Engineer" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="department">Department <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="department">Department</Label>
                       <Input
                         id="department"
                         list="depts-list"
@@ -447,7 +447,7 @@ function EmployeesPage() {
                       </datalist>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="manager_email">Manager Email <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="manager_email">Manager Email</Label>
                       <select
                         id="manager_email"
                         value={form.manager_email}
@@ -463,7 +463,7 @@ function EmployeesPage() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="hr_email">HR Email <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="hr_email">HR Email</Label>
                       <select
                         id="hr_email"
                         value={form.hr_email}
@@ -615,7 +615,7 @@ function EmployeesPage() {
 
                 <DialogFooter className="mt-4">
                   <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                  <Button onClick={() => addEmployee.mutate()} disabled={!form.email || !form.full_name || !form.password || !form.manager_email || addEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
+                  <Button onClick={() => addEmployee.mutate()} disabled={!form.email || !form.full_name || !form.password || addEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
                     {addEmployee.isPending ? "Creating…" : "Add employee"}
                   </Button>
                 </DialogFooter>
