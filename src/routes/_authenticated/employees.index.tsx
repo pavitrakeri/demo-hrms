@@ -145,15 +145,6 @@ function EmployeesPage() {
     work_email: "",
 
     // Legal / Identity
-    passport_number: "",
-    emirates_id_number: "",
-    uid_number: "",
-    file_number: "",
-    contract_type: "Limited",
-    labour_card_number: "",
-    labour_card_expiry: "",
-    visa_sponsorship: "Company Sponsored",
-    residence_visa_expiry: "",
     aadhaar_card_number: "",
     pan_card_number: "",
     pf_account_number: "",
@@ -194,8 +185,6 @@ function EmployeesPage() {
       const payload: Record<string, any> = { ...form };
       // Format optional dates
       if (!payload.date_of_birth) delete payload.date_of_birth;
-      if (!payload.labour_card_expiry) delete payload.labour_card_expiry;
-      if (!payload.residence_visa_expiry) delete payload.residence_visa_expiry;
 
       // Handle numbers
       payload.basic_salary = Number(payload.basic_salary) || 0;
@@ -549,45 +538,6 @@ function EmployeesPage() {
 
                   {/* 3. Legal & Identity Tab */}
                   <TabsContent value="visa" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
-                    <div className="space-y-1">
-                      <Label htmlFor="passport_number">Passport Number</Label>
-                      <Input id="passport_number" placeholder="e.g. N1234567" value={form.passport_number} onChange={(e) => setForm({ ...form, passport_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="emirates_id_number">Emirates ID Number</Label>
-                      <Input id="emirates_id_number" placeholder="784-YYYY-XXXXXXX-Z" value={form.emirates_id_number} onChange={(e) => setForm({ ...form, emirates_id_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="uid_number">Unified ID (UID) Number</Label>
-                      <Input id="uid_number" placeholder="Unified ID number" value={form.uid_number} onChange={(e) => setForm({ ...form, uid_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="file_number">Visa File Number</Label>
-                      <Input id="file_number" placeholder="Visa File number" value={form.file_number} onChange={(e) => setForm({ ...form, file_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="visa_sponsorship">Visa Sponsorship</Label>
-                      <Input id="visa_sponsorship" placeholder="e.g. Company Sponsored" value={form.visa_sponsorship} onChange={(e) => setForm({ ...form, visa_sponsorship: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="residence_visa_expiry">Residence Visa Expiry</Label>
-                      <Input id="residence_visa_expiry" type="date" value={form.residence_visa_expiry} onChange={(e) => setForm({ ...form, residence_visa_expiry: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="labour_card_number">Labour Card Number</Label>
-                      <Input id="labour_card_number" value={form.labour_card_number} onChange={(e) => setForm({ ...form, labour_card_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="labour_card_expiry">Labour Card Expiry</Label>
-                      <Input id="labour_card_expiry" type="date" value={form.labour_card_expiry} onChange={(e) => setForm({ ...form, labour_card_expiry: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="contract_type">Contract Type</Label>
-                      <select id="contract_type" value={form.contract_type} onChange={(e) => setForm({ ...form, contract_type: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                        <option value="Limited">Limited Term</option>
-                        <option value="Unlimited">Unlimited Term</option>
-                      </select>
-                    </div>
                     <div className="space-y-1">
                       <Label htmlFor="aadhaar_card_number">Aadhaar Card Number</Label>
                       <Input id="aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />

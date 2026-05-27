@@ -142,15 +142,6 @@ function EmployeeDetail() {
       work_email: emp.work_email ?? "",
 
       // Legal / Identity
-      passport_number: emp.passport_number ?? "",
-      emirates_id_number: emp.emirates_id_number ?? "",
-      uid_number: emp.uid_number ?? "",
-      file_number: emp.file_number ?? "",
-      contract_type: emp.contract_type ?? "Limited",
-      labour_card_number: emp.labour_card_number ?? "",
-      labour_card_expiry: emp.labour_card_expiry ? emp.labour_card_expiry.split("T")[0] : "",
-      visa_sponsorship: emp.visa_sponsorship ?? "Company Sponsored",
-      residence_visa_expiry: emp.residence_visa_expiry ? emp.residence_visa_expiry.split("T")[0] : "",
       aadhaar_card_number: emp.aadhaar_card_number ?? "",
       pan_card_number: emp.pan_card_number ?? "",
       pf_account_number: emp.pf_account_number ?? "",
@@ -180,8 +171,6 @@ function EmployeeDetail() {
       const payload: Record<string, any> = { ...form };
       // Format optional dates
       if (!payload.date_of_birth) delete payload.date_of_birth;
-      if (!payload.labour_card_expiry) delete payload.labour_card_expiry;
-      if (!payload.residence_visa_expiry) delete payload.residence_visa_expiry;
 
       // Handle numbers
       payload.basic_salary = Number(payload.basic_salary) || 0;
@@ -489,45 +478,6 @@ function EmployeeDetail() {
                   {/* 3. Legal & Identity Tab */}
                   <TabsContent value="visa" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
                     <div className="space-y-1">
-                      <Label htmlFor="edit_passport_number">Passport Number</Label>
-                      <Input id="edit_passport_number" placeholder="e.g. N1234567" value={form.passport_number} onChange={(e) => setForm({ ...form, passport_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_emirates_id_number">Emirates ID Number</Label>
-                      <Input id="edit_emirates_id_number" placeholder="784-YYYY-XXXXXXX-Z" value={form.emirates_id_number} onChange={(e) => setForm({ ...form, emirates_id_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_uid_number">Unified ID (UID) Number</Label>
-                      <Input id="edit_uid_number" placeholder="Unified ID number" value={form.uid_number} onChange={(e) => setForm({ ...form, uid_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_file_number">Visa File Number</Label>
-                      <Input id="edit_file_number" placeholder="Visa File number" value={form.file_number} onChange={(e) => setForm({ ...form, file_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_visa_sponsorship">Visa Sponsorship</Label>
-                      <Input id="edit_visa_sponsorship" placeholder="e.g. Company Sponsored" value={form.visa_sponsorship} onChange={(e) => setForm({ ...form, visa_sponsorship: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_residence_visa_expiry">Residence Visa Expiry</Label>
-                      <Input id="edit_residence_visa_expiry" type="date" value={form.residence_visa_expiry} onChange={(e) => setForm({ ...form, residence_visa_expiry: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_labour_card_number">Labour Card Number</Label>
-                      <Input id="edit_labour_card_number" value={form.labour_card_number} onChange={(e) => setForm({ ...form, labour_card_number: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_labour_card_expiry">Labour Card Expiry</Label>
-                      <Input id="edit_labour_card_expiry" type="date" value={form.labour_card_expiry} onChange={(e) => setForm({ ...form, labour_card_expiry: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="edit_contract_type">Contract Type</Label>
-                      <select id="edit_contract_type" value={form.contract_type} onChange={(e) => setForm({ ...form, contract_type: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                        <option value="Limited">Limited Term</option>
-                        <option value="Unlimited">Unlimited Term</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
                       <Label htmlFor="edit_aadhaar_card_number">Aadhaar Card Number</Label>
                       <Input id="edit_aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />
                     </div>
@@ -681,72 +631,7 @@ function EmployeeDetail() {
 
             {/* TAB 3: LEGAL & IDENTITY */}
             <TabsContent value="legal" className="outline-none space-y-4">
-              {/* Alert Warning if documents are expiring soon */}
-              {(isExpiringSoon(emp.residence_visa_expiry) || isExpiringSoon(emp.labour_card_expiry)) && (
-                <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm">
-                  <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold">Document Expiry Alert:</span> Some of the employee's visa or labour cards are expiring in the next 60 days. Please verify and initiate renewals.
-                  </div>
-                </div>
-              )}
-
               <div className="grid gap-4 md:grid-cols-2">
-                <DetailCard title="Primary Identification" icon={Fingerprint}>
-                  <DetailRow
-                    label="Emirates ID Number"
-                    value={emp.emirates_id_number}
-                    copyKey="emiratesId"
-                    onCopy={(v) => copyToClipboard(v, "emiratesId")}
-                    copied={copiedKey === "emiratesId"}
-                    className="font-mono text-sm tracking-wide"
-                  />
-                  <DetailRow
-                    label="Passport Number"
-                    value={emp.passport_number}
-                    copyKey="passportNum"
-                    onCopy={(v) => copyToClipboard(v, "passportNum")}
-                    copied={copiedKey === "passportNum"}
-                    className="font-mono text-sm tracking-wide"
-                  />
-                  <DetailRow
-                    label="Unified ID (UID) Number"
-                    value={emp.uid_number}
-                    copyKey="uidNum"
-                    onCopy={(v) => copyToClipboard(v, "uidNum")}
-                    copied={copiedKey === "uidNum"}
-                    className="font-mono text-sm"
-                  />
-                </DetailCard>
-
-                <DetailCard title="Visa & Work Authorisation" icon={FileText}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow label="Visa File Number" value={emp.file_number} />
-                    <DetailRow label="Visa Sponsorship" value={emp.visa_sponsorship || "—"} />
-                    <DetailRow
-                      label="Residence Visa Expiry"
-                      value={formatDate(emp.residence_visa_expiry)}
-                      badge={
-                        isExpiringSoon(emp.residence_visa_expiry) ? (
-                          <Badge variant="destructive" className="ml-2 px-1.5 py-0 text-[10px] animate-pulse">Expiring Soon</Badge>
-                        ) : undefined
-                      }
-                    />
-                    <DetailRow label="Labour Card Number" value={emp.labour_card_number} />
-                    <div className="sm:col-span-2">
-                      <DetailRow
-                        label="Labour Card Expiry"
-                        value={formatDate(emp.labour_card_expiry)}
-                        badge={
-                          isExpiringSoon(emp.labour_card_expiry) ? (
-                            <Badge variant="destructive" className="ml-2 px-1.5 py-0 text-[10px] animate-pulse">Expiring Soon</Badge>
-                          ) : undefined
-                        }
-                      />
-                    </div>
-                  </div>
-                </DetailCard>
-
                 <DetailCard title="Legal IDs & Bank Details" icon={IdCard}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <DetailRow
