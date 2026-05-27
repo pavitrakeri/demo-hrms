@@ -154,6 +154,14 @@ function EmployeesPage() {
     labour_card_expiry: "",
     visa_sponsorship: "Company Sponsored",
     residence_visa_expiry: "",
+    aadhaar_card_number: "",
+    pan_card_number: "",
+    pf_account_number: "",
+    esi_number: "",
+    bank_account_number: "",
+    ifsc_code: "",
+    emergency_contact_name: "",
+    emergency_contact_number: "",
 
     // Financial
     basic_salary: 0,
@@ -573,12 +581,44 @@ function EmployeesPage() {
                       <Label htmlFor="labour_card_expiry">Labour Card Expiry</Label>
                       <Input id="labour_card_expiry" type="date" value={form.labour_card_expiry} onChange={(e) => setForm({ ...form, labour_card_expiry: e.target.value })} />
                     </div>
-                    <div className="space-y-1 sm:col-span-2">
+                    <div className="space-y-1">
                       <Label htmlFor="contract_type">Contract Type</Label>
                       <select id="contract_type" value={form.contract_type} onChange={(e) => setForm({ ...form, contract_type: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                         <option value="Limited">Limited Term</option>
                         <option value="Unlimited">Unlimited Term</option>
                       </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="aadhaar_card_number">Aadhaar Card Number</Label>
+                      <Input id="aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="pan_card_number">PAN Card Number</Label>
+                      <Input id="pan_card_number" placeholder="PAN Card Number" value={form.pan_card_number} onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="pf_account_number">PF / EPF Account Number</Label>
+                      <Input id="pf_account_number" placeholder="PF / EPF Account Number" value={form.pf_account_number} onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="esi_number">ESI Number</Label>
+                      <Input id="esi_number" placeholder="ESI Number" value={form.esi_number} onChange={(e) => setForm({ ...form, esi_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="bank_account_number">Bank Account Number</Label>
+                      <Input id="bank_account_number" placeholder="Bank Account Number" value={form.bank_account_number} onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="ifsc_code">Bank IFSC Code</Label>
+                      <Input id="ifsc_code" placeholder="Bank IFSC Code" value={form.ifsc_code} onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="emergency_contact_name">Emergency Contact Name</Label>
+                      <Input id="emergency_contact_name" placeholder="Emergency Contact Name" value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="emergency_contact_number">Emergency Contact Number</Label>
+                      <Input id="emergency_contact_number" placeholder="Emergency Contact Number" value={form.emergency_contact_number} onChange={(e) => setForm({ ...form, emergency_contact_number: e.target.value })} />
                     </div>
                   </TabsContent>
 

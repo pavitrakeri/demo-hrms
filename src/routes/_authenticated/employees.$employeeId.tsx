@@ -151,6 +151,14 @@ function EmployeeDetail() {
       labour_card_expiry: emp.labour_card_expiry ? emp.labour_card_expiry.split("T")[0] : "",
       visa_sponsorship: emp.visa_sponsorship ?? "Company Sponsored",
       residence_visa_expiry: emp.residence_visa_expiry ? emp.residence_visa_expiry.split("T")[0] : "",
+      aadhaar_card_number: emp.aadhaar_card_number ?? "",
+      pan_card_number: emp.pan_card_number ?? "",
+      pf_account_number: emp.pf_account_number ?? "",
+      esi_number: emp.esi_number ?? "",
+      bank_account_number: emp.bank_account_number ?? "",
+      ifsc_code: emp.ifsc_code ?? "",
+      emergency_contact_name: emp.emergency_contact_name ?? "",
+      emergency_contact_number: emp.emergency_contact_number ?? "",
 
       // Financial
       basic_salary: emp.basic_salary ?? 0,
@@ -512,12 +520,44 @@ function EmployeeDetail() {
                       <Label htmlFor="edit_labour_card_expiry">Labour Card Expiry</Label>
                       <Input id="edit_labour_card_expiry" type="date" value={form.labour_card_expiry} onChange={(e) => setForm({ ...form, labour_card_expiry: e.target.value })} />
                     </div>
-                    <div className="space-y-1 sm:col-span-2">
+                    <div className="space-y-1">
                       <Label htmlFor="edit_contract_type">Contract Type</Label>
                       <select id="edit_contract_type" value={form.contract_type} onChange={(e) => setForm({ ...form, contract_type: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                         <option value="Limited">Limited Term</option>
                         <option value="Unlimited">Unlimited Term</option>
                       </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_aadhaar_card_number">Aadhaar Card Number</Label>
+                      <Input id="edit_aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_pan_card_number">PAN Card Number</Label>
+                      <Input id="edit_pan_card_number" placeholder="PAN Card Number" value={form.pan_card_number} onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_pf_account_number">PF / EPF Account Number</Label>
+                      <Input id="edit_pf_account_number" placeholder="PF / EPF Account Number" value={form.pf_account_number} onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_esi_number">ESI Number</Label>
+                      <Input id="edit_esi_number" placeholder="ESI Number" value={form.esi_number} onChange={(e) => setForm({ ...form, esi_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_bank_account_number">Bank Account Number</Label>
+                      <Input id="edit_bank_account_number" placeholder="Bank Account Number" value={form.bank_account_number} onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_ifsc_code">Bank IFSC Code</Label>
+                      <Input id="edit_ifsc_code" placeholder="Bank IFSC Code" value={form.ifsc_code} onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_emergency_contact_name">Emergency Contact Name</Label>
+                      <Input id="edit_emergency_contact_name" placeholder="Emergency Contact Name" value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_emergency_contact_number">Emergency Contact Number</Label>
+                      <Input id="edit_emergency_contact_number" placeholder="Emergency Contact Number" value={form.emergency_contact_number} onChange={(e) => setForm({ ...form, emergency_contact_number: e.target.value })} />
                     </div>
                   </TabsContent>
 
@@ -703,6 +743,40 @@ function EmployeeDetail() {
                           ) : undefined
                         }
                       />
+                    </div>
+                  </div>
+                </DetailCard>
+
+                <DetailCard title="Legal IDs & Bank Details" icon={IdCard}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <DetailRow
+                      label="Aadhaar Card Number"
+                      value={emp.aadhaar_card_number}
+                      copyKey="aadhaarCard"
+                      onCopy={(v) => copyToClipboard(v, "aadhaarCard")}
+                      copied={copiedKey === "aadhaarCard"}
+                    />
+                    <DetailRow
+                      label="PAN Card Number"
+                      value={emp.pan_card_number}
+                      copyKey="panCard"
+                      onCopy={(v) => copyToClipboard(v, "panCard")}
+                      copied={copiedKey === "panCard"}
+                      className="font-mono"
+                    />
+                    <DetailRow label="PF / EPF Account Number" value={emp.pf_account_number} />
+                    <DetailRow label="ESI Number" value={emp.esi_number} />
+                    <DetailRow label="Bank Account Number" value={emp.bank_account_number} />
+                    <DetailRow label="Bank IFSC Code" value={emp.ifsc_code} className="font-mono" />
+                  </div>
+                </DetailCard>
+
+                <DetailCard title="Emergency Contacts & Onboarding" icon={Heart}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <DetailRow label="Date of Joining" value={formatDate(joined)} />
+                    <DetailRow label="Emergency Contact Name" value={emp.emergency_contact_name} />
+                    <div className="sm:col-span-2">
+                      <DetailRow label="Emergency Contact Number" value={emp.emergency_contact_number} />
                     </div>
                   </div>
                 </DetailCard>
