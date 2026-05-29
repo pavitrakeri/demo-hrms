@@ -364,18 +364,6 @@ function MyTasksPage() {
               </Card>
             ))}
           </div>
-        ) : tasks.length === 0 ? (
-          <Card className="border-dashed border-2">
-            <CardContent className="py-16 text-center flex flex-col items-center justify-center space-y-3">
-              <ListTodo className="h-10 w-10 text-muted-foreground" />
-              <div>
-                <p className="font-semibold text-lg">No tasks assigned</p>
-                <p className="text-sm text-muted-foreground">
-                  You are all caught up! When you are added to a project task, it will show up here.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         ) : viewMode === "kanban" ? (
           /* Kanban Board View */
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -485,8 +473,21 @@ function MyTasksPage() {
               </TabsList>
             </Tabs>
 
-            <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
-              <CardContent className="p-0">
+            {tasks.length === 0 ? (
+              <Card className="border-dashed border-2">
+                <CardContent className="py-16 text-center flex flex-col items-center justify-center space-y-3">
+                  <ListTodo className="h-10 w-10 text-muted-foreground" />
+                  <div>
+                    <p className="font-semibold text-lg">No tasks assigned</p>
+                    <p className="text-sm text-muted-foreground">
+                      You are all caught up! When you are added to a project task, it will show up here.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
+                <CardContent className="p-0">
                 <Table>
                   <TableHeader className="bg-muted/10">
                     <TableRow>
@@ -577,6 +578,7 @@ function MyTasksPage() {
                 </Table>
               </CardContent>
             </Card>
+            )}
           </div>
         )}
 
