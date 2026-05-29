@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Outlet, Link, useNavigate, useRouterState } 
 import { getToken, api } from "@/lib/api";
 import { logout, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff } from "lucide-react";
+import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff, Settings } from "lucide-react";
 import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,7 @@ const navItems: NavItem[] = [
       { to: "/roles", label: "Roles", icon: Shield },
     ],
   },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 function AuthenticatedLayout() {
