@@ -1,10 +1,14 @@
 import { createFileRoute, redirect, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { getToken } from "@/lib/api";
+import { getToken, api } from "@/lib/api";
 import { logout, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown } from "lucide-react";
+import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff } from "lucide-react";
 import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ location }) => {
@@ -22,6 +26,7 @@ type NavItem =
 const navItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/attendance", label: "Attendance", icon: Clock },
+  { to: "/leaves", label: "Leaves", icon: Calendar },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/tasks", label: "My Tasks", icon: ListTodo },
   { to: "/employees", label: "Employees", icon: Users },
@@ -37,7 +42,7 @@ const navItems: NavItem[] = [
 
 function AuthenticatedLayout() {
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role, email, passwordResetRequired } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [orgOpen, setOrgOpen] = useState(pathname.startsWith("/departments") || pathname.startsWith("/roles"));
   
@@ -58,6 +63,10 @@ function AuthenticatedLayout() {
   }
 
   const isActive = (to: string) => pathname === to || pathname.startsWith(to + "/");
+
+  if (passwordResetRequired) {
+    return <ForcePasswordReset email={email} onLogout={onLogout} />;
+  }
 
   return (
     <div className="min-h-screen flex bg-muted/30">
@@ -187,6 +196,130 @@ function AuthenticatedLayout() {
           <Outlet />
         </main>
       </div>
+    </div>
+  );
+}
+
+interface ForcePasswordResetProps {
+  email: string | null;
+  onLogout: () => void;
+}
+
+function ForcePasswordReset({ email, onLogout }: ForcePasswordResetProps) {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("User email not found. Please log in again.");
+      onLogout();
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api("/auth/reset-password", {
+        method: "POST",
+        body: {
+          email,
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+        },
+      });
+      toast.success("Password updated successfully! Please log in with your new password.");
+      onLogout();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reset password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 w-full" style={{ background: "var(--gradient-sidebar)" }}>
+      <Card className="w-full max-w-md shadow-2xl border border-border/50 backdrop-blur-md bg-card/90">
+        <CardHeader className="space-y-2 text-center pb-4">
+          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+            <Lock className="h-6 w-6" />
+          </div>
+          <CardTitle className="text-2xl font-bold tracking-tight">Set New Password</CardTitle>
+          <CardDescription className="text-sm text-muted-foreground max-w-[280px] mx-auto">
+            This is your first login or your password was recently reset. Please set a new password to continue.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <div className="relative">
+                <Input
+                  id="new-password"
+                  type={showNew ? "text" : "password"}
+                  placeholder="At least 6 characters"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNew(!showNew)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirm-password"
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Repeat new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <Button
+              type="submit"
+              className="w-full font-semibold shadow-md transition-all hover:opacity-90 mt-2 cursor-pointer"
+              style={{ background: "var(--gradient-brand)" }}
+              disabled={loading}
+            >
+              {loading ? "Updating Password..." : "Update & Log In"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full text-xs text-muted-foreground hover:text-foreground mt-1 cursor-pointer"
+              onClick={onLogout}
+            >
+              Cancel & Log Out
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

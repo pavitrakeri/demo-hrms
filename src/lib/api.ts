@@ -1,4 +1,6 @@
-const BASE_URL = "https://hrms-2-t02s.onrender.com";
+const BASE_URL = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://localhost:8000"
+  : "https://hrms-2-t02s.onrender.com";
 const TOKEN_KEY = "hrms_token";
 
 export function getToken(): string | null {

@@ -25,7 +25,8 @@ import {
   Clock,
   LayoutGrid,
   List,
-  UserCheck
+  UserCheck,
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,6 +50,15 @@ function MyTasksPage() {
   const [editDueDate, setEditDueDate] = useState("");
   const [editStatus, setEditStatus] = useState("todo");
 
+  // New Task Dialog State
+  const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
+  const [newProjectId, setNewProjectId] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newAssignee, setNewAssignee] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newStatus, setNewStatus] = useState("todo");
+
   // Queries
   const { data: tasksData, isLoading: isLoadingTasks } = useQuery({
     queryKey: ["tasks", "my", statusFilter],
@@ -58,10 +68,15 @@ function MyTasksPage() {
       }),
   });
 
+  const { data: projectsData } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => api<any>("/projects"),
+  });
+
   const { data: empsData } = useQuery({
     queryKey: ["employees"],
     queryFn: () => api<any>("/employees/list"),
-    enabled: !!editingTask, // Only load employee list if we are editing
+    enabled: !!editingTask || isNewTaskOpen, // Only load employee list if we are editing or creating
   });
 
   // Data helpers
@@ -69,6 +84,12 @@ function MyTasksPage() {
     if (!tasksData) return [];
     return Array.isArray(tasksData) ? tasksData : tasksData.tasks ?? tasksData.items ?? [];
   }, [tasksData]);
+
+  const projects: any[] = useMemo(() => {
+    if (!projectsData) return [];
+    const list = Array.isArray(projectsData) ? projectsData : projectsData.projects ?? projectsData.items ?? [];
+    return list.filter((p: any) => p.status === "active");
+  }, [projectsData]);
 
   const employees: any[] = useMemo(() => {
     if (!empsData) return [];
@@ -114,6 +135,33 @@ function MyTasksPage() {
       toast.success("Task deleted successfully");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["project"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const createTask = useMutation({
+    mutationFn: () => {
+      const payload = {
+        title: newTitle,
+        description: newDesc || undefined,
+        assignee_id: newAssignee || undefined,
+        due_date: newDueDate || undefined,
+        status: newStatus,
+      };
+      return api(`/projects/${newProjectId}/tasks`, { method: "POST", body: payload });
+    },
+    onSuccess: () => {
+      toast.success("Task created successfully");
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.invalidateQueries({ queryKey: ["project", newProjectId, "tasks"] });
+      setIsNewTaskOpen(false);
+      // Reset Form
+      setNewTitle("");
+      setNewDesc("");
+      setNewAssignee("");
+      setNewDueDate("");
+      setNewProjectId("");
+      setNewStatus("todo");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -172,26 +220,120 @@ function MyTasksPage() {
             </p>
           </div>
 
-          {/* Toggle buttons for Kanban/List View */}
-          <div className="flex items-center rounded-lg border bg-muted/30 p-1 self-start sm:self-center">
-            <Button
-              variant={viewMode === "kanban" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs gap-1.5"
-              onClick={() => setViewMode("kanban")}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" />
-              Kanban Board
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs gap-1.5"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-3.5 w-3.5" />
-              List View
-            </Button>
+          <div className="flex items-center gap-3 self-start sm:self-center">
+            {/* New Task Trigger & Dialog */}
+            <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="h-9 shadow-[var(--shadow-brand)]" style={{ background: "var(--gradient-brand)" }}>
+                  <Plus className="h-4 w-4 mr-1.5" /> New task
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Create Task</DialogTitle>
+                  <DialogDescription>Create and assign a new task to a project member.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="new-project">Project <span className="text-destructive">*</span></Label>
+                    <select
+                      id="new-project"
+                      value={newProjectId}
+                      onChange={(e) => setNewProjectId(e.target.value)}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                    >
+                      <option value="" className="text-black bg-background">Select project...</option>
+                      {projects.map((proj) => {
+                        const projId = String(proj.id ?? proj.project_id);
+                        return (
+                          <option key={projId} value={projId} className="text-black bg-background">
+                            {proj.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="new-title">Task Title <span className="text-destructive">*</span></Label>
+                    <Input id="new-title" placeholder="e.g. Design homepage wireframe" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="new-desc">Description</Label>
+                    <Textarea id="new-desc" placeholder="Describe the steps or details..." value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="new-assignee">Assignee</Label>
+                    <select
+                      id="new-assignee"
+                      value={newAssignee}
+                      onChange={(e) => setNewAssignee(e.target.value)}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                    >
+                      <option value="" className="text-black bg-background">Select assignee...</option>
+                      {employees.map((emp) => {
+                        const empId = String(emp.id ?? emp.employee_id ?? emp._id);
+                        return (
+                          <option key={empId} value={empId} className="text-black bg-background">
+                            {emp.full_name ?? emp.name} ({emp.email})
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="new-due">Due Date</Label>
+                      <Input id="new-due" type="date" value={newDueDate} onChange={(e) => setNewDueDate(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="new-status">Status</Label>
+                      <select
+                        id="new-status"
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value)}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                      >
+                        <option value="todo" className="text-black bg-background">Todo</option>
+                        <option value="in_progress" className="text-black bg-background">In Progress</option>
+                        <option value="done" className="text-black bg-background">Done</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter className="mt-4">
+                  <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>Cancel</Button>
+                  <Button
+                    onClick={() => createTask.mutate()}
+                    disabled={!newProjectId || !newTitle || createTask.isPending}
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
+                    {createTask.isPending ? "Creating…" : "Create task"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Toggle buttons for Kanban/List View */}
+            <div className="flex items-center rounded-lg border bg-muted/30 p-1">
+              <Button
+                variant={viewMode === "kanban" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-3 text-xs gap-1.5"
+                onClick={() => setViewMode("kanban")}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Kanban Board
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 px-3 text-xs gap-1.5"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-3.5 w-3.5" />
+                List View
+              </Button>
+            </div>
           </div>
         </div>
 

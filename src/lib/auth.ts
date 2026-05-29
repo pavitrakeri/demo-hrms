@@ -29,6 +29,44 @@ export function getRoleFromToken(token: string | null): string | null {
   }
 }
 
+export function getEmailFromToken(token: string | null): string | null {
+  if (!token) return null;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload)?.email ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function getPasswordResetRequiredFromToken(token: string | null): boolean {
+  if (!token) return false;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return !!JSON.parse(jsonPayload)?.password_reset_required;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function useAuth() {
   const token = useSyncExternalStore(
     subscribe,
@@ -37,8 +75,10 @@ export function useAuth() {
   );
 
   const role = useMemo(() => getRoleFromToken(token), [token]);
+  const email = useMemo(() => getEmailFromToken(token), [token]);
+  const passwordResetRequired = useMemo(() => getPasswordResetRequiredFromToken(token), [token]);
 
-  return { token, isAuthenticated: !!token, role };
+  return { token, isAuthenticated: !!token, role, email, passwordResetRequired };
 }
 
 export type LoginResponse = {
