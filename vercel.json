@@ -1,5 +1,4 @@
 {
-  "cleanUrls": true,
   "outputDirectory": "dist/client",
   "rewrites": [
     {
@@ -8,3 +7,4 @@
     }
   ]
 }
+
