@@ -201,10 +201,6 @@ function Dashboard() {
           <h1 className="text-3xl font-extrabold tracking-tight">
             {getGreeting()}, {user?.full_name || "Employee"}!
           </h1>
-          <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5 font-medium">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-primary/45" />
-            {user?.department || "Unassigned"} · {user?.role || "Employee"} Role scope
-          </p>
         </div>
         <Button onClick={() => refetch()} variant="outline" size="sm" className="w-fit self-start sm:self-auto cursor-pointer shadow-soft">
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh Data
