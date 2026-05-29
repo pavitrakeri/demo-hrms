@@ -73,10 +73,16 @@ function MyTasksPage() {
     queryFn: () => api<any>("/projects"),
   });
 
-  const { data: empsData } = useQuery({
-    queryKey: ["employees"],
-    queryFn: () => api<any>("/employees/list"),
-    enabled: !!editingTask || isNewTaskOpen, // Only load employee list if we are editing or creating
+  const { data: newProjectDetails } = useQuery({
+    queryKey: ["project", newProjectId],
+    queryFn: () => api<any>(`/projects/${newProjectId}`),
+    enabled: !!newProjectId,
+  });
+
+  const { data: editProjectDetails } = useQuery({
+    queryKey: ["project", editingTask?.project_id],
+    queryFn: () => api<any>(`/projects/${editingTask.project_id}`),
+    enabled: !!editingTask?.project_id,
   });
 
   // Data helpers
@@ -91,11 +97,21 @@ function MyTasksPage() {
     return list.filter((p: any) => p.status === "active");
   }, [projectsData]);
 
-  const employees: any[] = useMemo(() => {
-    if (!empsData) return [];
-    const list = Array.isArray(empsData) ? empsData : empsData.employees ?? empsData.items ?? [];
-    return list.filter((e: any) => e.is_active !== false);
-  }, [empsData]);
+  const newProjectMembers = useMemo(() => {
+    return newProjectDetails?.members ?? [];
+  }, [newProjectDetails]);
+
+  const editProjectMembers = useMemo(() => {
+    const list = editProjectDetails?.members ?? [];
+    if (list.length === 0 && editingTask?.assignee_id) {
+      return [{
+        user_id: editingTask.assignee_id,
+        full_name: editingTask.assignee_name,
+        email: editingTask.assignee_email
+      }];
+    }
+    return list;
+  }, [editProjectDetails, editingTask]);
 
   // Mutations
   const updateStatus = useMutation({
@@ -269,12 +285,14 @@ function MyTasksPage() {
                       onChange={(e) => setNewAssignee(e.target.value)}
                       className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                     >
-                      <option value="" className="text-black bg-background">Select assignee...</option>
-                      {employees.map((emp) => {
-                        const empId = String(emp.id ?? emp.employee_id ?? emp._id);
+                      <option value="" className="text-black bg-background">
+                        {newProjectId ? "Select assignee..." : "Select a project first..."}
+                      </option>
+                      {newProjectMembers.map((m: any) => {
+                        const memberId = String(m.user_id);
                         return (
-                          <option key={empId} value={empId} className="text-black bg-background">
-                            {emp.full_name ?? emp.name} ({emp.email})
+                          <option key={memberId} value={memberId} className="text-black bg-background">
+                            {m.full_name ?? m.email} ({m.email})
                           </option>
                         );
                       })}
@@ -584,14 +602,14 @@ function MyTasksPage() {
                   id="edit-assignee"
                   value={editAssignee}
                   onChange={(e) => setEditAssignee(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                 >
                   <option value="" className="text-black bg-background">Select assignee...</option>
-                  {employees.map((emp) => {
-                    const empId = String(emp.id ?? emp.employee_id ?? emp._id);
+                  {editProjectMembers.map((m: any) => {
+                    const memberId = String(m.user_id);
                     return (
-                      <option key={empId} value={empId} className="text-black bg-background">
-                        {emp.full_name ?? emp.name} ({emp.email})
+                      <option key={memberId} value={memberId} className="text-black bg-background">
+                        {m.full_name ?? m.email} ({m.email})
                       </option>
                     );
                   })}
