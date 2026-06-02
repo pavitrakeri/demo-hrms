@@ -125,7 +125,7 @@ function EmployeesPage() {
     role: "employee", // Defaults to employee
     department: "",
     manager_email: "",
-    hr_email: "hr@aimploy.com", // Default fallback HR
+    hr_email: "", // Default fallback HR
     joining_date: new Date().toISOString().split("T")[0],
     is_active: true,
 
@@ -179,6 +179,12 @@ function EmployeesPage() {
     queryKey: ["departments"],
     queryFn: () => api<any>("/departments/list"),
   });
+
+  const { data: company } = useQuery({
+    queryKey: ["settings-company"],
+    queryFn: () => api<any>("/settings/company"),
+  });
+  const currencySymbol = company?.currency ?? "AED";
 
   const addEmployee = useMutation({
     mutationFn: () => {
@@ -274,7 +280,7 @@ function EmployeesPage() {
           department: r.department || "Unassigned",
           joining_date: new Date().toISOString().split("T")[0],
           manager_email: r.manager_email || "manager@aimploy.com",
-          hr_email: "hr@aimploy.com",
+          hr_email: "",
           is_active: r.is_active ? !/^(false|0|no)$/i.test(r.is_active) : true,
         };
         if (!payload.email || !payload.full_name) { fail++; continue; }
@@ -575,23 +581,23 @@ function EmployeesPage() {
                   {/* 4. Financial & Payroll Tab */}
                   <TabsContent value="financial" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
                     <div className="space-y-1">
-                      <Label htmlFor="basic_salary">Basic Salary (AED)</Label>
+                      <Label htmlFor="basic_salary">Basic Salary ({currencySymbol})</Label>
                       <Input id="basic_salary" type="number" min="0" value={form.basic_salary} onChange={(e) => setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="hra">Housing Allowance (HRA) (AED)</Label>
+                      <Label htmlFor="hra">Housing Allowance (HRA) ({currencySymbol})</Label>
                       <Input id="hra" type="number" min="0" value={form.hra} onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="mobile_allowance">Mobile Allowance (AED)</Label>
+                      <Label htmlFor="mobile_allowance">Mobile Allowance ({currencySymbol})</Label>
                       <Input id="mobile_allowance" type="number" min="0" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="trans_allowance">Transportation Allowance (AED)</Label>
+                      <Label htmlFor="trans_allowance">Transportation Allowance ({currencySymbol})</Label>
                       <Input id="trans_allowance" type="number" min="0" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="other_allowance">Other Allowance (AED)</Label>
+                      <Label htmlFor="other_allowance">Other Allowance ({currencySymbol})</Label>
                       <Input id="other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">

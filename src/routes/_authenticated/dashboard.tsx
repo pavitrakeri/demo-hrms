@@ -67,6 +67,12 @@ function Dashboard() {
     queryFn: () => api<any>("/dashboard/summary"),
   });
 
+  const { data: company } = useQuery({
+    queryKey: ["settings-company"],
+    queryFn: () => api<any>("/settings/company"),
+  });
+  const currencySymbol = company?.currency ?? "AED";
+
   const isClockedIn = summary?.attendance_today?.status === "clocked_in";
   const userRole = (summary?.user?.role ?? authRole ?? "").toLowerCase().trim();
   const isAdminOrHr = ["admin", "hr", "manager", "line_manager", "cfo"].includes(userRole);
@@ -337,7 +343,7 @@ function Dashboard() {
                           )}
                           {action.amount && (
                             <div className="text-sm font-extrabold text-foreground">
-                              Amount: {action.amount.toLocaleString()} AED
+                              Amount: {action.amount.toLocaleString()} {currencySymbol}
                             </div>
                           )}
                           {/* Quick comment input */}

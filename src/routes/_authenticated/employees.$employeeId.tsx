@@ -47,9 +47,13 @@ function formatDate(d?: string | null) {
   return parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-function formatCurrency(val?: number | null) {
+function formatCurrency(val?: number | null, currency: string = "AED") {
   if (val == null || isNaN(val)) return "—";
-  return new Intl.NumberFormat("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 }).format(val);
+  try {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(val);
+  } catch (e) {
+    return `${val.toLocaleString()} ${currency}`;
+  }
 }
 
 function initials(name?: string) {
@@ -94,6 +98,12 @@ function EmployeeDetail() {
     queryFn: () => api<any>("/departments/list"),
   });
 
+  const { data: company } = useQuery({
+    queryKey: ["settings-company"],
+    queryFn: () => api<any>("/settings/company"),
+  });
+  const currencySymbol = company?.currency ?? "AED";
+
   const listEmployees: any[] = Array.isArray(list) ? list : list?.employees ?? list?.items ?? [];
   const fromList = listEmployees.find(
     (e) => String(e.id ?? e.employee_id ?? e.email) === String(employeeId)
@@ -123,7 +133,7 @@ function EmployeeDetail() {
       password: "",
       department: emp.department ?? "",
       manager_email: emp.manager_email ?? "",
-      hr_email: emp.hr_email ?? "hr@aimploy.com",
+      hr_email: emp.hr_email ?? "",
       joining_date: emp.joining_date ? emp.joining_date.split("T")[0] : new Date().toISOString().split("T")[0],
       is_active: emp.is_active !== false,
 
@@ -519,23 +529,23 @@ function EmployeeDetail() {
                   {/* 4. Financial & Payroll Tab */}
                   <TabsContent value="financial" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
                     <div className="space-y-1">
-                      <Label htmlFor="edit_basic_salary">Basic Salary (AED)</Label>
+                      <Label htmlFor="edit_basic_salary">Basic Salary ({currencySymbol})</Label>
                       <Input id="edit_basic_salary" type="number" min="0" value={form.basic_salary} onChange={(e) => setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_hra">Housing Allowance (HRA) (AED)</Label>
+                      <Label htmlFor="edit_hra">Housing Allowance (HRA) ({currencySymbol})</Label>
                       <Input id="edit_hra" type="number" min="0" value={form.hra} onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_mobile_allowance">Mobile Allowance (AED)</Label>
+                      <Label htmlFor="edit_mobile_allowance">Mobile Allowance ({currencySymbol})</Label>
                       <Input id="edit_mobile_allowance" type="number" min="0" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_trans_allowance">Transportation Allowance (AED)</Label>
+                      <Label htmlFor="edit_trans_allowance">Transportation Allowance ({currencySymbol})</Label>
                       <Input id="edit_trans_allowance" type="number" min="0" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_other_allowance">Other Allowance (AED)</Label>
+                      <Label htmlFor="edit_other_allowance">Other Allowance ({currencySymbol})</Label>
                       <Input id="edit_other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
@@ -569,7 +579,7 @@ function EmployeeDetail() {
 
           {/* Details Dashboard Tabs */}
           <Tabs defaultValue="overview" className="w-full space-y-6">
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40">
+            <TabsList className="grid grid-cols-3 w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40">
               <TabsTrigger value="overview" className="text-xs font-semibold rounded-lg gap-2">
                 <Briefcase className="h-3.5 w-3.5 shrink-0" />
                 Work Details
@@ -581,10 +591,6 @@ function EmployeeDetail() {
               <TabsTrigger value="legal" className="text-xs font-semibold rounded-lg gap-2">
                 <Fingerprint className="h-3.5 w-3.5 shrink-0" />
                 Legal & ID
-              </TabsTrigger>
-              <TabsTrigger value="financials" className="text-xs font-semibold rounded-lg gap-2">
-                <DollarSign className="h-3.5 w-3.5 shrink-0" />
-                Compensation
               </TabsTrigger>
             </TabsList>
 
@@ -613,23 +619,19 @@ function EmployeeDetail() {
 
             {/* TAB 2: PERSONAL PROFILE */}
             <TabsContent value="personal" className="outline-none space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 <DetailCard title="Demographics" icon={User}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow label="Date of Birth" value={formatDate(emp.date_of_birth)} />
-                    <DetailRow label="Gender" value={emp.gender || "—"} />
-                    <DetailRow label="Marital Status" value={emp.marital_status || "—"} />
-                    <DetailRow label="Nationality" value={emp.nationality || "—"} />
-                  </div>
+                  <DetailRow label="Date of Birth" value={formatDate(emp.date_of_birth)} />
+                  <DetailRow label="Gender" value={emp.gender || "—"} />
+                  <DetailRow label="Marital Status" value={emp.marital_status || "—"} />
+                  <DetailRow label="Nationality" value={emp.nationality || "—"} />
                 </DetailCard>
 
                 <DetailCard title="Contact Information" icon={Phone}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow label="Login Email" value={email} isEmail copyKey="loginEmail" onCopy={(v) => copyToClipboard(v, "loginEmail")} copied={copiedKey === "loginEmail"} />
-                    <DetailRow label="Personal Email" value={emp.personal_email} isEmail copyKey="personalEmail" onCopy={(v) => copyToClipboard(v, "personalEmail")} copied={copiedKey === "personalEmail"} />
-                    <DetailRow label="Secondary Work Email" value={emp.work_email} isEmail copyKey="workEmail" onCopy={(v) => copyToClipboard(v, "workEmail")} copied={copiedKey === "workEmail"} />
-                    <DetailRow label="Contact Number" value={phone} />
-                  </div>
+                  <DetailRow label="Login Email" value={email} isEmail copyKey="loginEmail" onCopy={(v) => copyToClipboard(v, "loginEmail")} copied={copiedKey === "loginEmail"} />
+                  <DetailRow label="Personal Email" value={emp.personal_email} isEmail copyKey="personalEmail" onCopy={(v) => copyToClipboard(v, "personalEmail")} copied={copiedKey === "personalEmail"} />
+                  <DetailRow label="Secondary Work Email" value={emp.work_email} isEmail copyKey="workEmail" onCopy={(v) => copyToClipboard(v, "workEmail")} copied={copiedKey === "workEmail"} />
+                  <DetailRow label="Contact Number" value={phone} />
                 </DetailCard>
               </div>
             </TabsContent>
@@ -638,94 +640,32 @@ function EmployeeDetail() {
             <TabsContent value="legal" className="outline-none space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <DetailCard title="Legal IDs & Bank Details" icon={IdCard}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow
-                      label="Aadhaar Card Number"
-                      value={emp.aadhaar_card_number}
-                      copyKey="aadhaarCard"
-                      onCopy={(v) => copyToClipboard(v, "aadhaarCard")}
-                      copied={copiedKey === "aadhaarCard"}
-                    />
-                    <DetailRow
-                      label="PAN Card Number"
-                      value={emp.pan_card_number}
-                      copyKey="panCard"
-                      onCopy={(v) => copyToClipboard(v, "panCard")}
-                      copied={copiedKey === "panCard"}
-                      className="font-mono"
-                    />
-                    <DetailRow label="PF / EPF Account Number" value={emp.pf_account_number} />
-                    <DetailRow label="ESI Number" value={emp.esi_number} />
-                    <DetailRow label="Bank Account Number" value={emp.bank_account_number} />
-                    <DetailRow label="Bank IFSC Code" value={emp.ifsc_code} className="font-mono" />
-                  </div>
+                  <DetailRow
+                    label="Aadhaar Card Number"
+                    value={emp.aadhaar_card_number}
+                    copyKey="aadhaarCard"
+                    onCopy={(v) => copyToClipboard(v, "aadhaarCard")}
+                    copied={copiedKey === "aadhaarCard"}
+                  />
+                  <DetailRow
+                    label="PAN Card Number"
+                    value={emp.pan_card_number}
+                    copyKey="panCard"
+                    onCopy={(v) => copyToClipboard(v, "panCard")}
+                    copied={copiedKey === "panCard"}
+                    className="font-mono"
+                  />
+                  <DetailRow label="PF / EPF Account Number" value={emp.pf_account_number} />
+                  <DetailRow label="ESI Number" value={emp.esi_number} />
+                  <DetailRow label="Bank Account Number" value={emp.bank_account_number} />
+                  <DetailRow label="Bank IFSC Code" value={emp.ifsc_code} className="font-mono" />
                 </DetailCard>
 
                 <DetailCard title="Emergency Contacts & Onboarding" icon={Heart}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow label="Date of Joining" value={formatDate(joined)} />
-                    <DetailRow label="Emergency Contact Name" value={emp.emergency_contact_name} />
-                    <div className="sm:col-span-2">
-                      <DetailRow label="Emergency Contact Number" value={emp.emergency_contact_number} />
-                    </div>
-                  </div>
+                  <DetailRow label="Date of Joining" value={formatDate(joined)} />
+                  <DetailRow label="Emergency Contact Name" value={emp.emergency_contact_name} />
+                  <DetailRow label="Emergency Contact Number" value={emp.emergency_contact_number} />
                 </DetailCard>
-              </div>
-            </TabsContent>
-
-            {/* TAB 4: COMPENSATION & WPS */}
-            <TabsContent value="financials" className="outline-none space-y-4">
-              <div className="grid gap-4 lg:grid-cols-3">
-                {/* Total Salary Summary Block */}
-                <Card className="lg:col-span-1 border border-border/60 shadow-sm relative overflow-hidden bg-card flex flex-col justify-between">
-                  <div className="absolute right-0 top-0 h-32 w-32 translate-x-10 -translate-y-10 rounded-full opacity-10 blur-xl" style={{ background: "var(--gradient-brand)" }} />
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                      <Wallet className="h-4 w-4 text-muted-foreground" /> Total Monthly Package
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-6">
-                    <p className="text-4xl font-extrabold tracking-tight mt-1" style={{ color: "var(--foreground)" }}>
-                      {formatCurrency(totalSalary)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-2.5">
-                      Combined sum of basic salary and all recurring allowances.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Allowance Breakdown */}
-                <Card className="lg:col-span-2 border border-border/60 shadow-sm bg-card">
-                  <CardHeader className="pb-3 border-b border-border/40">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <DollarSign className="h-4.5 w-4.5 text-muted-foreground" /> Compensation Breakdown
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-4 px-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DetailRow label="Basic Salary" value={formatCurrency(basicSalary)} className="font-semibold" />
-                    <DetailRow label="Housing Allowance (HRA)" value={formatCurrency(hra)} />
-                    <DetailRow label="Mobile Allowance" value={formatCurrency(mobileAllowance)} />
-                    <DetailRow label="Transportation Allowance" value={formatCurrency(transportationAllowance)} />
-                    <div className="sm:col-span-2">
-                      <DetailRow label="Other Allowances" value={formatCurrency(otherAllowance)} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* WPS & Benefits */}
-                <Card className="lg:col-span-3 border border-border/60 shadow-sm bg-card">
-                  <CardHeader className="pb-3 border-b border-border/40">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Globe className="h-4.5 w-4.5 text-muted-foreground" /> WPS & Benefits Configuration
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    <DetailRow label="WPS Payment Status" value={emp.wps || "—"} />
-                    <DetailRow label="WPS Unique ID" value={emp.wps_unique_id} />
-                    <DetailRow label="Flight Ticket Benefits" value={emp.flight_ticket || "—"} badge={<Plane className="h-3.5 w-3.5 text-muted-foreground ml-1.5" />} />
-                    <DetailRow label="Medical Insurance Category" value={emp.medical_insurance_category || "—"} badge={<Heart className="h-3.5 w-3.5 text-muted-foreground ml-1.5" />} />
-                  </CardContent>
-                </Card>
               </div>
             </TabsContent>
           </Tabs>

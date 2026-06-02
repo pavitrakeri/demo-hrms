@@ -68,7 +68,7 @@ function LeavesPage() {
 
   // Leave Form State
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [leaveTypeId, setLeaveTypeId] = useState("2"); // Default to Annual Leave (ID 2)
+  const [leaveTypeId, setLeaveTypeId] = useState(""); // Managed dynamically from fetched leave types
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [halfDay, setHalfDay] = useState(false);
@@ -111,6 +111,17 @@ function LeavesPage() {
     queryFn: () => api<any>("/leave/calendar", { query: { month: currentMonth } }),
   });
 
+  const { data: leaveTypes, isLoading: isLoadingLeaveTypes } = useQuery({
+    queryKey: ["leave-types"],
+    queryFn: () => api<any[]>("/settings/leave-types"),
+  });
+
+  useEffect(() => {
+    if (leaveTypes && leaveTypes.length > 0 && !leaveTypeId) {
+      setLeaveTypeId(String(leaveTypes[0].id));
+    }
+  }, [leaveTypes, leaveTypeId]);
+
   // Memos & Data Parsers
   const myLeaves = myLeavesData ?? [];
   const approvals = approvalsData ?? [];
@@ -137,7 +148,8 @@ function LeavesPage() {
     return days;
   }, [startDate, endDate, halfDay]);
 
-  const showFileWarning = leaveTypeId === "1" && daysCount > 1;
+  const selectedLeaveType = leaveTypes?.find((lt: any) => String(lt.id) === leaveTypeId);
+  const showFileWarning = selectedLeaveType?.name?.toLowerCase() === "sick" && daysCount > 1;
 
   // Mutations
   const applyLeave = useMutation({
@@ -306,8 +318,15 @@ function LeavesPage() {
                     onChange={(e) => setLeaveTypeId(e.target.value)}
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                   >
-                    <option value="2" className="text-black bg-background">Casual Leave</option>
-                    <option value="1" className="text-black bg-background">Sick Leave</option>
+                    {isLoadingLeaveTypes ? (
+                      <option value="" className="text-black bg-background">Loading leave types...</option>
+                    ) : (
+                      leaveTypes?.map((lt: any) => (
+                        <option key={lt.id} value={String(lt.id)} className="text-black bg-background">
+                          {lt.name.charAt(0).toUpperCase() + lt.name.slice(1)} Leave
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
@@ -560,7 +579,7 @@ function LeavesPage() {
                             )}
                           </TableCell>
                           <TableCell className="align-middle text-right pr-6">
-                            {l.status === "pending" && (
+                            {(l.status === "pending" || l.status === "approved") && (
                               <Button
                                 variant="ghost"
                                 size="sm"

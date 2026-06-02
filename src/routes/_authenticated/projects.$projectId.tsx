@@ -152,6 +152,17 @@ function ProjectDetail() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  // Delete Project Mutation
+  const deleteProject = useMutation({
+    mutationFn: () => api(`/projects/${projectId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Project deleted successfully");
+      qc.invalidateQueries({ queryKey: ["projects"] });
+      navigate({ to: "/projects" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   // Create Task Mutation
   const createTask = useMutation({
     mutationFn: () => {
@@ -350,6 +361,21 @@ function ProjectDetail() {
           >
             <Archive className="h-4 w-4 mr-2" />
             {isArchived ? "Archived" : "Archive project"}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 hover:bg-destructive/10 hover:text-destructive border-input"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to permanently delete this project? This will delete all project members and tasks!")) {
+                deleteProject.mutate();
+              }
+            }}
+            disabled={deleteProject.isPending}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete project
           </Button>
         </div>
       </div>

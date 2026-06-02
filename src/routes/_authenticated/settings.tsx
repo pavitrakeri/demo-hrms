@@ -39,8 +39,8 @@ function SettingsPage() {
   const { data: company, isLoading: isLoadingCompany } = useQuery({
     queryKey: ["settings-company"],
     queryFn: () => api<any>("/settings/company"),
-    enabled: isAdminOrHr,
   });
+  const currencySymbol = company?.currency ?? "AED";
 
   // --- Form States ---
   const [profileForm, setProfileForm] = useState({
@@ -65,6 +65,9 @@ function SettingsPage() {
     weekend_days: "Saturday,Sunday",
     currency: "AED",
   });
+
+  const [newLeaveTypeName, setNewLeaveTypeName] = useState("");
+  const [newLeaveTypeDays, setNewLeaveTypeDays] = useState("");
 
   // Populate Forms when data loads
   useEffect(() => {
@@ -129,6 +132,25 @@ function SettingsPage() {
     }
   });
 
+  const { data: leaveTypes, isLoading: isLoadingLeaveTypes } = useQuery({
+    queryKey: ["leave-types"],
+    queryFn: () => api<any[]>("/settings/leave-types"),
+  });
+
+  const addLeaveType = useMutation({
+    mutationFn: (data: { name: string; default_days: number }) =>
+      api("/settings/leave-types", { method: "POST", body: data }),
+    onSuccess: () => {
+      toast.success("Leave type added successfully!");
+      qc.invalidateQueries({ queryKey: ["leave-types"] });
+      setNewLeaveTypeName("");
+      setNewLeaveTypeDays("");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to add leave type.");
+    }
+  });
+
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile.mutate(profileForm);
@@ -152,7 +174,16 @@ function SettingsPage() {
     updateCompany.mutate(companyForm);
   };
 
-  if (isLoadingProfile || (isAdminOrHr && isLoadingCompany)) {
+  const handleLeaveTypeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLeaveTypeName.trim() || !newLeaveTypeDays) return;
+    addLeaveType.mutate({
+      name: newLeaveTypeName,
+      default_days: Number(newLeaveTypeDays)
+    });
+  };
+
+  if (isLoadingProfile || isLoadingCompany) {
     return (
       <div className="flex flex-col gap-6 animate-pulse">
         <div className="h-10 w-48 bg-muted rounded-md" />
@@ -245,21 +276,21 @@ function SettingsPage() {
                   <CardContent className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Basic Salary</span>
-                      <span className="font-bold text-foreground">{profile.basic_salary?.toLocaleString()} AED</span>
+                      <span className="font-bold text-foreground">{profile.basic_salary?.toLocaleString()} {currencySymbol}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">House Allowance (HRA)</span>
-                      <span className="font-bold text-foreground">{profile.hra?.toLocaleString()} AED</span>
+                      <span className="font-bold text-foreground">{profile.hra?.toLocaleString()} {currencySymbol}</span>
                     </div>
                     {profile.transportation > 0 && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Transportation</span>
-                        <span className="font-bold text-foreground">{profile.transportation?.toLocaleString()} AED</span>
+                        <span className="font-bold text-foreground">{profile.transportation?.toLocaleString()} {currencySymbol}</span>
                       </div>
                     )}
                     <div className="flex justify-between pt-2 border-t border-border/50">
                       <span className="font-semibold text-foreground">Total Salary</span>
-                      <span className="font-extrabold text-primary text-base">{profile.total_salary?.toLocaleString()} AED</span>
+                      <span className="font-extrabold text-primary text-base">{profile.total_salary?.toLocaleString()} {currencySymbol}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -540,6 +571,81 @@ function SettingsPage() {
                   </CardContent>
                 </Card>
               </form>
+
+              {/* Leave Types Management Card */}
+              <Card className="border border-border/50 bg-card shadow-soft mt-6">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                    <Coins className="h-5 w-5 text-primary" /> Leave Types Management
+                  </CardTitle>
+                  <CardDescription>
+                    Add custom leave types and configure their default annual allowances.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Add new leave type form */}
+                  <form onSubmit={handleLeaveTypeSubmit} className="space-y-4 border-b pb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="lt_name">Leave Type Name</Label>
+                        <Input
+                          id="lt_name"
+                          placeholder="e.g. Earned Leave"
+                          value={newLeaveTypeName}
+                          onChange={(e) => setNewLeaveTypeName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="lt_days">Default Days</Label>
+                        <Input
+                          id="lt_days"
+                          type="number"
+                          min="0"
+                          placeholder="e.g. 15"
+                          value={newLeaveTypeDays}
+                          onChange={(e) => setNewLeaveTypeDays(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button type="submit" disabled={addLeaveType.isPending} className="font-semibold shadow-sm" style={{ background: "var(--gradient-brand)" }}>
+                        {addLeaveType.isPending ? "Adding..." : "Add Leave Type"}
+                      </Button>
+                    </div>
+                  </form>
+
+                  {/* Current Leave Types List */}
+                  <div className="space-y-3">
+                    <Label className="font-semibold text-sm">Active Leave Types</Label>
+                    {isLoadingLeaveTypes ? (
+                      <p className="text-xs text-muted-foreground animate-pulse py-2 text-center">Loading leave types...</p>
+                    ) : leaveTypes?.length === 0 ? (
+                      <p className="text-xs text-muted-foreground py-2 text-center">No custom leave types defined yet.</p>
+                    ) : (
+                      <div className="border rounded-md overflow-hidden bg-card">
+                        <Table>
+                          <TableHeader className="bg-muted/10">
+                            <TableRow>
+                              <TableHead>Name</TableHead>
+                              <TableHead className="text-right pr-6">Default Days</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {leaveTypes?.map((lt: any) => (
+                              <TableRow key={lt.id} className="hover:bg-muted/5 transition-colors">
+                                <TableCell className="capitalize text-xs font-semibold">{lt.name} Leave</TableCell>
+                                <TableCell className="text-right pr-6 text-xs font-mono font-semibold">{lt.default_days} days</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         )}
