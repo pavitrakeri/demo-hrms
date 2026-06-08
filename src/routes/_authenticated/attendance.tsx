@@ -97,6 +97,7 @@ function getLocation(): Promise<{ lat: number; lon: number }> {
 function AttendancePage() {
   const qc = useQueryClient();
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [locationName, setLocationName] = useState<string | null>(null);
   const [detecting, setDetecting] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -147,9 +148,29 @@ function AttendancePage() {
 
   const detectLocation = async () => {
     setDetecting(true);
+    setLocationName(null);
     try {
       const c = await getLocation();
       setCoords(c);
+      
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${c.lat}&lon=${c.lon}`);
+        const data = await res.json();
+        if (data && data.address) {
+          const { road, neighbourhood, suburb, city, town, village, state, postcode } = data.address;
+          const street = road || neighbourhood;
+          const locality = city || town || village || suburb;
+          const parts = [street, locality, state, postcode].filter(Boolean);
+          if (parts.length > 0) {
+            setLocationName(parts.join(", "));
+          } else {
+            setLocationName(data.display_name || null);
+          }
+        }
+      } catch (err) {
+        // Silently fail, it will fallback to coords
+      }
+      
       return c;
     } catch (e) {
       toast.error((e as Error).message);
@@ -232,10 +253,10 @@ function AttendancePage() {
             </div>
 
             <div className="text-sm flex items-center gap-2 text-muted-foreground">
-              <MapPin className="size-4" />
+              <MapPin className="size-4 shrink-0" />
               {coords ? (
-                <span>
-                  {coords.lat.toFixed(4)}, {coords.lon.toFixed(4)}
+                <span className="truncate" title={locationName || `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}>
+                  {locationName ? locationName : `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}
                 </span>
               ) : (
                 <span>Location not detected yet</span>
