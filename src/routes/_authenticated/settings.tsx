@@ -40,7 +40,7 @@ function SettingsPage() {
     queryKey: ["settings-company"],
     queryFn: () => api<any>("/settings/company"),
   });
-  const currencySymbol = company?.currency ?? "AED";
+  const currencySymbol = company?.currency ?? "";
 
   // --- Form States ---
   const [profileForm, setProfileForm] = useState({
@@ -63,7 +63,7 @@ function SettingsPage() {
     office_start_time: "09:00:00",
     office_end_time: "18:00:00",
     weekend_days: "Saturday,Sunday",
-    currency: "AED",
+    currency: "",
   });
 
   const [newLeaveTypeName, setNewLeaveTypeName] = useState("");
@@ -90,7 +90,7 @@ function SettingsPage() {
         office_start_time: company.office_start_time ?? "09:00:00",
         office_end_time: company.office_end_time ?? "18:00:00",
         weekend_days: company.weekend_days ?? "Saturday,Sunday",
-        currency: company.currency ?? "AED",
+        currency: company.currency ?? "",
       });
     }
   }, [company]);
@@ -537,7 +537,7 @@ function SettingsPage() {
                         <Label htmlFor="currency">Default Currency</Label>
                         <Input 
                           id="currency" 
-                          placeholder="e.g. AED" 
+                          placeholder="e.g. USD" 
                           value={companyForm.currency}
                           onChange={(e) => setCompanyForm({ ...companyForm, currency: e.target.value })}
                           required

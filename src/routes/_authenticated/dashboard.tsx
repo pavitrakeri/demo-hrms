@@ -71,7 +71,7 @@ function Dashboard() {
     queryKey: ["settings-company"],
     queryFn: () => api<any>("/settings/company"),
   });
-  const currencySymbol = company?.currency ?? "AED";
+  const currencySymbol = company?.currency ?? "";
 
   const isClockedIn = summary?.attendance_today?.status === "clocked_in";
   const userRole = (summary?.user?.role ?? authRole ?? "").toLowerCase().trim();

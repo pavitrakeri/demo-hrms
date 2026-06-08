@@ -184,7 +184,7 @@ function EmployeesPage() {
     queryKey: ["settings-company"],
     queryFn: () => api<any>("/settings/company"),
   });
-  const currencySymbol = company?.currency ?? "AED";
+  const currencySymbol = company?.currency ?? "";
 
   const addEmployee = useMutation({
     mutationFn: () => {

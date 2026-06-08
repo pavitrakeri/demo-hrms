@@ -47,7 +47,7 @@ function formatDate(d?: string | null) {
   return parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-function formatCurrency(val?: number | null, currency: string = "AED") {
+function formatCurrency(val?: number | null, currency: string = "") {
   if (val == null || isNaN(val)) return "—";
   try {
     return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(val);
@@ -102,7 +102,7 @@ function EmployeeDetail() {
     queryKey: ["settings-company"],
     queryFn: () => api<any>("/settings/company"),
   });
-  const currencySymbol = company?.currency ?? "AED";
+  const currencySymbol = company?.currency ?? "";
 
   const listEmployees: any[] = Array.isArray(list) ? list : list?.employees ?? list?.items ?? [];
   const fromList = listEmployees.find(
