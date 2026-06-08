@@ -581,23 +581,23 @@ function EmployeesPage() {
                   {/* 4. Financial & Payroll Tab */}
                   <TabsContent value="financial" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
                     <div className="space-y-1">
-                      <Label htmlFor="basic_salary">Basic Salary ({currencySymbol})</Label>
+                      <Label htmlFor="basic_salary">Basic Salary {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="basic_salary" type="number" min="0" value={form.basic_salary} onChange={(e) => setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="hra">Housing Allowance (HRA) ({currencySymbol})</Label>
+                      <Label htmlFor="hra">Housing Allowance (HRA) {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="hra" type="number" min="0" value={form.hra} onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="mobile_allowance">Mobile Allowance ({currencySymbol})</Label>
+                      <Label htmlFor="mobile_allowance">Mobile Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="mobile_allowance" type="number" min="0" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="trans_allowance">Transportation Allowance ({currencySymbol})</Label>
+                      <Label htmlFor="trans_allowance">Transportation Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="trans_allowance" type="number" min="0" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="other_allowance">Other Allowance ({currencySymbol})</Label>
+                      <Label htmlFor="other_allowance">Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1">
