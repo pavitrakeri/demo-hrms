@@ -434,6 +434,16 @@ function EmployeesPage() {
                       </select>
                     </div>
                     <div className="space-y-1">
+                      <Label htmlFor="employment_status">Employment Status</Label>
+                      <select id="employment_status" value={form.employment_status || "Full Time"} onChange={(e) => setForm({ ...form, employment_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Probation">Probation</option>
+                        <option value="Intern">Intern</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
                       <Label htmlFor="designation">Designation</Label>
                       <Input id="designation" placeholder="e.g. Software Engineer" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
                     </div>

@@ -140,7 +140,7 @@ function EmployeeDetail() {
       // Work / Designation details
       designation: emp.designation ?? "",
       office_location: emp.office_location ?? "HQ - Abu Dhabi",
-      employment_status: emp.employment_status ?? "probation",
+      employment_status: emp.employment_status ?? "Probation",
       status: emp.status ?? "active",
 
       // Personal details
@@ -231,7 +231,7 @@ function EmployeeDetail() {
   const reportsTo = emp.manager_email ?? emp.reports_to ?? emp.manager ?? null;
   const hrEmail = emp.hr_email ?? "—";
   const joined = emp.joining_date ?? emp.joined_at ?? emp.created_at ?? null;
-  const employmentStatus = emp.employment_status ?? "probation";
+  const employmentStatus = emp.employment_status ?? "Probation";
   const contractType = emp.contract_type ?? "Limited";
 
   // Financial fields
@@ -377,6 +377,16 @@ function EmployeeDetail() {
                         <option value="hr">HR Personnel</option>
                         <option value="cfo">CFO</option>
                         <option value="admin">Administrator</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="edit_employment_status">Employment Status</Label>
+                      <select id="edit_employment_status" value={form.employment_status || "Full Time"} onChange={(e) => setForm({ ...form, employment_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Probation">Probation</option>
+                        <option value="Intern">Intern</option>
                       </select>
                     </div>
                     <div className="space-y-1">
