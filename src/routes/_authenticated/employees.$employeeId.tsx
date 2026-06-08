@@ -287,9 +287,7 @@ function EmployeeDetail() {
                         <span className={"h-1.5 w-1.5 rounded-full mr-1.5 " + (is_active ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")} />
                         {statusStr}
                       </Badge>
-                      <Badge variant="outline" className="capitalize text-xs font-medium px-2 py-0.5 border-border">
-                        {employmentStatus}
-                      </Badge>
+
                     </div>
                     <p className="text-sm text-muted-foreground mt-1.5 font-medium">
                       {designation} · {department}
