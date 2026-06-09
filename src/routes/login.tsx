@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import aimployLogo from "@/assets/aimploy-logo.png";
-import hrmsBg from "@/assets/hrms-bg.png";
-import { Eye, EyeOff, ArrowRight, ShieldCheck, Zap, BarChart3 } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in — Aimploy HRMS" }] }),
@@ -40,165 +39,169 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden bg-background">
-      {/* Left side - background image with overlay */}
-      <div className="hidden lg:flex lg:w-1/2 relative">
-        <img
-          src={hrmsBg}
-          alt="HRMS Background"
-          className="absolute inset-0 w-full h-full object-cover"
+    <>
+      <style>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        .glass-card {
+          background: rgba(20, 20, 22, 0.65);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+          background: rgba(0, 0, 0, 0.3) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          color: white !important;
+          transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+          border-color: rgba(139, 92, 246, 0.5) !important;
+          box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1) !important;
+        }
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
+
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#050505]">
+        {/* Animated Background Orbs */}
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob pointer-events-none"></div>
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 pointer-events-none"></div>
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000 pointer-events-none"></div>
+
+        {/* Ambient Grid Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '50px 50px' }}
         />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, oklch(0.2 0.05 260 / 0.92), oklch(0.15 0.04 265 / 0.85))" }}
-        />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
-          <div>
-            <img src={aimployLogo} alt="Aimploy" className="h-10 w-auto brightness-0 invert" />
-          </div>
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-3xl font-bold leading-tight">
-                Streamline Your Workforce
-              </h2>
-              <p className="text-white/70 text-lg max-w-md leading-relaxed">
-                The all-in-one HR platform that empowers your team, simplifies operations, and drives growth.
+
+        <div className="w-full max-w-md relative z-10 px-6 sm:px-0">
+          <div className="glass-card rounded-[2rem] p-8 sm:p-12 overflow-hidden relative">
+            {/* Subtle top glare */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            
+            <div className="text-center space-y-6 mb-8">
+              <div className="inline-flex items-center justify-center p-3 bg-white/5 rounded-2xl border border-white/10 shadow-inner mb-2">
+                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto brightness-0 invert" />
+              </div>
+              
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight text-white">
+                  Welcome back
+                </h1>
+                <p className="text-sm text-zinc-400 font-medium">
+                  Enter your credentials to access your workspace
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={onSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-zinc-300 ml-1">
+                  Email address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="name@company.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 rounded-xl glass-input placeholder:text-zinc-600"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1 mr-1">
+                  <Label htmlFor="password" className="text-sm font-medium text-zinc-300">
+                    Password
+                  </Label>
+                  <button
+                    type="button"
+                    className="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                    onClick={() => toast.info("Contact your admin to reset your password.")}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 rounded-xl glass-input pr-11 placeholder:text-zinc-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors p-1"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-white font-bold rounded-xl border-0 shadow-[0_0_20px_rgba(139,92,246,0.25)] hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] group transition-all duration-300 overflow-hidden relative"
+                  style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}
+                  disabled={loading}
+                >
+                  {/* Subtle shine effect on button */}
+                  <div className="absolute inset-0 -translate-x-[150%] group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
+                  
+                  {loading ? (
+                    <span className="flex items-center gap-2 relative z-10">
+                      <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Authenticating...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 relative z-10 text-[15px]">
+                      Sign in to Aimploy
+                      <ArrowRight className="h-[18px] w-[18px] group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  )}
+                </Button>
+              </div>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-zinc-500">
+                Don&apos;t have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => toast.info("Contact your HR admin for workspace access.")}
+                  className="text-white font-medium hover:text-purple-400 transition-colors decoration-purple-400 decoration-2 underline-offset-4 hover:underline"
+                >
+                  Request access
+                </button>
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <FeatureIcon icon={ShieldCheck} label="Secure" />
-              <FeatureIcon icon={Zap} label="Fast" />
-              <FeatureIcon icon={BarChart3} label="Analytics" />
-            </div>
-          </div>
-          <p className="text-white/40 text-sm">© {new Date().getFullYear()} Aimploy. All rights reserved.</p>
-        </div>
-      </div>
-
-      {/* Right side - login form */}
-      <div className="flex-1 flex items-center justify-center p-6 md:p-12 relative">
-        {/* Floating decorative orbs */}
-        <div
-          className="absolute -top-40 -right-40 h-80 w-80 rounded-full opacity-20 blur-3xl pointer-events-none"
-          style={{ background: "var(--gradient-brand)" }}
-        />
-        <div
-          className="absolute -bottom-40 -left-20 h-80 w-80 rounded-full opacity-15 blur-3xl pointer-events-none"
-          style={{ background: "var(--gradient-brand)" }}
-        />
-
-        <div className="w-full max-w-sm relative z-10 space-y-8">
-          {/* Logo for mobile */}
-          <div className="lg:hidden text-center space-y-2">
-            <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto mx-auto" />
-          </div>
-
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Sign in to your Aimploy workspace
-            </p>
-          </div>
-
-          <form onSubmit={onSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@company.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-11 bg-muted/50 border-border/60 focus-visible:ring-primary/20"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Password
-                </Label>
-                <button
-                  type="button"
-                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
-                  onClick={() => toast.info("Contact your admin to reset your password.")}
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 bg-muted/50 border-border/60 pr-10 focus-visible:ring-primary/20"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-11 text-white font-semibold border-0 shadow-[var(--shadow-brand)] hover:opacity-90 group"
-              style={{ background: "var(--gradient-brand)" }}
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in…
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  Sign in
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              )}
-            </Button>
-          </form>
-
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <button
-                type="button"
-                onClick={() => toast.info("Contact your HR admin for workspace access.")}
-                className="text-primary font-medium hover:text-primary/80 transition-colors"
-              >
-                Request access
-              </button>
-            </p>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FeatureIcon({ icon: Icon, label }: { icon: typeof ShieldCheck; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/10">
-        <Icon className="h-5 w-5 text-white/90" />
-      </div>
-      <span className="text-xs text-white/60 font-medium">{label}</span>
-    </div>
+    </>
   );
 }
