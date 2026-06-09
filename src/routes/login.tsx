@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import aimployLogo from "@/assets/aimploy-logo.png";
+import loginBg from "@/assets/login-bg.png";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
@@ -89,10 +90,19 @@ function LoginPage() {
       `}</style>
 
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#050505]">
-        {/* Animated Background Orbs */}
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/20 dark:bg-purple-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob pointer-events-none"></div>
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-indigo-500/20 dark:bg-indigo-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 pointer-events-none"></div>
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/20 dark:bg-pink-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000 pointer-events-none"></div>
+        {/* Fullscreen Background Image */}
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: `url(${loginBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.95
+          }}
+        />
+        
+        {/* Subtle overlay to ensure the card stands out */}
+        <div className="absolute inset-0 bg-slate-50/20 dark:bg-black/50 pointer-events-none" />
 
         {/* Ambient Grid Background */}
         <div 
