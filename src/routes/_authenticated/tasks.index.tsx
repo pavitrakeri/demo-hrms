@@ -47,6 +47,7 @@ function MyTasksPage() {
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editAssignee, setEditAssignee] = useState("");
+  const [editStartDate, setEditStartDate] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
   const [editStatus, setEditStatus] = useState("todo");
 
@@ -56,6 +57,7 @@ function MyTasksPage() {
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newAssignee, setNewAssignee] = useState("");
+  const [newStartDate, setNewStartDate] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
   const [newStatus, setNewStatus] = useState("todo");
 
@@ -131,6 +133,7 @@ function MyTasksPage() {
         title: editTitle,
         description: editDesc || "",
         assignee_id: editAssignee || null,
+        start_date: editStartDate || null,
         due_date: editDueDate || null,
         status: editStatus,
       };
@@ -161,6 +164,7 @@ function MyTasksPage() {
         title: newTitle,
         description: newDesc || undefined,
         assignee_id: newAssignee || undefined,
+        start_date: newStartDate || undefined,
         due_date: newDueDate || undefined,
         status: newStatus,
       };
@@ -175,6 +179,7 @@ function MyTasksPage() {
       setNewTitle("");
       setNewDesc("");
       setNewAssignee("");
+      setNewStartDate("");
       setNewDueDate("");
       setNewProjectId("");
       setNewStatus("todo");
@@ -188,6 +193,7 @@ function MyTasksPage() {
     setEditTitle(task.title ?? "");
     setEditDesc(task.description ?? "");
     setEditAssignee(task.assignee_id ?? "");
+    setEditStartDate(task.start_date ?? "");
     setEditDueDate(task.due_date ?? "");
     setEditStatus(task.status ?? "todo");
   };
@@ -300,11 +306,16 @@ function MyTasksPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
+                      <Label htmlFor="new-start">Start Date</Label>
+                      <Input id="new-start" type="date" value={newStartDate} onChange={(e) => setNewStartDate(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
                       <Label htmlFor="new-due">Due Date</Label>
                       <Input id="new-due" type="date" value={newDueDate} onChange={(e) => setNewDueDate(e.target.value)} />
                     </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="new-status">Status</Label>
+                  </div>
+                  <div className="space-y-1.5 mt-3">
+                    <Label htmlFor="new-status">Status</Label>
                       <select
                         id="new-status"
                         value={newStatus}
@@ -619,11 +630,16 @@ function MyTasksPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
+                  <Label htmlFor="edit-start">Start Date</Label>
+                  <Input id="edit-start" type="date" value={editStartDate} onChange={(e) => setEditStartDate(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
                   <Label htmlFor="edit-due">Due Date</Label>
                   <Input id="edit-due" type="date" value={editDueDate} onChange={(e) => setEditDueDate(e.target.value)} />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="edit-status">Status</Label>
+              </div>
+              <div className="space-y-1.5 mt-3">
+                <Label htmlFor="edit-status">Status</Label>
                   <select
                     id="edit-status"
                     value={editStatus}

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, Play, Square, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/tasks/$taskId")({
@@ -25,6 +25,8 @@ function TaskDetail() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("todo");
+  const [startDate, setStartDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["task", taskId],
@@ -33,15 +35,18 @@ function TaskDetail() {
 
   useEffect(() => {
     if (data) {
-      setTitle(data.title ?? data.name ?? "");
-      setDescription(data.description ?? "");
-      setStatus(data.status ?? "todo");
+      const t = data.task ?? data;
+      setTitle(t.title ?? t.name ?? "");
+      setDescription(t.description ?? "");
+      setStatus(t.status ?? "todo");
+      setStartDate(t.start_date ?? "");
+      setDueDate(t.due_date ?? "");
     }
   }, [data]);
 
   const save = useMutation({
     mutationFn: () =>
-      api(`/tasks/${taskId}`, { method: "PUT", body: { title, description, status } }),
+      api(`/tasks/${taskId}`, { method: "PUT", body: { title, description, status, start_date: startDate || null, due_date: dueDate || null } }),
     onSuccess: () => {
       toast.success("Task updated");
       qc.invalidateQueries({ queryKey: ["task", taskId] });
@@ -60,7 +65,26 @@ function TaskDetail() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleTimer = useMutation({
+    mutationFn: () => api(`/tasks/${taskId}/timer`, { method: "POST" }),
+    onSuccess: () => {
+      toast.success("Timer toggled");
+      qc.invalidateQueries({ queryKey: ["task", taskId] });
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+
+  const task = data?.task ?? data;
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -87,6 +111,39 @@ function TaskDetail() {
               </SelectContent>
             </Select>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="start_date">Start Date</Label>
+              <Input id="start_date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="due_date">Due Date</Label>
+              <Input id="due_date" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            </div>
+          </div>
+          {task && (
+            <div className="p-4 bg-muted/30 rounded-lg border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Time Tracked</p>
+                  <p className="text-xs text-muted-foreground">{formatTime(task.time_spent_seconds || 0)}</p>
+                </div>
+              </div>
+              <Button 
+                variant={task.timer_started_at ? "destructive" : "secondary"} 
+                size="sm" 
+                onClick={() => toggleTimer.mutate()}
+                disabled={toggleTimer.isPending}
+              >
+                {task.timer_started_at ? (
+                  <><Square className="h-4 w-4 mr-1.5" /> Stop Timer</>
+                ) : (
+                  <><Play className="h-4 w-4 mr-1.5" /> Start Timer</>
+                )}
+              </Button>
+            </div>
+          )}
           <div className="flex gap-2">
             <Button onClick={() => save.mutate()} disabled={save.isPending}>
               {save.isPending ? "Saving…" : "Save"}
