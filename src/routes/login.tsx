@@ -57,17 +57,27 @@ function LoginPage() {
           animation-delay: 4s;
         }
         .glass-card {
-          background: rgba(20, 20, 22, 0.65);
+          background: rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        .dark .glass-card {
+          background: rgba(20, 20, 22, 0.65);
           border: 1px solid rgba(255, 255, 255, 0.08);
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
         .glass-input {
+          background: rgba(255, 255, 255, 0.5) !important;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
+          color: black !important;
+          transition: all 0.3s ease;
+        }
+        .dark .glass-input {
           background: rgba(0, 0, 0, 0.3) !important;
           border: 1px solid rgba(255, 255, 255, 0.1) !important;
           color: white !important;
-          transition: all 0.3s ease;
         }
         .glass-input:focus {
           border-color: rgba(139, 92, 246, 0.5) !important;
@@ -78,33 +88,33 @@ function LoginPage() {
         }
       `}</style>
 
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#050505]">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#050505]">
         {/* Animated Background Orbs */}
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob pointer-events-none"></div>
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 pointer-events-none"></div>
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-600/30 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000 pointer-events-none"></div>
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/20 dark:bg-purple-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob pointer-events-none"></div>
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-indigo-500/20 dark:bg-indigo-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 pointer-events-none"></div>
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/20 dark:bg-pink-600/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000 pointer-events-none"></div>
 
         {/* Ambient Grid Background */}
         <div 
-          className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '50px 50px' }}
+          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none" 
+          style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '50px 50px' }}
         />
 
         <div className="w-full max-w-md relative z-10 px-6 sm:px-0">
           <div className="glass-card rounded-[2rem] p-8 sm:p-12 overflow-hidden relative">
             {/* Subtle top glare */}
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/20 to-transparent"></div>
             
             <div className="text-center space-y-6 mb-8">
-              <div className="inline-flex items-center justify-center p-3 bg-white/5 rounded-2xl border border-white/10 shadow-inner mb-2">
-                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto brightness-0 invert" />
+              <div className="inline-flex items-center justify-center p-3 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 shadow-inner mb-2">
+                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto dark:brightness-0 dark:invert" />
               </div>
               
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-white">
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
                   Welcome back
                 </h1>
-                <p className="text-sm text-zinc-400 font-medium">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
                   Enter your credentials to access your workspace
                 </p>
               </div>
@@ -112,7 +122,7 @@ function LoginPage() {
 
             <form onSubmit={onSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-zinc-300 ml-1">
+                <Label htmlFor="email" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 ml-1">
                   Email address
                 </Label>
                 <Input
@@ -129,7 +139,7 @@ function LoginPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1 mr-1">
-                  <Label htmlFor="password" className="text-sm font-medium text-zinc-300">
+                  <Label htmlFor="password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                     Password
                   </Label>
                   <button
@@ -188,12 +198,12 @@ function LoginPage() {
             </form>
 
             <div className="mt-8 text-center">
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-zinc-600 dark:text-zinc-500">
                 Don&apos;t have an account?{" "}
                 <button
                   type="button"
                   onClick={() => toast.info("Contact your HR admin for workspace access.")}
-                  className="text-white font-medium hover:text-purple-400 transition-colors decoration-purple-400 decoration-2 underline-offset-4 hover:underline"
+                  className="text-zinc-900 dark:text-white font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors decoration-purple-500/50 dark:decoration-purple-400 decoration-2 underline-offset-4 hover:underline"
                 >
                   Request access
                 </button>
