@@ -116,8 +116,8 @@ function LoginPage() {
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/20 to-transparent"></div>
             
             <div className="text-center space-y-6 mb-8">
-              <div className="inline-flex items-center justify-center p-3 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 shadow-inner mb-2">
-                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto dark:brightness-0 dark:invert" />
+              <div className="mb-4">
+                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto dark:brightness-0 dark:invert mx-auto" />
               </div>
               
               <div className="space-y-2">
