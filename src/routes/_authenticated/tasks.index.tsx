@@ -340,7 +340,6 @@ function MyTasksPage() {
                       </select>
                     </div>
                   </div>
-                </div>
                 <DialogFooter className="mt-4">
                   <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>Cancel</Button>
                   <Button
@@ -682,7 +681,6 @@ function MyTasksPage() {
                   </select>
                 </div>
               </div>
-            </div>
             <DialogFooter className="mt-4">
               <Button variant="outline" onClick={() => setEditingTask(null)}>Cancel</Button>
               <Button
