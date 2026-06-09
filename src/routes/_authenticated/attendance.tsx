@@ -56,10 +56,10 @@ function formatTime(iso: string | null | undefined) {
     ? "—"
     : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
-function formatDate(iso: string | null | undefined) {
+function formatDate(iso: string | null | undefined | Date) {
   if (!iso) return "—";
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+  const d = iso instanceof Date ? iso : new Date(iso);
+  return isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 function dayKey(d: Date) {
   const y = d.getFullYear();
@@ -299,7 +299,7 @@ function AttendancePage() {
         <Card>
           <CardHeader>
             <CardTitle>Today</CardTitle>
-            <CardDescription>Summary for {new Date().toLocaleDateString()}.</CardDescription>
+            <CardDescription>Summary for {formatDate(new Date())}.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4">
             <div>
@@ -347,7 +347,7 @@ function AttendancePage() {
           </div>
           <div>
             <div className="text-sm font-medium mb-3">
-              {selectedDate.toLocaleDateString(undefined, {
+              {selectedDate.toLocaleDateString("en-GB", {
                 weekday: "long",
                 month: "short",
                 day: "numeric",
