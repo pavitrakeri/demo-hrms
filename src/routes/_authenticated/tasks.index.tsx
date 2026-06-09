@@ -26,7 +26,9 @@ import {
   LayoutGrid,
   List,
   UserCheck,
-  Plus
+  Plus,
+  Play,
+  Square
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -152,6 +154,16 @@ function MyTasksPage() {
     mutationFn: (id: string) => api(`/tasks/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       toast.success("Task deleted successfully");
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.invalidateQueries({ queryKey: ["project"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toggleTimer = useMutation({
+    mutationFn: (id: string) => api(`/tasks/${id}/timer`, { method: "POST" }),
+    onSuccess: () => {
+      toast.success("Timer toggled");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["project"] });
     },
@@ -424,6 +436,15 @@ function MyTasksPage() {
                                   <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleOpenEdit(t)}>
                                     <Edit className="h-3 w-3" />
                                   </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className={`h-6 w-6 ${t.timer_started_at ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50'}`} 
+                                    onClick={(e) => { e.preventDefault(); toggleTimer.mutate(id); }}
+                                    title={t.timer_started_at ? "Stop Timer" : "Start Timer"}
+                                  >
+                                    {t.timer_started_at ? <Square className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                                  </Button>
                                   <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => {
                                     if (window.confirm("Are you sure you want to delete this task?")) deleteTask.mutate(id);
                                   }}>
@@ -574,6 +595,15 @@ function MyTasksPage() {
                             <div className="flex items-center justify-end gap-1">
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleOpenEdit(t)}>
                                 <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className={`h-8 w-8 ${t.timer_started_at ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50'}`} 
+                                onClick={(e) => { e.preventDefault(); toggleTimer.mutate(id); }}
+                                title={t.timer_started_at ? "Stop Timer" : "Start Timer"}
+                              >
+                                {t.timer_started_at ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                               </Button>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => {
                                 if (window.confirm("Are you sure you want to delete this task?")) deleteTask.mutate(id);
