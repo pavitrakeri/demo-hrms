@@ -44,21 +44,24 @@ const navItems: NavItem[] = [
 
 function AuthenticatedLayout() {
   const navigate = useNavigate();
-  const { role, email, passwordResetRequired } = useAuth();
+  const { role, email, passwordResetRequired, permissions } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [orgOpen, setOrgOpen] = useState(pathname.startsWith("/departments") || pathname.startsWith("/roles"));
   const [mobileOpen, setMobileOpen] = useState(false);
   
   const allowedNavItems = useMemo(() => {
     const userRole = (role ?? "").toLowerCase().trim();
-    const canSeeOrg = ["admin", "hr", "cfo"].includes(userRole);
+    const isSystemAdmin = userRole === "admin";
     return navItems.filter((item) => {
-      if (item.label === "Employees" || item.label === "Organization") {
-        return canSeeOrg;
+      if (item.label === "Employees") {
+        return isSystemAdmin || permissions.includes("manage_employees");
+      }
+      if (item.label === "Organization") {
+        return isSystemAdmin || permissions.includes("manage_departments") || permissions.includes("manage_roles");
       }
       return true;
     });
-  }, [role]);
+  }, [role, permissions]);
 
   function onLogout() {
     logout();

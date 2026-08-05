@@ -67,6 +67,25 @@ export function getPasswordResetRequiredFromToken(token: string | null): boolean
   }
 }
 
+export function getPermissionsFromToken(token: string | null): string[] {
+  if (!token) return [];
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return [];
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload)?.permissions ?? [];
+  } catch (e) {
+    return [];
+  }
+}
+
 export function useAuth() {
   const token = useSyncExternalStore(
     subscribe,
@@ -77,8 +96,9 @@ export function useAuth() {
   const role = useMemo(() => getRoleFromToken(token), [token]);
   const email = useMemo(() => getEmailFromToken(token), [token]);
   const passwordResetRequired = useMemo(() => getPasswordResetRequiredFromToken(token), [token]);
+  const permissions = useMemo(() => getPermissionsFromToken(token), [token]);
 
-  return { token, isAuthenticated: !!token, role, email, passwordResetRequired };
+  return { token, isAuthenticated: !!token, role, email, passwordResetRequired, permissions };
 }
 
 export type LoginResponse = {
