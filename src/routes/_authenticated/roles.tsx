@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Search, Shield, Users, Pencil, Trash2, ShieldAlert, UserCheck } from "lucide-react";
 import { toast } from "sonner";
-import { getRoleFromToken, getToken } from "@/lib/auth";
+import { getRoleFromToken, getToken, getPermissionsFromToken } from "@/lib/auth";
 
 const AVAILABLE_PERMISSIONS = [
   { id: "manage_employees", label: "Manage Employees" },
@@ -28,8 +28,10 @@ const AVAILABLE_PERMISSIONS = [
 export const Route = createFileRoute("/_authenticated/roles")({
   head: () => ({ meta: [{ title: "Roles — HRMS" }] }),
   beforeLoad: () => {
-    const role = getRoleFromToken(getToken());
-    if (!role || !["admin", "hr", "cfo"].includes(role.toLowerCase().trim())) {
+    const token = getToken();
+    const role = getRoleFromToken(token)?.toLowerCase().trim();
+    const permissions = getPermissionsFromToken(token);
+    if (role !== "admin" && !permissions.includes("manage_roles")) {
       throw redirect({ to: "/dashboard" });
     }
   },

@@ -30,13 +30,15 @@ import {
   UserCheck
 } from "lucide-react";
 import { toast } from "sonner";
-import { getRoleFromToken, getToken } from "@/lib/auth";
+import { getRoleFromToken, getToken, getPermissionsFromToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/employees/")({
   head: () => ({ meta: [{ title: "Employees — HRMS" }] }),
   beforeLoad: () => {
-    const role = getRoleFromToken(getToken());
-    if (!role || !["admin", "hr", "cfo"].includes(role.toLowerCase().trim())) {
+    const token = getToken();
+    const role = getRoleFromToken(token)?.toLowerCase().trim();
+    const permissions = getPermissionsFromToken(token);
+    if (role !== "admin" && !permissions.includes("manage_employees")) {
       throw redirect({ to: "/dashboard" });
     }
   },
