@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { getPermissionsFromToken, getToken, getRoleFromToken } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -82,6 +83,15 @@ function EmployeeDetail() {
   const [editOpen, setEditOpen] = useState(false);
   const [activeFormTab, setActiveFormTab] = useState("basic");
 
+  const [payrollOpen, setPayrollOpen] = useState(false);
+  const [payrollForm, setPayrollForm] = useState<any>({});
+
+  // Auth Checks
+  const token = getToken();
+  const permissions = getPermissionsFromToken(token);
+  const userRole = getRoleFromToken(token)?.toLowerCase().trim();
+  const isFinanceOrAdmin = userRole === "admin" || userRole === "finance" || userRole === "cfo" || permissions.includes("manage_payroll");
+
   // Queries
   const { data: detail, isLoading, error } = useQuery({
     queryKey: ["employee", employeeId],
@@ -103,6 +113,13 @@ function EmployeeDetail() {
     queryFn: () => api<any>("/settings/company"),
   });
   const currencySymbol = company?.currency ?? "";
+
+  const { data: payrollSetupData } = useQuery({
+    queryKey: ["payroll-setup", employeeId],
+    queryFn: () => api<any>(`/payroll/initiate/${employeeId}`),
+    enabled: isFinanceOrAdmin,
+  });
+  const payrollSetup = payrollSetupData?.data;
 
   const listEmployees: any[] = Array.isArray(list) ? list : list?.employees ?? list?.items ?? [];
   const fromList = listEmployees.find(
@@ -205,6 +222,60 @@ function EmployeeDetail() {
       qc.invalidateQueries({ queryKey: ["employee", employeeId] });
       qc.invalidateQueries({ queryKey: ["employees"] });
       setEditOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const openPayrollDialog = () => {
+    if (payrollSetup) {
+      setPayrollForm({
+        basic_salary: payrollSetup.basic_salary ?? 0,
+        hra: payrollSetup.hra ?? 0,
+        allowances: payrollSetup.allowances ?? 0,
+        other_benefits: payrollSetup.other_benefits ?? 0,
+        payment_mode: payrollSetup.payment_mode ?? "bank_transfer",
+        bank_account_number: payrollSetup.bank_account_number ?? "",
+        bank_name: payrollSetup.bank_name ?? "",
+        iban_number: payrollSetup.iban_number ?? "",
+        remarks: payrollSetup.remarks ?? "",
+      });
+    } else {
+      setPayrollForm({
+        basic_salary: emp.basic_salary ?? 0,
+        hra: emp.hra ?? 0,
+        allowances: 0,
+        other_benefits: 0,
+        payment_mode: "bank_transfer",
+        bank_account_number: emp.bank_account_number ?? "",
+        bank_name: "",
+        iban_number: "",
+        remarks: "",
+      });
+    }
+    setPayrollOpen(true);
+  };
+
+  const savePayroll = useMutation({
+    mutationFn: () => {
+      const payload = {
+        employee_email: email,
+        ...payrollForm,
+      };
+      payload.basic_salary = Number(payload.basic_salary) || 0;
+      payload.hra = Number(payload.hra) || 0;
+      payload.allowances = Number(payload.allowances) || 0;
+      payload.other_benefits = Number(payload.other_benefits) || 0;
+
+      if (payrollSetup) {
+        return api(`/payroll/initiate/${email}/update`, { method: "PUT", body: payload });
+      } else {
+        return api(`/payroll/initiate/new_employee`, { method: "POST", body: payload });
+      }
+    },
+    onSuccess: () => {
+      toast.success(payrollSetup ? "Payroll updated successfully" : "Payroll initiated successfully");
+      qc.invalidateQueries({ queryKey: ["payroll-setup", employeeId] });
+      setPayrollOpen(false);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -587,7 +658,7 @@ function EmployeeDetail() {
 
           {/* Details Dashboard Tabs */}
           <Tabs defaultValue="overview" className="w-full space-y-6">
-            <TabsList className="grid grid-cols-3 w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40">
+            <TabsList className={`grid ${isFinanceOrAdmin ? 'grid-cols-4' : 'grid-cols-3'} w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40`}>
               <TabsTrigger value="overview" className="text-xs font-semibold rounded-lg gap-2">
                 <Briefcase className="h-3.5 w-3.5 shrink-0" />
                 Work Details
@@ -600,6 +671,12 @@ function EmployeeDetail() {
                 <Fingerprint className="h-3.5 w-3.5 shrink-0" />
                 Legal & ID
               </TabsTrigger>
+              {isFinanceOrAdmin && (
+                <TabsTrigger value="payroll" className="text-xs font-semibold rounded-lg gap-2">
+                  <Wallet className="h-3.5 w-3.5 shrink-0" />
+                  Payroll Setup
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* TAB 1: OVERVIEW & WORK */}
@@ -676,7 +753,115 @@ function EmployeeDetail() {
                 </DetailCard>
               </div>
             </TabsContent>
+
+            {/* TAB 4: PAYROLL SETUP */}
+            {isFinanceOrAdmin && (
+              <TabsContent value="payroll" className="outline-none space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <DetailCard title="Compensation" icon={DollarSign}>
+                    {payrollSetup ? (
+                      <>
+                        <DetailRow label="Basic Salary" value={formatCurrency(payrollSetup.basic_salary, currencySymbol)} />
+                        <DetailRow label="HRA" value={formatCurrency(payrollSetup.hra, currencySymbol)} />
+                        <DetailRow label="Allowances" value={formatCurrency(payrollSetup.allowances, currencySymbol)} />
+                        <DetailRow label="Other Benefits" value={formatCurrency(payrollSetup.other_benefits, currencySymbol)} />
+                        <DetailRow label="Gross Monthly" value={formatCurrency(payrollSetup.gross_monthly, currencySymbol)} className="text-primary font-bold" />
+                        <DetailRow label="Gross Annual" value={formatCurrency(payrollSetup.gross_annual, currencySymbol)} className="text-primary font-bold" />
+                      </>
+                    ) : (
+                      <div className="text-sm text-muted-foreground py-4">Payroll has not been initiated for this employee yet.</div>
+                    )}
+                  </DetailCard>
+
+                  <DetailCard title="Banking Details" icon={Wallet}>
+                    {payrollSetup ? (
+                      <>
+                        <DetailRow label="Payment Mode" value={payrollSetup.payment_mode} className="capitalize" />
+                        <DetailRow label="Bank Name" value={payrollSetup.bank_name} />
+                        <DetailRow label="Account Number" value={payrollSetup.bank_account_number} className="font-mono" />
+                        <DetailRow label="IBAN Number" value={payrollSetup.iban_number} className="font-mono" />
+                        <DetailRow label="Remarks" value={payrollSetup.remarks} />
+                      </>
+                    ) : (
+                      <div className="text-sm text-muted-foreground py-4">Banking information not available.</div>
+                    )}
+                  </DetailCard>
+                </div>
+                
+                <div className="flex justify-end mt-4">
+                  <Button onClick={openPayrollDialog} style={{ background: "var(--gradient-brand)" }}>
+                    {payrollSetup ? "Update Payroll Details" : "Initiate Payroll"}
+                  </Button>
+                </div>
+              </TabsContent>
+            )}
           </Tabs>
+          
+          {/* Payroll Setup Dialog */}
+          <Dialog open={payrollOpen} onOpenChange={setPayrollOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>{payrollSetup ? "Update Payroll Details" : "Initiate Payroll"}</DialogTitle>
+                <DialogDescription>Set up the compensation structure and banking details for this employee.</DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4 max-h-[60vh] overflow-y-auto px-1">
+                <div className="space-y-1">
+                  <Label>Basic Salary {currencySymbol && `(${currencySymbol})`} *</Label>
+                  <Input type="number" min="0" value={payrollForm.basic_salary || ""} onChange={(e) => setPayrollForm({ ...payrollForm, basic_salary: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label>Housing Allowance (HRA) {currencySymbol && `(${currencySymbol})`}</Label>
+                  <Input type="number" min="0" value={payrollForm.hra || ""} onChange={(e) => setPayrollForm({ ...payrollForm, hra: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label>Allowances {currencySymbol && `(${currencySymbol})`}</Label>
+                  <Input type="number" min="0" value={payrollForm.allowances || ""} onChange={(e) => setPayrollForm({ ...payrollForm, allowances: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label>Other Benefits {currencySymbol && `(${currencySymbol})`}</Label>
+                  <Input type="number" min="0" value={payrollForm.other_benefits || ""} onChange={(e) => setPayrollForm({ ...payrollForm, other_benefits: e.target.value })} />
+                </div>
+                
+                <div className="col-span-full border-t my-2 pt-4">
+                  <h4 className="text-sm font-semibold mb-3">Banking Information</h4>
+                </div>
+                
+                <div className="space-y-1">
+                  <Label>Payment Mode</Label>
+                  <select className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm" value={payrollForm.payment_mode || "bank_transfer"} onChange={(e) => setPayrollForm({ ...payrollForm, payment_mode: e.target.value })}>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="cash">Cash</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="wps">WPS</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label>Bank Name</Label>
+                  <Input value={payrollForm.bank_name || ""} onChange={(e) => setPayrollForm({ ...payrollForm, bank_name: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label>Account Number</Label>
+                  <Input value={payrollForm.bank_account_number || ""} onChange={(e) => setPayrollForm({ ...payrollForm, bank_account_number: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label>IBAN Number</Label>
+                  <Input value={payrollForm.iban_number || ""} onChange={(e) => setPayrollForm({ ...payrollForm, iban_number: e.target.value })} />
+                </div>
+                <div className="space-y-1 col-span-full">
+                  <Label>Remarks</Label>
+                  <Input value={payrollForm.remarks || ""} onChange={(e) => setPayrollForm({ ...payrollForm, remarks: e.target.value })} />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setPayrollOpen(false)}>Cancel</Button>
+                <Button onClick={() => savePayroll.mutate()} disabled={!payrollForm.basic_salary || savePayroll.isPending} style={{ background: "var(--gradient-brand)" }}>
+                  {savePayroll.isPending ? "Saving…" : "Save Payroll"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </div>
