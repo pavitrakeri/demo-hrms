@@ -10,9 +10,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Search, Shield, Users, Pencil, Trash2, ShieldAlert, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { getRoleFromToken, getToken } from "@/lib/auth";
+
+const AVAILABLE_PERMISSIONS = [
+  { id: "manage_employees", label: "Manage Employees" },
+  { id: "manage_roles", label: "Manage Roles" },
+  { id: "manage_departments", label: "Manage Departments" },
+  { id: "manage_leaves", label: "Manage Leaves" },
+  { id: "manage_payroll", label: "Manage Payroll" },
+  { id: "manage_policies", label: "Manage Policies" },
+  { id: "manage_recruitment", label: "Manage Recruitment" },
+];
 
 export const Route = createFileRoute("/_authenticated/roles")({
   head: () => ({ meta: [{ title: "Roles — HRMS" }] }),
@@ -44,8 +55,8 @@ function RolesPage() {
   const [search, setSearch] = useState("");
   
   // Form States
-  const [form, setForm] = useState({ name: "", description: "" });
-  const [editingRole, setEditingRole] = useState<any>(null); // { id, name, description }
+  const [form, setForm] = useState<{ name: string; description: string; permissions: string[] }>({ name: "", description: "", permissions: [] });
+  const [editingRole, setEditingRole] = useState<any>(null); // { id, name, description, permissions }
   const [deletingRole, setDeletingRole] = useState<any>(null); // { id, name }
 
   // Queries
@@ -97,7 +108,7 @@ function RolesPage() {
       toast.success("Role created successfully");
       qc.invalidateQueries({ queryKey: ["roles"] });
       setOpen(false);
-      setForm({ name: "", description: "" });
+      setForm({ name: "", description: "", permissions: [] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -108,6 +119,7 @@ function RolesPage() {
         role_id: editingRole.id,
         name: editingRole.name || undefined,
         description: editingRole.description || "",
+        permissions: editingRole.permissions || [],
       };
       return api("/roles/update", { method: "PUT", body: payload });
     },
@@ -148,6 +160,7 @@ function RolesPage() {
       id: role.id ?? role.role_id,
       name: role.name ?? "",
       description: role.description ?? "",
+      permissions: role.permissions ?? [],
     });
     setEditOpen(true);
   };
@@ -194,6 +207,30 @@ function RolesPage() {
               <div className="space-y-1">
                 <Label htmlFor="description">Description <span className="text-muted-foreground text-xs">(Optional)</span></Label>
                 <Textarea id="description" placeholder="Describe the scope and responsibilities..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div className="space-y-3 pt-2">
+                <Label>Permissions</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {AVAILABLE_PERMISSIONS.map((perm) => (
+                    <div key={perm.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`perm-${perm.id}`} 
+                        checked={form.permissions.includes(perm.id)}
+                        onCheckedChange={(checked) => {
+                          setForm(prev => ({
+                            ...prev,
+                            permissions: checked 
+                              ? [...prev.permissions, perm.id]
+                              : prev.permissions.filter(p => p !== perm.id)
+                          }));
+                        }}
+                      />
+                      <label htmlFor={`perm-${perm.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                        {perm.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <DialogFooter>
@@ -248,7 +285,8 @@ function RolesPage() {
               <TableHeader className="bg-muted/5 border-b border-border/40">
                 <TableRow>
                   <TableHead className="w-[30%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-6">Role Name</TableHead>
-                  <TableHead className="w-[45%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Description</TableHead>
+                  <TableHead className="w-[35%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Description</TableHead>
+                  <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Permissions</TableHead>
                   <TableHead className="w-[15%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Headcount</TableHead>
                   <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-right pr-6">Actions</TableHead>
                 </TableRow>
@@ -287,6 +325,12 @@ function RolesPage() {
                         ) : (
                           <span className="text-muted-foreground/60 italic text-xs">No description provided</span>
                         )}
+                      </TableCell>
+
+                      <TableCell className="align-middle">
+                        <Badge variant="outline" className="text-xs font-normal">
+                          {(r.permissions?.length || 0)} permissions
+                        </Badge>
                       </TableCell>
 
                       <TableCell className="align-middle">
@@ -343,6 +387,30 @@ function RolesPage() {
               <div className="space-y-1">
                 <Label htmlFor="edit_description">Description</Label>
                 <Textarea id="edit_description" value={editingRole.description} onChange={(e) => setEditingRole({ ...editingRole, description: e.target.value })} />
+              </div>
+              <div className="space-y-3 pt-2">
+                <Label>Permissions</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {AVAILABLE_PERMISSIONS.map((perm) => (
+                    <div key={perm.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`edit-perm-${perm.id}`} 
+                        checked={editingRole.permissions?.includes(perm.id)}
+                        onCheckedChange={(checked) => {
+                          setEditingRole((prev: any) => ({
+                            ...prev,
+                            permissions: checked 
+                              ? [...(prev.permissions || []), perm.id]
+                              : (prev.permissions || []).filter((p: string) => p !== perm.id)
+                          }));
+                        }}
+                      />
+                      <label htmlFor={`edit-perm-${perm.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                        {perm.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <DialogFooter>
