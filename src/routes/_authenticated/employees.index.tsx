@@ -612,6 +612,13 @@ function EmployeesPage() {
                       <Label htmlFor="other_allowance">Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
                       <Input id="other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
                     </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <Label>Total Computed Salary {currencySymbol ? `(${currencySymbol})` : ""}</Label>
+                      <div className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm items-center text-muted-foreground font-semibold">
+                        {((form.basic_salary || 0) + (form.hra || 0) + (form.mobile || 0) + (form.transportation || 0) + (form.other || 0)).toLocaleString()}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Auto-calculated from above fields. This will be used to initialize the payroll setup.</p>
+                    </div>
                     <div className="space-y-1">
                       <Label htmlFor="wps">WPS Payment Status</Label>
                       <Input id="wps" placeholder="e.g. Yes / No / Exempt" value={form.wps} onChange={(e) => setForm({ ...form, wps: e.target.value })} />
