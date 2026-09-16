@@ -94,3 +94,57 @@ export async function api<T = unknown>(path: string, opts: RequestOpts = {}): Pr
   }
   return payload as T;
 }
+
+export type AiActionCard = {
+  action_required: "confirmation";
+  action_id: string;
+  leave_type: string;
+  start_date: string;
+  end_date: string;
+  num_days: number;
+  reason: string;
+  message: string;
+};
+
+export type AiMessage = {
+  id: string;
+  sender: "user" | "assistant" | "system";
+  content: string;
+  created_at: string | null;
+  action_card?: AiActionCard | null;
+};
+
+export type AiChatResponse = {
+  conversation_id: string;
+  response: string;
+  action_card?: AiActionCard | null;
+};
+
+export type AiConversation = {
+  id: string;
+  title: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export async function sendAiMessage(message: string, conversationId?: string): Promise<AiChatResponse> {
+  return api<AiChatResponse>("/ai/chat", {
+    method: "POST",
+    body: { message, conversation_id: conversationId },
+  });
+}
+
+export async function confirmAiAction(actionId: string, confirm: boolean): Promise<{ status: string; message: string; leave_id?: string }> {
+  return api("/ai/confirm-action", {
+    method: "POST",
+    body: { action_id: actionId, confirm },
+  });
+}
+
+export async function getAiConversations(): Promise<AiConversation[]> {
+  return api<AiConversation[]>("/ai/conversations");
+}
+
+export async function getAiMessages(conversationId: string): Promise<{ conversation_id: string; messages: AiMessage[] }> {
+  return api(`/ai/conversations/${conversationId}/messages`);
+}
