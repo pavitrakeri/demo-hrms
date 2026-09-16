@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Outlet, Link, useNavigate, useRouterState } 
 import { getToken, api } from "@/lib/api";
 import { logout, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff, Settings, Menu, Wallet } from "lucide-react";
+import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff, Settings, Menu, Wallet, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
@@ -28,6 +28,7 @@ type NavItem =
 
 const navItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/attendance", label: "Attendance", icon: Clock },
   { to: "/leaves", label: "Leaves", icon: Calendar },
   { to: "/projects", label: "Projects", icon: FolderKanban },

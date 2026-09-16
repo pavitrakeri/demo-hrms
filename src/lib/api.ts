@@ -148,3 +148,7 @@ export async function getAiConversations(): Promise<AiConversation[]> {
 export async function getAiMessages(conversationId: string): Promise<{ conversation_id: string; messages: AiMessage[] }> {
   return api(`/ai/conversations/${conversationId}/messages`);
 }
+
+export async function deleteAiConversation(conversationId: string): Promise<{ status: string }> {
+  return api(`/ai/conversations/${conversationId}`, { method: "DELETE" });
+}
