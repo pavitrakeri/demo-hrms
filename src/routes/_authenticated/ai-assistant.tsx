@@ -89,6 +89,8 @@ function AiAssistantPage() {
     startListening: startInlineListen,
     stopListening: stopInlineListen,
   } = useVoiceAssistant({
+    continuous: false,
+    silenceTimeoutMs: 1200,
     onSpeechResult: (text) => {
       setInput((prev) => (prev ? prev + " " + text : text));
     },
