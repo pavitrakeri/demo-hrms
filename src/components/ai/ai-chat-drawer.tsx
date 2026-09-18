@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Send, Trash2, Bot, Loader2 } from "lucide-react";
+import { Sparkles, Send, Trash2, Bot, Loader2, Radio, Mic, MicOff } from "lucide-react";
 import { sendAiMessage, AiMessage } from "@/lib/api";
 import { ChatMessage } from "./chat-message";
 import { PromptChips } from "./prompt-chips";
+import { VoiceModeModal } from "./voice-mode-modal";
+import { useVoiceAssistant } from "@/hooks/use-voice-assistant";
 import { toast } from "sonner";
 
 interface AiChatDrawerProps {
@@ -25,7 +27,18 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | undefined>(undefined);
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const {
+    isListening: isInlineListening,
+    startListening: startInlineListen,
+    stopListening: stopInlineListen,
+  } = useVoiceAssistant({
+    onSpeechResult: (text) => {
+      setInput((prev) => (prev ? prev + " " + text : text));
+    },
+  });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -106,15 +119,26 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClearChat}
-            title="Clear conversation"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setVoiceModalOpen(true)}
+              title="Launch Live Voice Mode"
+              className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+            >
+              <Radio className="h-4 w-4 text-primary animate-pulse" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClearChat}
+              title="Clear conversation"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </SheetHeader>
 
         {/* Message Stream */}
@@ -153,6 +177,20 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
               className="flex-1 text-xs h-10 rounded-xl bg-muted/40 border-border/60 focus-visible:ring-primary"
             />
             <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={isInlineListening ? stopInlineListen : startInlineListen}
+              className={`h-10 w-10 shrink-0 rounded-xl transition-colors ${
+                isInlineListening
+                  ? "bg-rose-500/15 text-rose-500 hover:bg-rose-500/20 animate-pulse"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title={isInlineListening ? "Stop voice listening" : "Click to speak"}
+            >
+              {isInlineListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </Button>
+            <Button
               type="submit"
               size="icon"
               disabled={!input.trim() || loading}
@@ -165,6 +203,19 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
             Powered by Google Gemini 1.5 • Respects Aimploy role permissions
           </div>
         </div>
+
+        <VoiceModeModal
+          open={voiceModalOpen}
+          onOpenChange={setVoiceModalOpen}
+          conversationId={conversationId}
+          onNewMessage={(userText, aiText, actionCard) => {
+            setMessages((prev) => [
+              ...prev,
+              { id: `user-${Date.now()}`, sender: "user", content: userText, created_at: new Date().toISOString() },
+              { id: `ai-${Date.now()}`, sender: "assistant", content: aiText, created_at: new Date().toISOString(), action_card: actionCard },
+            ]);
+          }}
+        />
       </SheetContent>
     </Sheet>
   );

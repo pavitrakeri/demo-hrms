@@ -20,8 +20,13 @@ import {
   MessageSquare,
   Loader2,
   Shield,
-  ChevronRight
+  ChevronRight,
+  Radio,
+  Mic,
+  MicOff
 } from "lucide-react";
+import { VoiceModeModal } from "@/components/ai/voice-mode-modal";
+import { useVoiceAssistant } from "@/hooks/use-voice-assistant";
 import {
   sendAiMessage,
   getAiConversations,
@@ -76,7 +81,18 @@ function AiAssistantPage() {
   const [messages, setMessages] = useState<AiMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const {
+    isListening: isInlineListening,
+    startListening: startInlineListen,
+    stopListening: stopInlineListen,
+  } = useVoiceAssistant({
+    onSpeechResult: (text) => {
+      setInput((prev) => (prev ? prev + " " + text : text));
+    },
+  });
 
   // Fetch list of conversations
   const { data: conversations = [], isLoading: loadingConversations } = useQuery({
@@ -191,6 +207,15 @@ function AiAssistantPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setVoiceModalOpen(true)}
+            size="sm"
+            variant="outline"
+            className="border-primary/40 text-primary hover:bg-primary/10 font-medium shadow-sm h-9 gap-1.5"
+          >
+            <Radio className="h-4 w-4 text-primary animate-pulse" />
+            Live Voice Mode
+          </Button>
           <Button
             onClick={handleNewChat}
             size="sm"
@@ -361,6 +386,20 @@ function AiAssistantPage() {
                 className="flex-1 text-sm h-11 rounded-xl bg-muted/40 border-border/60 focus-visible:ring-primary shadow-inner"
               />
               <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={isInlineListening ? stopInlineListen : startInlineListen}
+                className={`h-11 w-11 shrink-0 rounded-xl transition-colors ${
+                  isInlineListening
+                    ? "bg-rose-500/15 text-rose-500 hover:bg-rose-500/20 animate-pulse"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title={isInlineListening ? "Stop voice listening" : "Click to speak"}
+              >
+                {isInlineListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </Button>
+              <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim() || sending}
@@ -372,6 +411,20 @@ function AiAssistantPage() {
           </div>
         </Card>
       </div>
+
+      <VoiceModeModal
+        open={voiceModalOpen}
+        onOpenChange={setVoiceModalOpen}
+        conversationId={selectedConversationId}
+        onNewMessage={(userText, aiText, actionCard) => {
+          setMessages((prev) => [
+            ...prev,
+            { id: `user-${Date.now()}`, sender: "user", content: userText, created_at: new Date().toISOString() },
+            { id: `ai-${Date.now()}`, sender: "assistant", content: aiText, created_at: new Date().toISOString(), action_card: actionCard },
+          ]);
+          queryClient.invalidateQueries({ queryKey: ["ai_conversations"] });
+        }}
+      />
     </div>
   );
 }
