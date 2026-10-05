@@ -73,18 +73,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "Aimploy HRMS" },
       { name: "description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { name: "author", content: "Aimploy" },
+      { property: "og:title", content: "Aimploy HRMS" },
       { property: "og:description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:site", content: "@Aimploy" },
+      { name: "twitter:title", content: "Aimploy HRMS" },
       { name: "twitter:description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/347fc5ad-3336-46f4-8c09-365c29ca23ab/id-preview-22a0742b--ac529076-52ec-450f-a7cd-8217ee9fe54f.lovable.app-1779439212074.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/347fc5ad-3336-46f4-8c09-365c29ca23ab/id-preview-22a0742b--ac529076-52ec-450f-a7cd-8217ee9fe54f.lovable.app-1779439212074.png" },
+
     ],
     links: [
       {
