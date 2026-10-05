@@ -74,7 +74,11 @@ export function ActionConfirmCard({ card, onActionComplete }: ActionConfirmCardP
             disabled={loading}
             onClick={() => handleConfirm(true)}
           >
-            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+            {loading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+            ) : (
+              <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
+            )}
             Confirm & Submit
           </Button>
           <Button

@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Send, Trash2, Bot, Loader2, Radio, Mic, MicOff } from "lucide-react";
@@ -18,7 +24,8 @@ interface AiChatDrawerProps {
 const INITIAL_MESSAGE: AiMessage = {
   id: "welcome-msg",
   sender: "assistant",
-  content: "Hello! I am your Aimploy HR Assistant. I can help you check your leave balance, review attendance, find assigned tasks, look up company policies, or prepare a leave application. How can I help you today?",
+  content:
+    "Hello! I am your Aimploy HR Assistant. I can help you check your leave balance, review attendance, find assigned tasks, look up company policies, or prepare a leave application. How can I help you today?",
   created_at: new Date().toISOString(),
 };
 
@@ -81,7 +88,8 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
       const errorMsg: AiMessage = {
         id: `err-${Date.now()}`,
         sender: "assistant",
-        content: "Sorry, I ran into an issue communicating with the assistant service. Please try again.",
+        content:
+          "Sorry, I ran into an issue communicating with the assistant service. Please try again.",
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -198,7 +206,11 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
               disabled={!input.trim() || loading}
               className="h-10 w-10 shrink-0 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </form>
           <div className="text-[10px] text-muted-foreground text-center mt-2">
@@ -213,8 +225,19 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
           onNewMessage={(userText, aiText, actionCard) => {
             setMessages((prev) => [
               ...prev,
-              { id: `user-${Date.now()}`, sender: "user", content: userText, created_at: new Date().toISOString() },
-              { id: `ai-${Date.now()}`, sender: "assistant", content: aiText, created_at: new Date().toISOString(), action_card: actionCard },
+              {
+                id: `user-${Date.now()}`,
+                sender: "user",
+                content: userText,
+                created_at: new Date().toISOString(),
+              },
+              {
+                id: `ai-${Date.now()}`,
+                sender: "assistant",
+                content: aiText,
+                created_at: new Date().toISOString(),
+                action_card: actionCard,
+              },
             ]);
           }}
         />

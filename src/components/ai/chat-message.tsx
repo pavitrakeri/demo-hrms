@@ -37,7 +37,10 @@ export function ChatMessage({ message, onActionComplete }: ChatMessageProps) {
               isUser ? "text-primary-foreground/70 text-right" : "text-muted-foreground text-left"
             }`}
           >
-            {new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            {new Date(message.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </div>
         )}
       </div>

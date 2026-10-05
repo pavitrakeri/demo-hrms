@@ -7,9 +7,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Building2, Pencil, Trash2, Users, ShieldAlert, FolderOpen, Mail, UserCheck } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Plus,
+  Search,
+  Building2,
+  Pencil,
+  Trash2,
+  Users,
+  ShieldAlert,
+  FolderOpen,
+  Mail,
+  UserCheck,
+} from "lucide-react";
 import { toast } from "sonner";
 import { getRoleFromToken, getToken, getPermissionsFromToken } from "@/lib/auth";
 
@@ -28,20 +54,25 @@ export const Route = createFileRoute("/_authenticated/departments")({
 
 function initials(name?: string) {
   if (!name) return "?";
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 }
 
 function DepartmentsPage() {
   const qc = useQueryClient();
-  
+
   // Dialog States
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  
+
   // Search & Filter
   const [search, setSearch] = useState("");
-  
+
   // Form States
   const [form, setForm] = useState({ name: "", manager_email: "", hr_email: "" });
   const [editingDept, setEditingDept] = useState<any>(null); // { id, name, manager_email, hr_email }
@@ -66,17 +97,19 @@ function DepartmentsPage() {
   // Data Mappers
   const items: any[] = useMemo(() => {
     if (!deptData) return [];
-    return Array.isArray(deptData) ? deptData : deptData.departments ?? deptData.items ?? [];
+    return Array.isArray(deptData) ? deptData : (deptData.departments ?? deptData.items ?? []);
   }, [deptData]);
 
   const employees: any[] = useMemo(() => {
     if (!empsData) return [];
-    return Array.isArray(empsData) ? empsData : empsData.employees ?? empsData.items ?? [];
+    return Array.isArray(empsData) ? empsData : (empsData.employees ?? empsData.items ?? []);
   }, [empsData]);
 
   const projects: any[] = useMemo(() => {
     if (!projectsData) return [];
-    return Array.isArray(projectsData) ? projectsData : projectsData.projects ?? projectsData.items ?? [];
+    return Array.isArray(projectsData)
+      ? projectsData
+      : (projectsData.projects ?? projectsData.items ?? []);
   }, [projectsData]);
 
   // Compute stats and headcounts
@@ -191,7 +224,6 @@ function DepartmentsPage() {
 
   return (
     <div className="space-y-6">
-      
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -203,22 +235,37 @@ function DepartmentsPage() {
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="shadow-[var(--shadow-brand)] cursor-pointer" style={{ background: "var(--gradient-brand)" }}>
-              <Plus className="h-4 w-4 mr-2" />Add department
+            <Button
+              className="shadow-[var(--shadow-brand)] cursor-pointer"
+              style={{ background: "var(--gradient-brand)" }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add department
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Department</DialogTitle>
-              <DialogDescription>Create a department with assigned manager and HR partners.</DialogDescription>
+              <DialogDescription>
+                Create a department with assigned manager and HR partners.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-3.5 my-2">
               <div className="space-y-1">
-                <Label htmlFor="name">Department Name <span className="text-destructive">*</span></Label>
-                <Input id="name" placeholder="e.g. Technology" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                <Label htmlFor="name">
+                  Department Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  placeholder="e.g. Technology"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="manager_email">Line Manager <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                <Label htmlFor="manager_email">
+                  Line Manager <span className="text-muted-foreground text-xs">(Optional)</span>
+                </Label>
                 <select
                   id="manager_email"
                   value={form.manager_email}
@@ -234,7 +281,9 @@ function DepartmentsPage() {
                 </select>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="hr_email">HR Partner <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                <Label htmlFor="hr_email">
+                  HR Partner <span className="text-muted-foreground text-xs">(Optional)</span>
+                </Label>
                 <select
                   id="hr_email"
                   value={form.hr_email}
@@ -251,8 +300,14 @@ function DepartmentsPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button onClick={() => create.mutate()} disabled={!form.name || create.isPending} style={{ background: "var(--gradient-brand)" }}>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => create.mutate()}
+                disabled={!form.name || create.isPending}
+                style={{ background: "var(--gradient-brand)" }}
+              >
                 {create.isPending ? "Creating…" : "Create department"}
               </Button>
             </DialogFooter>
@@ -264,7 +319,11 @@ function DepartmentsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard icon={Building2} label="Total Departments" value={items.length} />
         <StatCard icon={Users} label="Total Headcount" value={employees.length} accent />
-        <StatCard icon={FolderOpen} label="Total Active Projects" value={projects.filter(p => !p.is_archived).length} />
+        <StatCard
+          icon={FolderOpen}
+          label="Total Active Projects"
+          value={projects.filter((p) => !p.is_archived).length}
+        />
       </div>
 
       {/* Search Filter Card */}
@@ -286,7 +345,9 @@ function DepartmentsPage() {
       {isLoadingDepts ? (
         <div className="space-y-3">
           {[1, 2].map((i) => (
-            <Card key={i} className="animate-pulse"><CardContent className="h-16" /></Card>
+            <Card key={i} className="animate-pulse">
+              <CardContent className="h-16" />
+            </Card>
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -301,11 +362,21 @@ function DepartmentsPage() {
             <Table>
               <TableHeader className="bg-muted/5 border-b border-border/40">
                 <TableRow>
-                  <TableHead className="w-[30%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-6">Department Name</TableHead>
-                  <TableHead className="w-[25%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Line Manager</TableHead>
-                  <TableHead className="w-[25%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">HR Partner</TableHead>
-                  <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Headcount</TableHead>
-                  <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-right pr-6">Actions</TableHead>
+                  <TableHead className="w-[30%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-6">
+                    Department Name
+                  </TableHead>
+                  <TableHead className="w-[25%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Line Manager
+                  </TableHead>
+                  <TableHead className="w-[25%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    HR Partner
+                  </TableHead>
+                  <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Headcount
+                  </TableHead>
+                  <TableHead className="w-[10%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-right pr-6">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -315,15 +386,18 @@ function DepartmentsPage() {
                   const projectsCount = departmentProjectsCount[d.name] || 0;
 
                   // Find Manager Name
-                  const managerEmp = employees.find(e => e.email === d.manager_email);
+                  const managerEmp = employees.find((e) => e.email === d.manager_email);
                   const managerName = managerEmp ? (managerEmp.full_name ?? managerEmp.name) : null;
 
                   // Find HR Name
-                  const hrEmp = employees.find(e => e.email === d.hr_email);
+                  const hrEmp = employees.find((e) => e.email === d.hr_email);
                   const hrName = hrEmp ? (hrEmp.full_name ?? hrEmp.name) : null;
 
                   return (
-                    <TableRow key={id} className="hover:bg-muted/15 transition-colors group border-b border-border/40 last:border-b-0">
+                    <TableRow
+                      key={id}
+                      className="hover:bg-muted/15 transition-colors group border-b border-border/40 last:border-b-0"
+                    >
                       <TableCell className="align-middle py-4 pl-6">
                         <div className="flex items-center gap-3.5">
                           <div
@@ -333,40 +407,58 @@ function DepartmentsPage() {
                             {initials(d.name)}
                           </div>
                           <div>
-                            <span className="font-bold text-sm text-foreground block tracking-tight">{d.name ?? "—"}</span>
+                            <span className="font-bold text-sm text-foreground block tracking-tight">
+                              {d.name ?? "—"}
+                            </span>
                             {projectsCount > 0 && (
                               <span className="text-[10px] text-primary bg-primary/5 border border-primary/10 px-2 py-0.5 rounded-full font-medium mt-1 inline-flex items-center gap-1 shadow-sm">
-                                <FolderOpen className="h-3 w-3" /> {projectsCount} {projectsCount === 1 ? "project" : "projects"}
+                                <FolderOpen className="h-3 w-3" /> {projectsCount}{" "}
+                                {projectsCount === 1 ? "project" : "projects"}
                               </span>
                             )}
                           </div>
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="align-middle text-xs">
                         {d.manager_email ? (
                           <div className="min-w-0">
-                            <span className="font-semibold block text-foreground text-sm">{managerName ?? "Manager"}</span>
-                            <span className="text-muted-foreground truncate block text-xs mt-0.5">{d.manager_email}</span>
+                            <span className="font-semibold block text-foreground text-sm">
+                              {managerName ?? "Manager"}
+                            </span>
+                            <span className="text-muted-foreground truncate block text-xs mt-0.5">
+                              {d.manager_email}
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground/60 italic text-xs">Unassigned</span>
+                          <span className="text-muted-foreground/60 italic text-xs">
+                            Unassigned
+                          </span>
                         )}
                       </TableCell>
 
                       <TableCell className="align-middle text-xs">
                         {d.hr_email ? (
                           <div className="min-w-0">
-                            <span className="font-semibold block text-foreground text-sm">{hrName ?? "HR Partner"}</span>
-                            <span className="text-muted-foreground truncate block text-xs mt-0.5">{d.hr_email}</span>
+                            <span className="font-semibold block text-foreground text-sm">
+                              {hrName ?? "HR Partner"}
+                            </span>
+                            <span className="text-muted-foreground truncate block text-xs mt-0.5">
+                              {d.hr_email}
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground/60 italic text-xs">Unassigned</span>
+                          <span className="text-muted-foreground/60 italic text-xs">
+                            Unassigned
+                          </span>
                         )}
                       </TableCell>
 
                       <TableCell className="align-middle">
-                        <Badge variant={count > 0 ? "secondary" : "outline"} className="gap-1 font-medium text-xs rounded-full">
+                        <Badge
+                          variant={count > 0 ? "secondary" : "outline"}
+                          className="gap-1 font-medium text-xs rounded-full"
+                        >
                           <Users className="h-3 w-3 text-muted-foreground" />
                           {count} {count === 1 ? "member" : "members"}
                         </Badge>
@@ -413,15 +505,23 @@ function DepartmentsPage() {
             </DialogHeader>
             <div className="space-y-3.5 my-2">
               <div className="space-y-1">
-                <Label htmlFor="edit_name">Department Name <span className="text-destructive">*</span></Label>
-                <Input id="edit_name" value={editingDept.name} onChange={(e) => setEditingDept({ ...editingDept, name: e.target.value })} />
+                <Label htmlFor="edit_name">
+                  Department Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="edit_name"
+                  value={editingDept.name}
+                  onChange={(e) => setEditingDept({ ...editingDept, name: e.target.value })}
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="edit_manager_email">Line Manager</Label>
                 <select
                   id="edit_manager_email"
                   value={editingDept.manager_email}
-                  onChange={(e) => setEditingDept({ ...editingDept, manager_email: e.target.value })}
+                  onChange={(e) =>
+                    setEditingDept({ ...editingDept, manager_email: e.target.value })
+                  }
                   className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
                   <option value="">No Manager Assigned</option>
@@ -450,8 +550,20 @@ function DepartmentsPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setEditOpen(false); setEditingDept(null); }}>Cancel</Button>
-              <Button onClick={() => update.mutate()} disabled={!editingDept.name || update.isPending} style={{ background: "var(--gradient-brand)" }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditOpen(false);
+                  setEditingDept(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => update.mutate()}
+                disabled={!editingDept.name || update.isPending}
+                style={{ background: "var(--gradient-brand)" }}
+              >
                 {update.isPending ? "Saving…" : "Save changes"}
               </Button>
             </DialogFooter>
@@ -468,7 +580,8 @@ function DepartmentsPage() {
                 <ShieldAlert className="h-5 w-5 shrink-0" /> Delete Department
               </DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete the department <strong className="text-foreground">"{deletingDept.name}"</strong>?
+                Are you sure you want to delete the department{" "}
+                <strong className="text-foreground">"{deletingDept.name}"</strong>?
               </DialogDescription>
             </DialogHeader>
 
@@ -477,28 +590,43 @@ function DepartmentsPage() {
                 <div className="p-3.5 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-xs font-semibold leading-relaxed flex gap-2">
                   <ShieldAlert className="h-4.5 w-4.5 shrink-0 mt-0.5" />
                   <div>
-                    Cannot delete this department directly: There are currently <strong className="underline">{deletingDept.headcount}</strong> employees assigned to it. You must re-assign them first.
+                    Cannot delete this department directly: There are currently{" "}
+                    <strong className="underline">{deletingDept.headcount}</strong> employees
+                    assigned to it. You must re-assign them first.
                   </div>
                 </div>
               ) : deletingDept.projectsCount > 0 ? (
                 <div className="p-3.5 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-xs font-semibold leading-relaxed flex gap-2">
                   <ShieldAlert className="h-4.5 w-4.5 shrink-0 mt-0.5" />
                   <div>
-                    Cannot delete this department directly: There are currently <strong className="underline">{deletingDept.projectsCount}</strong> projects assigned to it. You must re-assign or delete those projects first.
+                    Cannot delete this department directly: There are currently{" "}
+                    <strong className="underline">{deletingDept.projectsCount}</strong> projects
+                    assigned to it. You must re-assign or delete those projects first.
                   </div>
                 </div>
               ) : (
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  This action is permanent and cannot be undone. This will delete the department configuration records.
+                  This action is permanent and cannot be undone. This will delete the department
+                  configuration records.
                 </p>
               )}
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setDeleteOpen(false); setDeletingDept(null); }}>Cancel</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDeleteOpen(false);
+                  setDeletingDept(null);
+                }}
+              >
+                Cancel
+              </Button>
               <Button
                 variant="destructive"
-                disabled={deletingDept.headcount > 0 || deletingDept.projectsCount > 0 || remove.isPending}
+                disabled={
+                  deletingDept.headcount > 0 || deletingDept.projectsCount > 0 || remove.isPending
+                }
                 onClick={() => remove.mutate(deletingDept.id)}
               >
                 {remove.isPending ? "Deleting…" : "Confirm delete"}
@@ -507,23 +635,38 @@ function DepartmentsPage() {
           </DialogContent>
         </Dialog>
       )}
-
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value, accent }: { icon: any; label: string; value: number; accent?: boolean }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: any;
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
   return (
     <Card className="border-border/60 shadow-soft bg-card hover:-translate-y-0.5 hover:shadow-md hover:border-primary/20 transition-all duration-300">
       <CardContent className="p-5 flex items-center gap-4">
         <div
           className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
-          style={accent ? { background: "var(--gradient-brand)" } : { background: "var(--gradient-subtle)", border: "1px solid var(--border)" }}
+          style={
+            accent
+              ? { background: "var(--gradient-brand)" }
+              : { background: "var(--gradient-subtle)", border: "1px solid var(--border)" }
+          }
         >
           <Icon className={"h-5 w-5 " + (accent ? "text-white" : "text-primary")} />
         </div>
         <div>
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            {label}
+          </p>
           <p className="text-3xl font-bold tracking-tight mt-1">{value}</p>
         </div>
       </CardContent>

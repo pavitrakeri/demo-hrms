@@ -91,35 +91,43 @@ function LoginPage() {
 
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#050505]">
         {/* Fullscreen Background Image */}
-        <div 
+        <div
           className="absolute inset-0 w-full h-full"
           style={{
             backgroundImage: `url(${loginBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: 0.95
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.95,
           }}
         />
-        
+
         {/* Subtle overlay to ensure the card stands out */}
         <div className="absolute inset-0 bg-slate-50/20 dark:bg-black/50 pointer-events-none" />
 
         {/* Ambient Grid Background */}
-        <div 
-          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none" 
-          style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '50px 50px' }}
+        <div
+          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "50px 50px",
+          }}
         />
 
         <div className="w-full max-w-md relative z-10 px-6 sm:px-0">
           <div className="glass-card rounded-[2rem] p-8 sm:p-12 overflow-hidden relative">
             {/* Subtle top glare */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/20 to-transparent"></div>
-            
+
             <div className="text-center space-y-6 mb-8">
               <div className="mb-4">
-                <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto dark:brightness-0 dark:invert mx-auto" />
+                <img
+                  src={aimployLogo}
+                  alt="Aimploy"
+                  className="h-8 w-auto dark:brightness-0 dark:invert mx-auto"
+                />
               </div>
-              
+
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
                   Welcome back
@@ -132,7 +140,10 @@ function LoginPage() {
 
             <form onSubmit={onSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 ml-1">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-zinc-700 dark:text-zinc-300 ml-1"
+                >
                   Email address
                 </Label>
                 <Input
@@ -149,7 +160,10 @@ function LoginPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1 mr-1">
-                  <Label htmlFor="password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                  >
                     Password
                   </Label>
                   <button
@@ -177,7 +191,11 @@ function LoginPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors p-1"
                     tabIndex={-1}
                   >
-                    {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                    {showPassword ? (
+                      <EyeOff className="h-[18px] w-[18px]" />
+                    ) : (
+                      <Eye className="h-[18px] w-[18px]" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -191,7 +209,7 @@ function LoginPage() {
                 >
                   {/* Subtle shine effect on button */}
                   <div className="absolute inset-0 -translate-x-[150%] group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
-                  
+
                   {loading ? (
                     <span className="flex items-center gap-2 relative z-10">
                       <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

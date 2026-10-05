@@ -7,10 +7,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -28,7 +49,7 @@ import {
   UserCheck,
   Plus,
   Play,
-  Square
+  Square,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -92,12 +113,14 @@ function MyTasksPage() {
   // Data helpers
   const tasks: any[] = useMemo(() => {
     if (!tasksData) return [];
-    return Array.isArray(tasksData) ? tasksData : tasksData.tasks ?? tasksData.items ?? [];
+    return Array.isArray(tasksData) ? tasksData : (tasksData.tasks ?? tasksData.items ?? []);
   }, [tasksData]);
 
   const projects: any[] = useMemo(() => {
     if (!projectsData) return [];
-    const list = Array.isArray(projectsData) ? projectsData : projectsData.projects ?? projectsData.items ?? [];
+    const list = Array.isArray(projectsData)
+      ? projectsData
+      : (projectsData.projects ?? projectsData.items ?? []);
     return list.filter((p: any) => p.status === "active");
   }, [projectsData]);
 
@@ -108,11 +131,13 @@ function MyTasksPage() {
   const editProjectMembers = useMemo(() => {
     const list = editProjectDetails?.members ?? [];
     if (list.length === 0 && editingTask?.assignee_id) {
-      return [{
-        user_id: editingTask.assignee_id,
-        full_name: editingTask.assignee_name,
-        email: editingTask.assignee_email
-      }];
+      return [
+        {
+          user_id: editingTask.assignee_id,
+          full_name: editingTask.assignee_name,
+          email: editingTask.assignee_email,
+        },
+      ];
     }
     return list;
   }, [editProjectDetails, editingTask]);
@@ -258,25 +283,35 @@ function MyTasksPage() {
             {/* New Task Trigger & Dialog */}
             <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-9 shadow-[var(--shadow-brand)]" style={{ background: "var(--gradient-brand)" }}>
+                <Button
+                  size="sm"
+                  className="h-9 shadow-[var(--shadow-brand)]"
+                  style={{ background: "var(--gradient-brand)" }}
+                >
                   <Plus className="h-4 w-4 mr-1.5" /> New task
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Create Task</DialogTitle>
-                  <DialogDescription>Create and assign a new task to a project member.</DialogDescription>
+                  <DialogDescription>
+                    Create and assign a new task to a project member.
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="new-project">Project <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="new-project">
+                      Project <span className="text-destructive">*</span>
+                    </Label>
                     <select
                       id="new-project"
                       value={newProjectId}
                       onChange={(e) => setNewProjectId(e.target.value)}
                       className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                     >
-                      <option value="" className="text-black bg-background">Select project...</option>
+                      <option value="" className="text-black bg-background">
+                        Select project...
+                      </option>
                       {projects.map((proj) => {
                         const projId = String(proj.id ?? proj.project_id);
                         return (
@@ -288,12 +323,24 @@ function MyTasksPage() {
                     </select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="new-title">Task Title <span className="text-destructive">*</span></Label>
-                    <Input id="new-title" placeholder="e.g. Design homepage wireframe" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                    <Label htmlFor="new-title">
+                      Task Title <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="new-title"
+                      placeholder="e.g. Design homepage wireframe"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="new-desc">Description</Label>
-                    <Textarea id="new-desc" placeholder="Describe the steps or details..." value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
+                    <Textarea
+                      id="new-desc"
+                      placeholder="Describe the steps or details..."
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="new-assignee">Assignee</Label>
@@ -309,7 +356,11 @@ function MyTasksPage() {
                       {newProjectMembers.map((m: any) => {
                         const memberId = String(m.user_id);
                         return (
-                          <option key={memberId} value={memberId} className="text-black bg-background">
+                          <option
+                            key={memberId}
+                            value={memberId}
+                            className="text-black bg-background"
+                          >
                             {m.full_name ?? m.email} ({m.email})
                           </option>
                         );
@@ -319,29 +370,47 @@ function MyTasksPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label htmlFor="new-start">Start Date</Label>
-                      <Input id="new-start" type="date" value={newStartDate} onChange={(e) => setNewStartDate(e.target.value)} />
+                      <Input
+                        id="new-start"
+                        type="date"
+                        value={newStartDate}
+                        onChange={(e) => setNewStartDate(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="new-due">Due Date</Label>
-                      <Input id="new-due" type="date" value={newDueDate} onChange={(e) => setNewDueDate(e.target.value)} />
+                      <Input
+                        id="new-due"
+                        type="date"
+                        value={newDueDate}
+                        onChange={(e) => setNewDueDate(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="space-y-1.5 mt-3">
                     <Label htmlFor="new-status">Status</Label>
-                      <select
-                        id="new-status"
-                        value={newStatus}
-                        onChange={(e) => setNewStatus(e.target.value)}
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
-                      >
-                        <option value="todo" className="text-black bg-background">Todo</option>
-                        <option value="in_progress" className="text-black bg-background">In Progress</option>
-                        <option value="done" className="text-black bg-background">Done</option>
-                      </select>
-                    </div>
+                    <select
+                      id="new-status"
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                    >
+                      <option value="todo" className="text-black bg-background">
+                        Todo
+                      </option>
+                      <option value="in_progress" className="text-black bg-background">
+                        In Progress
+                      </option>
+                      <option value="done" className="text-black bg-background">
+                        Done
+                      </option>
+                    </select>
                   </div>
+                </div>
                 <DialogFooter className="mt-4">
-                  <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>Cancel</Button>
+                  <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>
+                    Cancel
+                  </Button>
                   <Button
                     onClick={() => createTask.mutate()}
                     disabled={!newProjectId || !newTitle || createTask.isPending}
@@ -391,12 +460,18 @@ function MyTasksPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {STATUSES.map((statusKey) => {
               const statusTasks = tasks.filter((t) => (t.status ?? "todo") === statusKey);
-              const columnTitle = 
-                statusKey === "todo" ? "To Do" : 
-                statusKey === "in_progress" ? "In Progress" : "Completed";
-              const columnAccent = 
-                statusKey === "todo" ? "bg-amber-500" : 
-                statusKey === "in_progress" ? "bg-sky-500" : "bg-emerald-500";
+              const columnTitle =
+                statusKey === "todo"
+                  ? "To Do"
+                  : statusKey === "in_progress"
+                    ? "In Progress"
+                    : "Completed";
+              const columnAccent =
+                statusKey === "todo"
+                  ? "bg-amber-500"
+                  : statusKey === "in_progress"
+                    ? "bg-sky-500"
+                    : "bg-emerald-500";
 
               return (
                 <div key={statusKey} className="space-y-4">
@@ -421,7 +496,10 @@ function MyTasksPage() {
                         const overdue = isOverdue(t.due_date, t.status);
 
                         return (
-                          <Card key={id} className="hover:shadow-[var(--shadow-brand)] transition-all border border-border/60 hover:border-primary/20 bg-card overflow-hidden group">
+                          <Card
+                            key={id}
+                            className="hover:shadow-[var(--shadow-brand)] transition-all border border-border/60 hover:border-primary/20 bg-card overflow-hidden group"
+                          >
                             <CardHeader className="p-4 pb-2 space-y-1">
                               <div className="flex items-start justify-between gap-2">
                                 <Link
@@ -432,21 +510,41 @@ function MyTasksPage() {
                                   {t.title}
                                 </Link>
                                 <div className="flex shrink-0 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleOpenEdit(t)}>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                    onClick={() => handleOpenEdit(t)}
+                                  >
                                     <Edit className="h-3 w-3" />
                                   </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className={`h-6 w-6 ${t.timer_started_at ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50'}`} 
-                                    onClick={(e) => { e.preventDefault(); toggleTimer.mutate(id); }}
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`h-6 w-6 ${t.timer_started_at ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50"}`}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      toggleTimer.mutate(id);
+                                    }}
                                     title={t.timer_started_at ? "Stop Timer" : "Start Timer"}
                                   >
-                                    {t.timer_started_at ? <Square className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                                    {t.timer_started_at ? (
+                                      <Square className="h-3 w-3" />
+                                    ) : (
+                                      <Play className="h-3 w-3" />
+                                    )}
                                   </Button>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => {
-                                    if (window.confirm("Are you sure you want to delete this task?")) deleteTask.mutate(id);
-                                  }}>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                    onClick={() => {
+                                      if (
+                                        window.confirm("Are you sure you want to delete this task?")
+                                      )
+                                        deleteTask.mutate(id);
+                                    }}
+                                  >
                                     <Trash2 className="h-3 w-3" />
                                   </Button>
                                 </div>
@@ -467,14 +565,23 @@ function MyTasksPage() {
 
                               <div className="flex items-center justify-between text-[10px] pt-2 border-t border-border/40">
                                 {/* Creator */}
-                                <span className="text-muted-foreground truncate max-w-[100px]" title={`Created by: ${t.creator_name ?? t.creator_email}`}>
+                                <span
+                                  className="text-muted-foreground truncate max-w-[100px]"
+                                  title={`Created by: ${t.creator_name ?? t.creator_email}`}
+                                >
                                   by {t.creator_name ?? t.creator_email ?? "System"}
                                 </span>
 
                                 {/* Due Date Alert */}
                                 {t.due_date ? (
-                                  <span className={`flex items-center gap-1 font-medium ${overdue ? "text-destructive" : "text-muted-foreground"}`}>
-                                    {overdue ? <AlertTriangle className="h-3 w-3 animate-pulse" /> : <Calendar className="h-3 w-3" />}
+                                  <span
+                                    className={`flex items-center gap-1 font-medium ${overdue ? "text-destructive" : "text-muted-foreground"}`}
+                                  >
+                                    {overdue ? (
+                                      <AlertTriangle className="h-3 w-3 animate-pulse" />
+                                    ) : (
+                                      <Calendar className="h-3 w-3" />
+                                    )}
                                     {t.due_date}
                                   </span>
                                 ) : (
@@ -497,10 +604,18 @@ function MyTasksPage() {
             {/* Status Filter Tab row */}
             <Tabs value={statusFilter} onValueChange={setStatusFilter} className="w-full">
               <TabsList className="grid grid-cols-4 w-full max-w-[400px]">
-                <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                <TabsTrigger value="todo" className="text-xs">Todo</TabsTrigger>
-                <TabsTrigger value="in_progress" className="text-xs">In Progress</TabsTrigger>
-                <TabsTrigger value="done" className="text-xs">Completed</TabsTrigger>
+                <TabsTrigger value="all" className="text-xs">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="todo" className="text-xs">
+                  Todo
+                </TabsTrigger>
+                <TabsTrigger value="in_progress" className="text-xs">
+                  In Progress
+                </TabsTrigger>
+                <TabsTrigger value="done" className="text-xs">
+                  Completed
+                </TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -511,7 +626,8 @@ function MyTasksPage() {
                   <div>
                     <p className="font-semibold text-lg">No tasks assigned</p>
                     <p className="text-sm text-muted-foreground">
-                      You are all caught up! When you are added to a project task, it will show up here.
+                      You are all caught up! When you are added to a project task, it will show up
+                      here.
                     </p>
                   </div>
                 </CardContent>
@@ -519,105 +635,131 @@ function MyTasksPage() {
             ) : (
               <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
                 <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-muted/10">
-                    <TableRow>
-                      <TableHead className="w-[45%]">Task Details</TableHead>
-                      <TableHead className="w-[18%]">Project</TableHead>
-                      <TableHead className="w-[15%]">Due Date</TableHead>
-                      <TableHead className="w-[18%]">Status</TableHead>
-                      <TableHead className="w-[4%] text-right pr-4">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {tasks.map((t) => {
-                      const id = String(t.id ?? t.task_id ?? t._id);
-                      const overdue = isOverdue(t.due_date, t.status);
+                  <Table>
+                    <TableHeader className="bg-muted/10">
+                      <TableRow>
+                        <TableHead className="w-[45%]">Task Details</TableHead>
+                        <TableHead className="w-[18%]">Project</TableHead>
+                        <TableHead className="w-[15%]">Due Date</TableHead>
+                        <TableHead className="w-[18%]">Status</TableHead>
+                        <TableHead className="w-[4%] text-right pr-4">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {tasks.map((t) => {
+                        const id = String(t.id ?? t.task_id ?? t._id);
+                        const overdue = isOverdue(t.due_date, t.status);
 
-                      return (
-                        <TableRow key={id} className="hover:bg-muted/10 transition-colors group">
-                          <TableCell className="align-middle py-3">
-                            <div className="space-y-1">
-                              <Link
-                                to="/tasks/$taskId"
-                                params={{ taskId: id }}
-                                className="font-bold text-sm text-foreground hover:underline group-hover:text-primary transition-colors block"
-                              >
-                                {t.title}
-                              </Link>
-                              {t.description && (
-                                <p className="text-xs text-muted-foreground line-clamp-1 max-w-[400px]">
-                                  {t.description}
-                                </p>
+                        return (
+                          <TableRow key={id} className="hover:bg-muted/10 transition-colors group">
+                            <TableCell className="align-middle py-3">
+                              <div className="space-y-1">
+                                <Link
+                                  to="/tasks/$taskId"
+                                  params={{ taskId: id }}
+                                  className="font-bold text-sm text-foreground hover:underline group-hover:text-primary transition-colors block"
+                                >
+                                  {t.title}
+                                </Link>
+                                {t.description && (
+                                  <p className="text-xs text-muted-foreground line-clamp-1 max-w-[400px]">
+                                    {t.description}
+                                  </p>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="align-middle text-xs">
+                              {t.project_name ? (
+                                <span className="flex items-center gap-1.5 font-medium">
+                                  <FolderKanban className="h-3.5 w-3.5 text-muted-foreground" />
+                                  {t.project_name}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
                               )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="align-middle text-xs">
-                            {t.project_name ? (
-                              <span className="flex items-center gap-1.5 font-medium">
-                                <FolderKanban className="h-3.5 w-3.5 text-muted-foreground" />
-                                {t.project_name}
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="align-middle text-xs">
-                            {t.due_date ? (
-                              <span className={`flex items-center gap-1.5 font-medium ${overdue ? "text-destructive" : "text-muted-foreground"}`}>
-                                {overdue ? <AlertTriangle className="h-3.5 w-3.5" /> : <Calendar className="h-3.5 w-3.5" />}
-                                {t.due_date}
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="align-middle">
-                            <Select
-                              value={t.status ?? "todo"}
-                              onValueChange={(status) => updateStatus.mutate({ id, status })}
-                              disabled={updateStatus.isPending}
-                            >
-                              <SelectTrigger className="h-8 w-28 text-xs py-1">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {STATUSES.map((s) => (
-                                  <SelectItem key={s} value={s} className="text-xs">
-                                    {s.replace("_", " ").toUpperCase()}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell className="align-middle text-right pr-4">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleOpenEdit(t)}>
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className={`h-8 w-8 ${t.timer_started_at ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50'}`} 
-                                onClick={(e) => { e.preventDefault(); toggleTimer.mutate(id); }}
-                                title={t.timer_started_at ? "Stop Timer" : "Start Timer"}
+                            </TableCell>
+                            <TableCell className="align-middle text-xs">
+                              {t.due_date ? (
+                                <span
+                                  className={`flex items-center gap-1.5 font-medium ${overdue ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  {overdue ? (
+                                    <AlertTriangle className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Calendar className="h-3.5 w-3.5" />
+                                  )}
+                                  {t.due_date}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="align-middle">
+                              <Select
+                                value={t.status ?? "todo"}
+                                onValueChange={(status) => updateStatus.mutate({ id, status })}
+                                disabled={updateStatus.isPending}
                               >
-                                {t.timer_started_at ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => {
-                                if (window.confirm("Are you sure you want to delete this task?")) deleteTask.mutate(id);
-                              }}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                                <SelectTrigger className="h-8 w-28 text-xs py-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {STATUSES.map((s) => (
+                                    <SelectItem key={s} value={s} className="text-xs">
+                                      {s.replace("_", " ").toUpperCase()}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell className="align-middle text-right pr-4">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                  onClick={() => handleOpenEdit(t)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`h-8 w-8 ${t.timer_started_at ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50"}`}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    toggleTimer.mutate(id);
+                                  }}
+                                  title={t.timer_started_at ? "Stop Timer" : "Start Timer"}
+                                >
+                                  {t.timer_started_at ? (
+                                    <Square className="h-4 w-4" />
+                                  ) : (
+                                    <Play className="h-4 w-4" />
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => {
+                                    if (
+                                      window.confirm("Are you sure you want to delete this task?")
+                                    )
+                                      deleteTask.mutate(id);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             )}
           </div>
         )}
@@ -627,16 +769,28 @@ function MyTasksPage() {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Task</DialogTitle>
-              <DialogDescription>Modify task specifications, assignee, and schedule.</DialogDescription>
+              <DialogDescription>
+                Modify task specifications, assignee, and schedule.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="edit-title">Task Title <span className="text-destructive">*</span></Label>
-                <Input id="edit-title" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                <Label htmlFor="edit-title">
+                  Task Title <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="edit-title"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="edit-desc">Description</Label>
-                <Textarea id="edit-desc" value={editDesc} onChange={(e) => setEditDesc(e.target.value)} />
+                <Textarea
+                  id="edit-desc"
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="edit-assignee">Assignee</Label>
@@ -646,7 +800,9 @@ function MyTasksPage() {
                   onChange={(e) => setEditAssignee(e.target.value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                 >
-                  <option value="" className="text-black bg-background">Select assignee...</option>
+                  <option value="" className="text-black bg-background">
+                    Select assignee...
+                  </option>
                   {editProjectMembers.map((m: any) => {
                     const memberId = String(m.user_id);
                     return (
@@ -660,29 +816,47 @@ function MyTasksPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="edit-start">Start Date</Label>
-                  <Input id="edit-start" type="date" value={editStartDate} onChange={(e) => setEditStartDate(e.target.value)} />
+                  <Input
+                    id="edit-start"
+                    type="date"
+                    value={editStartDate}
+                    onChange={(e) => setEditStartDate(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="edit-due">Due Date</Label>
-                  <Input id="edit-due" type="date" value={editDueDate} onChange={(e) => setEditDueDate(e.target.value)} />
+                  <Input
+                    id="edit-due"
+                    type="date"
+                    value={editDueDate}
+                    onChange={(e) => setEditDueDate(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-1.5 mt-3">
                 <Label htmlFor="edit-status">Status</Label>
-                  <select
-                    id="edit-status"
-                    value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  >
-                    <option value="todo" className="text-black bg-background">Todo</option>
-                    <option value="in_progress" className="text-black bg-background">In Progress</option>
-                    <option value="done" className="text-black bg-background">Done</option>
-                  </select>
-                </div>
+                <select
+                  id="edit-status"
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                >
+                  <option value="todo" className="text-black bg-background">
+                    Todo
+                  </option>
+                  <option value="in_progress" className="text-black bg-background">
+                    In Progress
+                  </option>
+                  <option value="done" className="text-black bg-background">
+                    Done
+                  </option>
+                </select>
               </div>
+            </div>
             <DialogFooter className="mt-4">
-              <Button variant="outline" onClick={() => setEditingTask(null)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setEditingTask(null)}>
+                Cancel
+              </Button>
               <Button
                 onClick={() => saveTask.mutate()}
                 disabled={!editTitle || saveTask.isPending}

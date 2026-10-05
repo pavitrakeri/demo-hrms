@@ -7,11 +7,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
@@ -26,7 +47,7 @@ import {
   Clock,
   AlertCircle,
   Search,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -88,7 +109,7 @@ function ProjectDetail() {
 
   const employees: any[] = useMemo(() => {
     if (!empsData) return [];
-    const list = Array.isArray(empsData) ? empsData : empsData.employees ?? empsData.items ?? [];
+    const list = Array.isArray(empsData) ? empsData : (empsData.employees ?? empsData.items ?? []);
     return list.filter((e: any) => e.is_active !== false);
   }, [empsData]);
 
@@ -98,7 +119,7 @@ function ProjectDetail() {
     return employees.filter(
       (e) =>
         (e.full_name ?? e.name ?? "").toLowerCase().includes(q) ||
-        (e.email ?? "").toLowerCase().includes(q)
+        (e.email ?? "").toLowerCase().includes(q),
     );
   }, [employees, empSearch]);
 
@@ -106,7 +127,7 @@ function ProjectDetail() {
   const members: any[] = projectData?.members ?? [];
   const tasks: any[] = useMemo(() => {
     if (!tasksData) return [];
-    return Array.isArray(tasksData) ? tasksData : tasksData.tasks ?? tasksData.items ?? [];
+    return Array.isArray(tasksData) ? tasksData : (tasksData.tasks ?? tasksData.items ?? []);
   }, [tasksData]);
 
   // Populate Edit Form on load
@@ -214,7 +235,9 @@ function ProjectDetail() {
   });
 
   if (isLoadingProject) {
-    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading project...</div>;
+    return (
+      <div className="p-8 text-center text-muted-foreground animate-pulse">Loading project...</div>
+    );
   }
 
   if (!projectData || !p.id) {
@@ -222,7 +245,10 @@ function ProjectDetail() {
       <div className="space-y-4 text-center py-12">
         <AlertCircle className="h-10 w-10 text-destructive mx-auto" />
         <h2 className="text-xl font-bold">Project not found</h2>
-        <Link to="/projects" className="text-primary hover:underline inline-flex items-center gap-1">
+        <Link
+          to="/projects"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+        >
           <ArrowLeft className="h-4 w-4" /> Back to projects
         </Link>
       </div>
@@ -274,24 +300,46 @@ function ProjectDetail() {
             <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>Edit Project</DialogTitle>
-                <DialogDescription>Update project information and edit team members.</DialogDescription>
+                <DialogDescription>
+                  Update project information and edit team members.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="edit-name">Project Name <span className="text-destructive">*</span></Label>
-                  <Input id="edit-name" value={projName} onChange={(e) => setProjName(e.target.value)} />
+                  <Label htmlFor="edit-name">
+                    Project Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="edit-name"
+                    value={projName}
+                    onChange={(e) => setProjName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="edit-desc">Description</Label>
-                  <Textarea id="edit-desc" value={projDesc} onChange={(e) => setProjDesc(e.target.value)} />
+                  <Textarea
+                    id="edit-desc"
+                    value={projDesc}
+                    onChange={(e) => setProjDesc(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-start">Start Date</Label>
-                  <Input id="edit-start" type="date" value={projStart} onChange={(e) => setProjStart(e.target.value)} />
+                  <Input
+                    id="edit-start"
+                    type="date"
+                    value={projStart}
+                    onChange={(e) => setProjStart(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-deadline">Deadline</Label>
-                  <Input id="edit-deadline" type="date" value={projDeadline} onChange={(e) => setProjDeadline(e.target.value)} />
+                  <Input
+                    id="edit-deadline"
+                    type="date"
+                    value={projDeadline}
+                    onChange={(e) => setProjDeadline(e.target.value)}
+                  />
                 </div>
 
                 <div className="space-y-2 sm:col-span-2 border-t pt-3 mt-1">
@@ -307,7 +355,9 @@ function ProjectDetail() {
                   </div>
                   <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2 bg-muted/20">
                     {filteredEmployees.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">No employees found.</p>
+                      <p className="text-xs text-muted-foreground text-center py-4">
+                        No employees found.
+                      </p>
                     ) : (
                       filteredEmployees.map((emp) => {
                         const empId = String(emp.id ?? emp.employee_id ?? emp._id);
@@ -324,7 +374,10 @@ function ProjectDetail() {
                                 }
                               }}
                             />
-                            <Label htmlFor={`edit-emp-${empId}`} className="text-xs cursor-pointer flex flex-col">
+                            <Label
+                              htmlFor={`edit-emp-${empId}`}
+                              className="text-xs cursor-pointer flex flex-col"
+                            >
                               <span className="font-medium">{emp.full_name ?? emp.name}</span>
                               <span className="text-muted-foreground text-[10px]">{emp.email}</span>
                             </Label>
@@ -336,7 +389,9 @@ function ProjectDetail() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+                  Cancel
+                </Button>
                 <Button
                   onClick={() => updateProject.mutate()}
                   disabled={!projName || updateProject.isPending}
@@ -368,7 +423,11 @@ function ProjectDetail() {
             size="sm"
             className="h-9 hover:bg-destructive/10 hover:text-destructive border-input"
             onClick={() => {
-              if (window.confirm("Are you sure you want to permanently delete this project? This will delete all project members and tasks!")) {
+              if (
+                window.confirm(
+                  "Are you sure you want to permanently delete this project? This will delete all project members and tasks!",
+                )
+              ) {
                 deleteProject.mutate();
               }
             }}
@@ -411,7 +470,9 @@ function ProjectDetail() {
                   <span className="text-muted-foreground flex items-center gap-1.5">
                     <UserCheck className="h-3.5 w-3.5" /> Created By
                   </span>
-                  <span className="font-semibold truncate max-w-[150px]">{p.creator_name ?? p.creator_email ?? "—"}</span>
+                  <span className="font-semibold truncate max-w-[150px]">
+                    {p.creator_name ?? p.creator_email ?? "—"}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -426,11 +487,16 @@ function ProjectDetail() {
             </CardHeader>
             <CardContent className="p-5 pt-0">
               {members.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-4 text-center">No members assigned.</p>
+                <p className="text-xs text-muted-foreground py-4 text-center">
+                  No members assigned.
+                </p>
               ) : (
                 <div className="divide-y divide-border/50 max-h-[300px] overflow-y-auto pr-1">
                   {members.map((m) => (
-                    <div key={m.user_id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
+                    <div
+                      key={m.user_id}
+                      className="py-2.5 flex items-center justify-between gap-2 text-xs"
+                    >
                       <div className="min-w-0">
                         <p className="font-semibold truncate">{m.full_name ?? m.email}</p>
                         <p className="text-muted-foreground text-[10px] truncate">{m.email}</p>
@@ -463,23 +529,42 @@ function ProjectDetail() {
               {/* Task Creation Trigger */}
               <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" disabled={isArchived} className="h-8 shadow-[var(--shadow-brand)]" style={{ background: "var(--gradient-brand)" }}>
+                  <Button
+                    size="sm"
+                    disabled={isArchived}
+                    className="h-8 shadow-[var(--shadow-brand)]"
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
                     <Plus className="h-4 w-4 mr-1.5" /> New task
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle>Create Task</DialogTitle>
-                    <DialogDescription>Assign a new task to a project team member.</DialogDescription>
+                    <DialogDescription>
+                      Assign a new task to a project team member.
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-3">
                     <div className="space-y-1.5">
-                      <Label htmlFor="t-title">Task Title <span className="text-destructive">*</span></Label>
-                      <Input id="t-title" placeholder="e.g. Design homepage wireframe" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
+                      <Label htmlFor="t-title">
+                        Task Title <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="t-title"
+                        placeholder="e.g. Design homepage wireframe"
+                        value={taskTitle}
+                        onChange={(e) => setTaskTitle(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="t-desc">Description</Label>
-                      <Textarea id="t-desc" placeholder="Describe the steps or details..." value={taskDesc} onChange={(e) => setTaskDesc(e.target.value)} />
+                      <Textarea
+                        id="t-desc"
+                        placeholder="Describe the steps or details..."
+                        value={taskDesc}
+                        onChange={(e) => setTaskDesc(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="t-assignee">Assignee</Label>
@@ -489,9 +574,15 @@ function ProjectDetail() {
                         onChange={(e) => setTaskAssignee(e.target.value)}
                         className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       >
-                        <option value="" className="text-black bg-background">Assign to project member...</option>
+                        <option value="" className="text-black bg-background">
+                          Assign to project member...
+                        </option>
                         {members.map((m) => (
-                          <option key={m.user_id} value={m.user_id} className="text-black bg-background">
+                          <option
+                            key={m.user_id}
+                            value={m.user_id}
+                            className="text-black bg-background"
+                          >
                             {m.full_name ?? m.email}
                           </option>
                         ))}
@@ -500,7 +591,12 @@ function ProjectDetail() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label htmlFor="t-due">Due Date</Label>
-                        <Input id="t-due" type="date" value={taskDueDate} onChange={(e) => setTaskDueDate(e.target.value)} />
+                        <Input
+                          id="t-due"
+                          type="date"
+                          value={taskDueDate}
+                          onChange={(e) => setTaskDueDate(e.target.value)}
+                        />
                       </div>
                       <div className="space-y-1.5">
                         <Label htmlFor="t-status">Initial Status</Label>
@@ -510,15 +606,23 @@ function ProjectDetail() {
                           onChange={(e) => setTaskStatus(e.target.value)}
                           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                         >
-                          <option value="todo" className="text-black bg-background">Todo</option>
-                          <option value="in_progress" className="text-black bg-background">In Progress</option>
-                          <option value="done" className="text-black bg-background">Done</option>
+                          <option value="todo" className="text-black bg-background">
+                            Todo
+                          </option>
+                          <option value="in_progress" className="text-black bg-background">
+                            In Progress
+                          </option>
+                          <option value="done" className="text-black bg-background">
+                            Done
+                          </option>
                         </select>
                       </div>
                     </div>
                   </div>
                   <DialogFooter className="mt-4">
-                    <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setIsNewTaskOpen(false)}>
+                      Cancel
+                    </Button>
                     <Button
                       onClick={() => createTask.mutate()}
                       disabled={!taskTitle || createTask.isPending}
@@ -532,18 +636,32 @@ function ProjectDetail() {
             </CardHeader>
             <CardContent className="p-5 pt-0">
               {/* Tabs for filters */}
-              <Tabs value={taskStatusFilter} onValueChange={setTaskStatusFilter} className="w-full mb-4">
+              <Tabs
+                value={taskStatusFilter}
+                onValueChange={setTaskStatusFilter}
+                className="w-full mb-4"
+              >
                 <TabsList className="grid grid-cols-4 w-full max-w-[400px]">
-                  <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                  <TabsTrigger value="todo" className="text-xs">Todo</TabsTrigger>
-                  <TabsTrigger value="in_progress" className="text-xs">In Progress</TabsTrigger>
-                  <TabsTrigger value="done" className="text-xs font-semibold">Done</TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs">
+                    All
+                  </TabsTrigger>
+                  <TabsTrigger value="todo" className="text-xs">
+                    Todo
+                  </TabsTrigger>
+                  <TabsTrigger value="in_progress" className="text-xs">
+                    In Progress
+                  </TabsTrigger>
+                  <TabsTrigger value="done" className="text-xs font-semibold">
+                    Done
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
 
               {/* Tasks List */}
               {isLoadingTasks ? (
-                <div className="p-4 text-center text-xs text-muted-foreground animate-pulse">Loading tasks...</div>
+                <div className="p-4 text-center text-xs text-muted-foreground animate-pulse">
+                  Loading tasks...
+                </div>
               ) : tasks.length === 0 ? (
                 <div className="py-8 text-center text-xs text-muted-foreground border border-dashed rounded-lg bg-muted/5">
                   No tasks found under this filter.
@@ -600,7 +718,9 @@ function ProjectDetail() {
                               <div className="flex items-center justify-between gap-2">
                                 <Select
                                   value={t.status ?? "todo"}
-                                  onValueChange={(status) => updateTaskStatus.mutate({ taskId: tId, status })}
+                                  onValueChange={(status) =>
+                                    updateTaskStatus.mutate({ taskId: tId, status })
+                                  }
                                   disabled={isArchived || updateTaskStatus.isPending}
                                 >
                                   <SelectTrigger className="h-8 w-28 text-xs py-1">
@@ -608,7 +728,11 @@ function ProjectDetail() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     {TASK_STATUSES.map((statusOption) => (
-                                      <SelectItem key={statusOption} value={statusOption} className="text-xs">
+                                      <SelectItem
+                                        key={statusOption}
+                                        value={statusOption}
+                                        className="text-xs"
+                                      >
                                         {statusOption.replace("_", " ").toUpperCase()}
                                       </SelectItem>
                                     ))}
@@ -620,7 +744,9 @@ function ProjectDetail() {
                                   size="icon"
                                   className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
                                   onClick={() => {
-                                    if (window.confirm("Are you sure you want to delete this task?")) {
+                                    if (
+                                      window.confirm("Are you sure you want to delete this task?")
+                                    ) {
                                       deleteTask.mutate(tId);
                                     }
                                   }}

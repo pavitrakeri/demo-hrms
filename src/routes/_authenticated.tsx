@@ -1,8 +1,33 @@
-import { createFileRoute, redirect, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  Outlet,
+  Link,
+  useNavigate,
+  useRouterState,
+} from "@tanstack/react-router";
 import { getToken, api } from "@/lib/api";
 import { logout, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Clock, FolderKanban, ListTodo, Users, LogOut, Building2, Shield, ChevronDown, Calendar, Lock, Eye, EyeOff, Settings, Menu, Wallet, Sparkles } from "lucide-react";
+import {
+  LayoutDashboard,
+  Clock,
+  FolderKanban,
+  ListTodo,
+  Users,
+  LogOut,
+  Building2,
+  Shield,
+  ChevronDown,
+  Calendar,
+  Lock,
+  Eye,
+  EyeOff,
+  Settings,
+  Menu,
+  Wallet,
+  Sparkles,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
@@ -24,7 +49,11 @@ export const Route = createFileRoute("/_authenticated")({
 
 type NavItem =
   | { to: string; label: string; icon: typeof LayoutDashboard }
-  | { label: string; icon: typeof LayoutDashboard; children: { to: string; label: string; icon: typeof LayoutDashboard }[] };
+  | {
+      label: string;
+      icon: typeof LayoutDashboard;
+      children: { to: string; label: string; icon: typeof LayoutDashboard }[];
+    };
 
 const navItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,10 +79,12 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
   const { role, email, passwordResetRequired, permissions } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [orgOpen, setOrgOpen] = useState(pathname.startsWith("/departments") || pathname.startsWith("/roles"));
+  const [orgOpen, setOrgOpen] = useState(
+    pathname.startsWith("/departments") || pathname.startsWith("/roles"),
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  
+
   const allowedNavItems = useMemo(() => {
     const userRole = (role ?? "").toLowerCase().trim();
     const isSystemAdmin = userRole === "admin";
@@ -62,7 +93,11 @@ function AuthenticatedLayout() {
         return isSystemAdmin || permissions.includes("manage_employees");
       }
       if (item.label === "Organization") {
-        return isSystemAdmin || permissions.includes("manage_departments") || permissions.includes("manage_roles");
+        return (
+          isSystemAdmin ||
+          permissions.includes("manage_departments") ||
+          permissions.includes("manage_roles")
+        );
       }
       return true;
     });
@@ -111,7 +146,9 @@ function AuthenticatedLayout() {
                       <item.icon className="h-4 w-4" />
                       {item.label}
                     </div>
-                    <ChevronDown className={"h-4 w-4 transition-transform " + (expanded ? "rotate-180" : "")} />
+                    <ChevronDown
+                      className={"h-4 w-4 transition-transform " + (expanded ? "rotate-180" : "")}
+                    />
                   </button>
                   {expanded && (
                     <div className="ml-4 mt-1 space-y-1">
@@ -127,7 +164,9 @@ function AuthenticatedLayout() {
                                 ? "text-sidebar-primary-foreground shadow-[var(--shadow-brand)]"
                                 : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent")
                             }
-                            style={childActive ? { background: "var(--gradient-brand)" } : undefined}
+                            style={
+                              childActive ? { background: "var(--gradient-brand)" } : undefined
+                            }
                           >
                             <child.icon className="h-4 w-4" />
                             {child.label}
@@ -178,7 +217,11 @@ function AuthenticatedLayout() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-64 text-sidebar-foreground border-none" style={{ background: "var(--gradient-sidebar)" }}>
+              <SheetContent
+                side="left"
+                className="p-0 w-64 text-sidebar-foreground border-none"
+                style={{ background: "var(--gradient-sidebar)" }}
+              >
                 <div className="flex flex-col h-full">
                   <div className="px-6 py-6 border-b border-sidebar-border">
                     <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block">
@@ -200,13 +243,19 @@ function AuthenticatedLayout() {
                                   ? "text-sidebar-primary-foreground"
                                   : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent")
                               }
-                              style={anyActive ? { background: "var(--gradient-brand)" } : undefined}
+                              style={
+                                anyActive ? { background: "var(--gradient-brand)" } : undefined
+                              }
                             >
                               <div className="flex items-center gap-3">
                                 <item.icon className="h-4 w-4" />
                                 {item.label}
                               </div>
-                              <ChevronDown className={"h-4 w-4 transition-transform " + (expanded ? "rotate-180" : "")} />
+                              <ChevronDown
+                                className={
+                                  "h-4 w-4 transition-transform " + (expanded ? "rotate-180" : "")
+                                }
+                              />
                             </button>
                             {expanded && (
                               <div className="ml-4 mt-1 space-y-1">
@@ -223,7 +272,11 @@ function AuthenticatedLayout() {
                                           ? "text-sidebar-primary-foreground shadow-[var(--shadow-brand)]"
                                           : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent")
                                       }
-                                      style={childActive ? { background: "var(--gradient-brand)" } : undefined}
+                                      style={
+                                        childActive
+                                          ? { background: "var(--gradient-brand)" }
+                                          : undefined
+                                      }
                                     >
                                       <child.icon className="h-4 w-4" />
                                       {child.label}
@@ -257,7 +310,10 @@ function AuthenticatedLayout() {
                   </nav>
                   <div className="p-3 border-t border-sidebar-border">
                     <button
-                      onClick={() => { setMobileOpen(false); onLogout(); }}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        onLogout();
+                      }}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
@@ -331,7 +387,10 @@ function ForcePasswordReset({ email, onLogout }: ForcePasswordResetProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 w-full" style={{ background: "var(--gradient-sidebar)" }}>
+    <div
+      className="min-h-screen flex items-center justify-center p-4 w-full"
+      style={{ background: "var(--gradient-sidebar)" }}
+    >
       <Card className="w-full max-w-md shadow-2xl border border-border/50 backdrop-blur-md bg-card/90">
         <CardHeader className="space-y-2 text-center pb-4">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
@@ -339,7 +398,8 @@ function ForcePasswordReset({ email, onLogout }: ForcePasswordResetProps) {
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">Set New Password</CardTitle>
           <CardDescription className="text-sm text-muted-foreground max-w-[280px] mx-auto">
-            This is your first login or your password was recently reset. Please set a new password to continue.
+            This is your first login or your password was recently reset. Please set a new password
+            to continue.
           </CardDescription>
         </CardHeader>
         <CardContent>

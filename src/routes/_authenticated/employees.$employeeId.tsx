@@ -7,7 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -33,7 +40,7 @@ import {
   Wallet,
   Globe,
   FileText,
-  Pencil
+  Pencil,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/employees/$employeeId")({
@@ -51,7 +58,11 @@ function formatDate(d?: string | null) {
 function formatCurrency(val?: number | null, currency: string = "") {
   if (val == null || isNaN(val)) return "—";
   try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(val);
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(val);
   } catch (e) {
     return `${val.toLocaleString()} ${currency}`;
   }
@@ -90,10 +101,18 @@ function EmployeeDetail() {
   const token = getToken();
   const permissions = getPermissionsFromToken(token);
   const userRole = getRoleFromToken(token)?.toLowerCase().trim();
-  const isFinanceOrAdmin = userRole === "admin" || userRole === "finance" || userRole === "cfo" || permissions.includes("manage_payroll");
+  const isFinanceOrAdmin =
+    userRole === "admin" ||
+    userRole === "finance" ||
+    userRole === "cfo" ||
+    permissions.includes("manage_payroll");
 
   // Queries
-  const { data: detail, isLoading, error } = useQuery({
+  const {
+    data: detail,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["employee", employeeId],
     queryFn: () => api<any>(`/employees/${employeeId}`),
   });
@@ -121,26 +140,28 @@ function EmployeeDetail() {
   });
   const payrollSetup = payrollSetupData?.data;
 
-  const listEmployees: any[] = Array.isArray(list) ? list : list?.employees ?? list?.items ?? [];
+  const listEmployees: any[] = Array.isArray(list) ? list : (list?.employees ?? list?.items ?? []);
   const fromList = listEmployees.find(
-    (e) => String(e.id ?? e.employee_id ?? e.email) === String(employeeId)
+    (e) => String(e.id ?? e.employee_id ?? e.email) === String(employeeId),
   );
 
   const detailObj: any =
-    typeof detail === "string" || detail == null
-      ? {}
-      : (detail.employee ?? detail.data ?? detail);
-  
+    typeof detail === "string" || detail == null ? {} : (detail.employee ?? detail.data ?? detail);
+
   const emp: any = { ...(fromList ?? {}), ...detailObj };
 
   // Form State
   const [form, setForm] = useState<any>(null);
 
-  const apiDepartments: any[] = Array.isArray(deptsData) ? deptsData : deptsData?.departments ?? deptsData?.items ?? [];
-  const departments = Array.from(new Set([
-    ...listEmployees.map((e) => e.department).filter(Boolean),
-    ...apiDepartments.map((d) => d.name).filter(Boolean)
-  ])).sort();
+  const apiDepartments: any[] = Array.isArray(deptsData)
+    ? deptsData
+    : (deptsData?.departments ?? deptsData?.items ?? []);
+  const departments = Array.from(
+    new Set([
+      ...listEmployees.map((e) => e.department).filter(Boolean),
+      ...apiDepartments.map((d) => d.name).filter(Boolean),
+    ]),
+  ).sort();
 
   const openEditDialog = () => {
     setForm({
@@ -151,7 +172,9 @@ function EmployeeDetail() {
       department: emp.department ?? "",
       manager_email: emp.manager_email ?? "",
       hr_email: emp.hr_email ?? "",
-      joining_date: emp.joining_date ? emp.joining_date.split("T")[0] : new Date().toISOString().split("T")[0],
+      joining_date: emp.joining_date
+        ? emp.joining_date.split("T")[0]
+        : new Date().toISOString().split("T")[0],
       is_active: emp.is_active !== false,
 
       // Work / Designation details
@@ -206,7 +229,12 @@ function EmployeeDetail() {
       payload.mobile = Number(payload.mobile) || 0;
       payload.transportation = Number(payload.transportation) || 0;
       payload.other = Number(payload.other) || 0;
-      payload.total_salary = payload.basic_salary + payload.hra + payload.mobile + payload.transportation + payload.other;
+      payload.total_salary =
+        payload.basic_salary +
+        payload.hra +
+        payload.mobile +
+        payload.transportation +
+        payload.other;
 
       // Convert empty strings to null so Pydantic/FastAPI parses them as None/null
       Object.keys(payload).forEach((key) => {
@@ -273,7 +301,9 @@ function EmployeeDetail() {
       }
     },
     onSuccess: () => {
-      toast.success(payrollSetup ? "Payroll updated successfully" : "Payroll initiated successfully");
+      toast.success(
+        payrollSetup ? "Payroll updated successfully" : "Payroll initiated successfully",
+      );
       qc.invalidateQueries({ queryKey: ["payroll-setup", employeeId] });
       setPayrollOpen(false);
     },
@@ -293,7 +323,7 @@ function EmployeeDetail() {
   const role = emp.role ?? "—";
   const designation = emp.designation ?? role ?? "—";
   const department = emp.department ?? emp.dept ?? "—";
-  
+
   const is_active = emp.is_active !== false;
   const statusStr = emp.status ?? (is_active ? "Active" : "Inactive");
 
@@ -311,11 +341,16 @@ function EmployeeDetail() {
   const mobileAllowance = parseFloat(emp.mobile) || 0;
   const transportationAllowance = parseFloat(emp.transportation) || 0;
   const otherAllowance = parseFloat(emp.other) || 0;
-  const totalSalary = emp.total_salary || (basicSalary + hra + mobileAllowance + transportationAllowance + otherAllowance);
+  const totalSalary =
+    emp.total_salary ||
+    basicSalary + hra + mobileAllowance + transportationAllowance + otherAllowance;
 
   return (
     <div className="space-y-6">
-      <Link to="/employees" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors">
+      <Link
+        to="/employees"
+        className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors"
+      >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to employees
       </Link>
 
@@ -334,7 +369,6 @@ function EmployeeDetail() {
         </Card>
       ) : (
         <div className="space-y-6 animate-in fade-in-50 duration-200">
-          
           {/* Professional Hero Card */}
           <Card className="overflow-hidden border border-border/60 shadow-[var(--shadow-brand)] bg-card">
             <div className="h-12 opacity-90" style={{ background: "var(--gradient-brand)" }} />
@@ -353,12 +387,23 @@ function EmployeeDetail() {
                       <Badge
                         variant={is_active ? "secondary" : "outline"}
                         className="font-semibold text-xs px-2.5 py-0.5 rounded-full"
-                        style={is_active ? { background: "color-mix(in oklab, var(--success) 12%, transparent)", color: "var(--success)" } : undefined}
+                        style={
+                          is_active
+                            ? {
+                                background: "color-mix(in oklab, var(--success) 12%, transparent)",
+                                color: "var(--success)",
+                              }
+                            : undefined
+                        }
                       >
-                        <span className={"h-1.5 w-1.5 rounded-full mr-1.5 " + (is_active ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")} />
+                        <span
+                          className={
+                            "h-1.5 w-1.5 rounded-full mr-1.5 " +
+                            (is_active ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")
+                          }
+                        />
                         {statusStr}
                       </Badge>
-
                     </div>
                     <p className="text-sm text-muted-foreground mt-1.5 font-medium">
                       {designation} · {department}
@@ -383,18 +428,37 @@ function EmployeeDetail() {
                     onClick={() => copyToClipboard(emp.id ?? employeeId, "empId")}
                   >
                     {copiedKey === "empId" ? (
-                      <><Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> Copied ID</>
+                      <>
+                        <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> Copied ID
+                      </>
                     ) : (
-                      <><Copy className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> Copy Profile ID</>
+                      <>
+                        <Copy className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> Copy Profile
+                        ID
+                      </>
                     )}
                   </Button>
                   {phone && (
-                    <Button variant="outline" size="sm" asChild className="h-9 text-xs font-semibold px-4">
-                      <a href={`tel:${phone}`}><Phone className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> Call</a>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="h-9 text-xs font-semibold px-4"
+                    >
+                      <a href={`tel:${phone}`}>
+                        <Phone className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> Call
+                      </a>
                     </Button>
                   )}
-                  <Button size="sm" asChild className="h-9 text-xs font-semibold px-4 shadow-sm" style={{ background: "var(--gradient-brand)" }}>
-                    <a href={`mailto:${email}`}><Mail className="h-3.5 w-3.5 mr-1.5" /> Email employee</a>
+                  <Button
+                    size="sm"
+                    asChild
+                    className="h-9 text-xs font-semibold px-4 shadow-sm"
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
+                    <a href={`mailto:${email}`}>
+                      <Mail className="h-3.5 w-3.5 mr-1.5" /> Email employee
+                    </a>
                   </Button>
                 </div>
               </div>
@@ -407,7 +471,9 @@ function EmployeeDetail() {
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Edit Employee Details</DialogTitle>
-                  <DialogDescription>Update employee profile details, legal documents, and compensation.</DialogDescription>
+                  <DialogDescription>
+                    Update employee profile details, legal documents, and compensation.
+                  </DialogDescription>
                 </DialogHeader>
 
                 <Tabs value={activeFormTab} onValueChange={setActiveFormTab} className="w-full">
@@ -427,22 +493,53 @@ function EmployeeDetail() {
                   </TabsList>
 
                   {/* 1. Basic Info Tab */}
-                  <TabsContent value="basic" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="basic"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
-                      <Label htmlFor="edit_full_name">Full Name <span className="text-destructive">*</span></Label>
-                      <Input id="edit_full_name" placeholder="John Doe" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                      <Label htmlFor="edit_full_name">
+                        Full Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="edit_full_name"
+                        placeholder="John Doe"
+                        value={form.full_name}
+                        onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_email">Login Email <span className="text-destructive">*</span></Label>
-                      <Input id="edit_email" type="email" placeholder="john.doe@aimploy.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                      <Label htmlFor="edit_email">
+                        Login Email <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="edit_email"
+                        type="email"
+                        placeholder="john.doe@aimploy.com"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_password">Login Password</Label>
-                      <Input id="edit_password" type="password" placeholder="Leave blank to keep unchanged" value={form.password || ""} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                      <Input
+                        id="edit_password"
+                        type="password"
+                        placeholder="Leave blank to keep unchanged"
+                        value={form.password || ""}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_role">System Role <span className="text-destructive">*</span></Label>
-                      <select id="edit_role" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <Label htmlFor="edit_role">
+                        System Role <span className="text-destructive">*</span>
+                      </Label>
+                      <select
+                        id="edit_role"
+                        value={form.role}
+                        onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="employee">Employee</option>
                         <option value="line_manager">Line Manager</option>
                         <option value="hr">HR Personnel</option>
@@ -452,7 +549,12 @@ function EmployeeDetail() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_employment_status">Employment Status</Label>
-                      <select id="edit_employment_status" value={form.employment_status || "Full Time"} onChange={(e) => setForm({ ...form, employment_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="edit_employment_status"
+                        value={form.employment_status || "Full Time"}
+                        onChange={(e) => setForm({ ...form, employment_status: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Full Time">Full Time</option>
                         <option value="Part Time">Part Time</option>
                         <option value="Contract">Contract</option>
@@ -462,7 +564,12 @@ function EmployeeDetail() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_designation">Designation</Label>
-                      <Input id="edit_designation" placeholder="e.g. Software Engineer" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
+                      <Input
+                        id="edit_designation"
+                        placeholder="e.g. Software Engineer"
+                        value={form.designation}
+                        onChange={(e) => setForm({ ...form, designation: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_department">Department</Label>
@@ -512,27 +619,57 @@ function EmployeeDetail() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_joining_date">Joining Date <span className="text-destructive">*</span></Label>
-                      <Input id="edit_joining_date" type="date" value={form.joining_date} onChange={(e) => setForm({ ...form, joining_date: e.target.value })} />
+                      <Label htmlFor="edit_joining_date">
+                        Joining Date <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="edit_joining_date"
+                        type="date"
+                        value={form.joining_date}
+                        onChange={(e) => setForm({ ...form, joining_date: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_office_location">Office Location</Label>
-                      <Input id="edit_office_location" value={form.office_location} onChange={(e) => setForm({ ...form, office_location: e.target.value })} />
+                      <Input
+                        id="edit_office_location"
+                        value={form.office_location}
+                        onChange={(e) => setForm({ ...form, office_location: e.target.value })}
+                      />
                     </div>
                     <div className="flex items-center justify-between rounded-md border p-3.5 sm:col-span-2">
                       <div>
-                        <Label htmlFor="edit_is_active" className="cursor-pointer text-sm font-semibold">Active Status</Label>
-                        <p className="text-[10px] text-muted-foreground">Inactive employees cannot log in.</p>
+                        <Label
+                          htmlFor="edit_is_active"
+                          className="cursor-pointer text-sm font-semibold"
+                        >
+                          Active Status
+                        </Label>
+                        <p className="text-[10px] text-muted-foreground">
+                          Inactive employees cannot log in.
+                        </p>
                       </div>
-                      <Switch id="edit_is_active" checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
+                      <Switch
+                        id="edit_is_active"
+                        checked={form.is_active}
+                        onCheckedChange={(v) => setForm({ ...form, is_active: v })}
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 2. Personal Info Tab */}
-                  <TabsContent value="personal" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="personal"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
                       <Label htmlFor="edit_gender">Gender</Label>
-                      <select id="edit_gender" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="edit_gender"
+                        value={form.gender}
+                        onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
@@ -540,11 +677,21 @@ function EmployeeDetail() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_date_of_birth">Date of Birth</Label>
-                      <Input id="edit_date_of_birth" type="date" value={form.date_of_birth} onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })} />
+                      <Input
+                        id="edit_date_of_birth"
+                        type="date"
+                        value={form.date_of_birth}
+                        onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_marital_status">Marital Status</Label>
-                      <select id="edit_marital_status" value={form.marital_status} onChange={(e) => setForm({ ...form, marital_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="edit_marital_status"
+                        value={form.marital_status}
+                        onChange={(e) => setForm({ ...form, marital_status: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Single">Single</option>
                         <option value="Married">Married</option>
                         <option value="Divorced">Divorced</option>
@@ -553,102 +700,252 @@ function EmployeeDetail() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_nationality">Nationality</Label>
-                      <Input id="edit_nationality" placeholder="e.g. United Arab Emirates" value={form.nationality} onChange={(e) => setForm({ ...form, nationality: e.target.value })} />
+                      <Input
+                        id="edit_nationality"
+                        placeholder="e.g. United Arab Emirates"
+                        value={form.nationality}
+                        onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_contact_number">Contact Number</Label>
-                      <Input id="edit_contact_number" placeholder="e.g. +971 50 123 4567" value={form.contact_number} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
+                      <Input
+                        id="edit_contact_number"
+                        placeholder="e.g. +971 50 123 4567"
+                        value={form.contact_number}
+                        onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_personal_email">Personal Email</Label>
-                      <Input id="edit_personal_email" type="email" placeholder="personal@email.com" value={form.personal_email} onChange={(e) => setForm({ ...form, personal_email: e.target.value })} />
+                      <Input
+                        id="edit_personal_email"
+                        type="email"
+                        placeholder="personal@email.com"
+                        value={form.personal_email}
+                        onChange={(e) => setForm({ ...form, personal_email: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
                       <Label htmlFor="edit_work_email">Secondary Work Email</Label>
-                      <Input id="edit_work_email" type="email" placeholder="work.alt@company.com" value={form.work_email} onChange={(e) => setForm({ ...form, work_email: e.target.value })} />
+                      <Input
+                        id="edit_work_email"
+                        type="email"
+                        placeholder="work.alt@company.com"
+                        value={form.work_email}
+                        onChange={(e) => setForm({ ...form, work_email: e.target.value })}
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 3. Legal & Identity Tab */}
-                  <TabsContent value="visa" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="visa"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
                       <Label htmlFor="edit_aadhaar_card_number">Aadhaar Card Number</Label>
-                      <Input id="edit_aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />
+                      <Input
+                        id="edit_aadhaar_card_number"
+                        placeholder="Aadhaar Card Number"
+                        value={form.aadhaar_card_number}
+                        onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_pan_card_number">PAN Card Number</Label>
-                      <Input id="edit_pan_card_number" placeholder="PAN Card Number" value={form.pan_card_number} onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })} />
+                      <Input
+                        id="edit_pan_card_number"
+                        placeholder="PAN Card Number"
+                        value={form.pan_card_number}
+                        onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_pf_account_number">PF / EPF Account Number</Label>
-                      <Input id="edit_pf_account_number" placeholder="PF / EPF Account Number" value={form.pf_account_number} onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })} />
+                      <Input
+                        id="edit_pf_account_number"
+                        placeholder="PF / EPF Account Number"
+                        value={form.pf_account_number}
+                        onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_esi_number">ESI Number</Label>
-                      <Input id="edit_esi_number" placeholder="ESI Number" value={form.esi_number} onChange={(e) => setForm({ ...form, esi_number: e.target.value })} />
+                      <Input
+                        id="edit_esi_number"
+                        placeholder="ESI Number"
+                        value={form.esi_number}
+                        onChange={(e) => setForm({ ...form, esi_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_bank_account_number">Bank Account Number</Label>
-                      <Input id="edit_bank_account_number" placeholder="Bank Account Number" value={form.bank_account_number} onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })} />
+                      <Input
+                        id="edit_bank_account_number"
+                        placeholder="Bank Account Number"
+                        value={form.bank_account_number}
+                        onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_ifsc_code">Bank IFSC Code</Label>
-                      <Input id="edit_ifsc_code" placeholder="Bank IFSC Code" value={form.ifsc_code} onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })} />
+                      <Input
+                        id="edit_ifsc_code"
+                        placeholder="Bank IFSC Code"
+                        value={form.ifsc_code}
+                        onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_emergency_contact_name">Emergency Contact Name</Label>
-                      <Input id="edit_emergency_contact_name" placeholder="Emergency Contact Name" value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} />
+                      <Input
+                        id="edit_emergency_contact_name"
+                        placeholder="Emergency Contact Name"
+                        value={form.emergency_contact_name}
+                        onChange={(e) =>
+                          setForm({ ...form, emergency_contact_name: e.target.value })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_emergency_contact_number">Emergency Contact Number</Label>
-                      <Input id="edit_emergency_contact_number" placeholder="Emergency Contact Number" value={form.emergency_contact_number} onChange={(e) => setForm({ ...form, emergency_contact_number: e.target.value })} />
+                      <Label htmlFor="edit_emergency_contact_number">
+                        Emergency Contact Number
+                      </Label>
+                      <Input
+                        id="edit_emergency_contact_number"
+                        placeholder="Emergency Contact Number"
+                        value={form.emergency_contact_number}
+                        onChange={(e) =>
+                          setForm({ ...form, emergency_contact_number: e.target.value })
+                        }
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 4. Financial & Payroll Tab */}
-                  <TabsContent value="financial" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="financial"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
-                      <Label htmlFor="edit_basic_salary">Basic Salary {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="edit_basic_salary" type="number" min="0" value={form.basic_salary} onChange={(e) => setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="edit_basic_salary">
+                        Basic Salary {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="edit_basic_salary"
+                        type="number"
+                        min="0"
+                        value={form.basic_salary}
+                        onChange={(e) =>
+                          setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_hra">Housing Allowance (HRA) {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="edit_hra" type="number" min="0" value={form.hra} onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="edit_hra">
+                        Housing Allowance (HRA) {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="edit_hra"
+                        type="number"
+                        min="0"
+                        value={form.hra}
+                        onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_mobile_allowance">Mobile Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="edit_mobile_allowance" type="number" min="0" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="edit_mobile_allowance">
+                        Mobile Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="edit_mobile_allowance"
+                        type="number"
+                        min="0"
+                        value={form.mobile}
+                        onChange={(e) =>
+                          setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_trans_allowance">Transportation Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="edit_trans_allowance" type="number" min="0" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="edit_trans_allowance">
+                        Transportation Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="edit_trans_allowance"
+                        type="number"
+                        min="0"
+                        value={form.transportation}
+                        onChange={(e) =>
+                          setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="edit_other_allowance">Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="edit_other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="edit_other_allowance">
+                        Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="edit_other_allowance"
+                        type="number"
+                        min="0"
+                        value={form.other}
+                        onChange={(e) =>
+                          setForm({ ...form, other: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_wps">WPS Payment Status</Label>
-                      <Input id="edit_wps" placeholder="e.g. Yes / No / Exempt" value={form.wps} onChange={(e) => setForm({ ...form, wps: e.target.value })} />
+                      <Input
+                        id="edit_wps"
+                        placeholder="e.g. Yes / No / Exempt"
+                        value={form.wps}
+                        onChange={(e) => setForm({ ...form, wps: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_wps_unique_id">WPS Unique ID</Label>
-                      <Input id="edit_wps_unique_id" placeholder="WPS unique identification code" value={form.wps_unique_id} onChange={(e) => setForm({ ...form, wps_unique_id: e.target.value })} />
+                      <Input
+                        id="edit_wps_unique_id"
+                        placeholder="WPS unique identification code"
+                        value={form.wps_unique_id}
+                        onChange={(e) => setForm({ ...form, wps_unique_id: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="edit_flight_ticket">Flight Ticket Benefits</Label>
-                      <Input id="edit_flight_ticket" placeholder="e.g. Annual / Bi-annual" value={form.flight_ticket} onChange={(e) => setForm({ ...form, flight_ticket: e.target.value })} />
+                      <Input
+                        id="edit_flight_ticket"
+                        placeholder="e.g. Annual / Bi-annual"
+                        value={form.flight_ticket}
+                        onChange={(e) => setForm({ ...form, flight_ticket: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
                       <Label htmlFor="edit_med_insurance">Medical Insurance Category</Label>
-                      <Input id="edit_med_insurance" placeholder="e.g. VIP, Standard, Enhanced" value={form.medical_insurance_category} onChange={(e) => setForm({ ...form, medical_insurance_category: e.target.value })} />
+                      <Input
+                        id="edit_med_insurance"
+                        placeholder="e.g. VIP, Standard, Enhanced"
+                        value={form.medical_insurance_category}
+                        onChange={(e) =>
+                          setForm({ ...form, medical_insurance_category: e.target.value })
+                        }
+                      />
                     </div>
                   </TabsContent>
                 </Tabs>
 
                 <DialogFooter className="mt-4">
-                  <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
-                  <Button onClick={() => updateEmployee.mutate()} disabled={!form.email || !form.full_name || updateEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
+                  <Button variant="outline" onClick={() => setEditOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => updateEmployee.mutate()}
+                    disabled={!form.email || !form.full_name || updateEmployee.isPending}
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
                     {updateEmployee.isPending ? "Saving…" : "Save changes"}
                   </Button>
                 </DialogFooter>
@@ -658,7 +955,9 @@ function EmployeeDetail() {
 
           {/* Details Dashboard Tabs */}
           <Tabs defaultValue="overview" className="w-full space-y-6">
-            <TabsList className={`grid ${isFinanceOrAdmin ? 'grid-cols-4' : 'grid-cols-3'} w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40`}>
+            <TabsList
+              className={`grid ${isFinanceOrAdmin ? "grid-cols-4" : "grid-cols-3"} w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40`}
+            >
               <TabsTrigger value="overview" className="text-xs font-semibold rounded-lg gap-2">
                 <Briefcase className="h-3.5 w-3.5 shrink-0" />
                 Work Details
@@ -684,18 +983,40 @@ function EmployeeDetail() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <DetailCard title="Organization Context" icon={Building2}>
                   <DetailRow label="Department" value={department} />
-                  <DetailRow label="Reports To (Manager)" value={reportsTo} isEmail copyKey="mgrEmail" onCopy={(v) => copyToClipboard(v, "mgrEmail")} copied={copiedKey === "mgrEmail"} />
-                  <DetailRow label="HR Partner" value={hrEmail} isEmail copyKey="hrEmail" onCopy={(v) => copyToClipboard(v, "hrEmail")} copied={copiedKey === "hrEmail"} />
+                  <DetailRow
+                    label="Reports To (Manager)"
+                    value={reportsTo}
+                    isEmail
+                    copyKey="mgrEmail"
+                    onCopy={(v) => copyToClipboard(v, "mgrEmail")}
+                    copied={copiedKey === "mgrEmail"}
+                  />
+                  <DetailRow
+                    label="HR Partner"
+                    value={hrEmail}
+                    isEmail
+                    copyKey="hrEmail"
+                    onCopy={(v) => copyToClipboard(v, "hrEmail")}
+                    copied={copiedKey === "hrEmail"}
+                  />
                 </DetailCard>
 
                 <DetailCard title="Position Details" icon={Briefcase}>
                   <DetailRow label="Designation" value={designation} />
-                  <DetailRow label="System Role" value={role} className="uppercase font-semibold text-xs tracking-wider" />
+                  <DetailRow
+                    label="System Role"
+                    value={role}
+                    className="uppercase font-semibold text-xs tracking-wider"
+                  />
                   <DetailRow label="Office Location" value={officeLocation} />
                 </DetailCard>
 
                 <DetailCard title="Tenure & Status" icon={Calendar}>
-                  <DetailRow label="Employment Status" value={employmentStatus} className="capitalize" />
+                  <DetailRow
+                    label="Employment Status"
+                    value={employmentStatus}
+                    className="capitalize"
+                  />
                   <DetailRow label="Contract Type" value={contractType} />
                   <DetailRow label="Joining Date" value={formatDate(joined)} />
                 </DetailCard>
@@ -713,9 +1034,30 @@ function EmployeeDetail() {
                 </DetailCard>
 
                 <DetailCard title="Contact Information" icon={Phone}>
-                  <DetailRow label="Login Email" value={email} isEmail copyKey="loginEmail" onCopy={(v) => copyToClipboard(v, "loginEmail")} copied={copiedKey === "loginEmail"} />
-                  <DetailRow label="Personal Email" value={emp.personal_email} isEmail copyKey="personalEmail" onCopy={(v) => copyToClipboard(v, "personalEmail")} copied={copiedKey === "personalEmail"} />
-                  <DetailRow label="Secondary Work Email" value={emp.work_email} isEmail copyKey="workEmail" onCopy={(v) => copyToClipboard(v, "workEmail")} copied={copiedKey === "workEmail"} />
+                  <DetailRow
+                    label="Login Email"
+                    value={email}
+                    isEmail
+                    copyKey="loginEmail"
+                    onCopy={(v) => copyToClipboard(v, "loginEmail")}
+                    copied={copiedKey === "loginEmail"}
+                  />
+                  <DetailRow
+                    label="Personal Email"
+                    value={emp.personal_email}
+                    isEmail
+                    copyKey="personalEmail"
+                    onCopy={(v) => copyToClipboard(v, "personalEmail")}
+                    copied={copiedKey === "personalEmail"}
+                  />
+                  <DetailRow
+                    label="Secondary Work Email"
+                    value={emp.work_email}
+                    isEmail
+                    copyKey="workEmail"
+                    onCopy={(v) => copyToClipboard(v, "workEmail")}
+                    copied={copiedKey === "workEmail"}
+                  />
                   <DetailRow label="Contact Number" value={phone} />
                 </DetailCard>
               </div>
@@ -749,7 +1091,10 @@ function EmployeeDetail() {
                 <DetailCard title="Emergency Contacts & Onboarding" icon={Heart}>
                   <DetailRow label="Date of Joining" value={formatDate(joined)} />
                   <DetailRow label="Emergency Contact Name" value={emp.emergency_contact_name} />
-                  <DetailRow label="Emergency Contact Number" value={emp.emergency_contact_number} />
+                  <DetailRow
+                    label="Emergency Contact Number"
+                    value={emp.emergency_contact_number}
+                  />
                 </DetailCard>
               </div>
             </TabsContent>
@@ -761,75 +1106,148 @@ function EmployeeDetail() {
                   <DetailCard title="Compensation" icon={DollarSign}>
                     {payrollSetup ? (
                       <>
-                        <DetailRow label="Basic Salary" value={formatCurrency(payrollSetup.basic_salary, currencySymbol)} />
-                        <DetailRow label="HRA" value={formatCurrency(payrollSetup.hra, currencySymbol)} />
-                        <DetailRow label="Allowances" value={formatCurrency(payrollSetup.allowances, currencySymbol)} />
-                        <DetailRow label="Other Benefits" value={formatCurrency(payrollSetup.other_benefits, currencySymbol)} />
-                        <DetailRow label="Gross Monthly" value={formatCurrency(payrollSetup.gross_monthly, currencySymbol)} className="text-primary font-bold" />
-                        <DetailRow label="Gross Annual" value={formatCurrency(payrollSetup.gross_annual, currencySymbol)} className="text-primary font-bold" />
+                        <DetailRow
+                          label="Basic Salary"
+                          value={formatCurrency(payrollSetup.basic_salary, currencySymbol)}
+                        />
+                        <DetailRow
+                          label="HRA"
+                          value={formatCurrency(payrollSetup.hra, currencySymbol)}
+                        />
+                        <DetailRow
+                          label="Allowances"
+                          value={formatCurrency(payrollSetup.allowances, currencySymbol)}
+                        />
+                        <DetailRow
+                          label="Other Benefits"
+                          value={formatCurrency(payrollSetup.other_benefits, currencySymbol)}
+                        />
+                        <DetailRow
+                          label="Gross Monthly"
+                          value={formatCurrency(payrollSetup.gross_monthly, currencySymbol)}
+                          className="text-primary font-bold"
+                        />
+                        <DetailRow
+                          label="Gross Annual"
+                          value={formatCurrency(payrollSetup.gross_annual, currencySymbol)}
+                          className="text-primary font-bold"
+                        />
                       </>
                     ) : (
-                      <div className="text-sm text-muted-foreground py-4">Payroll has not been initiated for this employee yet.</div>
+                      <div className="text-sm text-muted-foreground py-4">
+                        Payroll has not been initiated for this employee yet.
+                      </div>
                     )}
                   </DetailCard>
 
                   <DetailCard title="Banking Details" icon={Wallet}>
                     {payrollSetup ? (
                       <>
-                        <DetailRow label="Payment Mode" value={payrollSetup.payment_mode} className="capitalize" />
+                        <DetailRow
+                          label="Payment Mode"
+                          value={payrollSetup.payment_mode}
+                          className="capitalize"
+                        />
                         <DetailRow label="Bank Name" value={payrollSetup.bank_name} />
-                        <DetailRow label="Account Number" value={payrollSetup.bank_account_number} className="font-mono" />
-                        <DetailRow label="IBAN Number" value={payrollSetup.iban_number} className="font-mono" />
+                        <DetailRow
+                          label="Account Number"
+                          value={payrollSetup.bank_account_number}
+                          className="font-mono"
+                        />
+                        <DetailRow
+                          label="IBAN Number"
+                          value={payrollSetup.iban_number}
+                          className="font-mono"
+                        />
                         <DetailRow label="Remarks" value={payrollSetup.remarks} />
                       </>
                     ) : (
-                      <div className="text-sm text-muted-foreground py-4">Banking information not available.</div>
+                      <div className="text-sm text-muted-foreground py-4">
+                        Banking information not available.
+                      </div>
                     )}
                   </DetailCard>
                 </div>
-                
+
                 <div className="flex justify-end mt-4">
-                  <Button onClick={openPayrollDialog} style={{ background: "var(--gradient-brand)" }}>
+                  <Button
+                    onClick={openPayrollDialog}
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
                     {payrollSetup ? "Update Payroll Details" : "Initiate Payroll"}
                   </Button>
                 </div>
               </TabsContent>
             )}
           </Tabs>
-          
+
           {/* Payroll Setup Dialog */}
           <Dialog open={payrollOpen} onOpenChange={setPayrollOpen}>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>{payrollSetup ? "Update Payroll Details" : "Initiate Payroll"}</DialogTitle>
-                <DialogDescription>Set up the compensation structure and banking details for this employee.</DialogDescription>
+                <DialogTitle>
+                  {payrollSetup ? "Update Payroll Details" : "Initiate Payroll"}
+                </DialogTitle>
+                <DialogDescription>
+                  Set up the compensation structure and banking details for this employee.
+                </DialogDescription>
               </DialogHeader>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4 max-h-[60vh] overflow-y-auto px-1">
                 <div className="space-y-1">
                   <Label>Basic Salary {currencySymbol && `(${currencySymbol})`} *</Label>
-                  <Input type="number" min="0" value={payrollForm.basic_salary || ""} onChange={(e) => setPayrollForm({ ...payrollForm, basic_salary: e.target.value })} />
+                  <Input
+                    type="number"
+                    min="0"
+                    value={payrollForm.basic_salary || ""}
+                    onChange={(e) =>
+                      setPayrollForm({ ...payrollForm, basic_salary: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Housing Allowance (HRA) {currencySymbol && `(${currencySymbol})`}</Label>
-                  <Input type="number" min="0" value={payrollForm.hra || ""} onChange={(e) => setPayrollForm({ ...payrollForm, hra: e.target.value })} />
+                  <Input
+                    type="number"
+                    min="0"
+                    value={payrollForm.hra || ""}
+                    onChange={(e) => setPayrollForm({ ...payrollForm, hra: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Allowances {currencySymbol && `(${currencySymbol})`}</Label>
-                  <Input type="number" min="0" value={payrollForm.allowances || ""} onChange={(e) => setPayrollForm({ ...payrollForm, allowances: e.target.value })} />
+                  <Input
+                    type="number"
+                    min="0"
+                    value={payrollForm.allowances || ""}
+                    onChange={(e) => setPayrollForm({ ...payrollForm, allowances: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Other Benefits {currencySymbol && `(${currencySymbol})`}</Label>
-                  <Input type="number" min="0" value={payrollForm.other_benefits || ""} onChange={(e) => setPayrollForm({ ...payrollForm, other_benefits: e.target.value })} />
+                  <Input
+                    type="number"
+                    min="0"
+                    value={payrollForm.other_benefits || ""}
+                    onChange={(e) =>
+                      setPayrollForm({ ...payrollForm, other_benefits: e.target.value })
+                    }
+                  />
                 </div>
-                
+
                 <div className="col-span-full border-t my-2 pt-4">
                   <h4 className="text-sm font-semibold mb-3">Banking Information</h4>
                 </div>
-                
+
                 <div className="space-y-1">
                   <Label>Payment Mode</Label>
-                  <select className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm" value={payrollForm.payment_mode || "bank_transfer"} onChange={(e) => setPayrollForm({ ...payrollForm, payment_mode: e.target.value })}>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
+                    value={payrollForm.payment_mode || "bank_transfer"}
+                    onChange={(e) =>
+                      setPayrollForm({ ...payrollForm, payment_mode: e.target.value })
+                    }
+                  >
                     <option value="bank_transfer">Bank Transfer</option>
                     <option value="cash">Cash</option>
                     <option value="cheque">Cheque</option>
@@ -838,25 +1256,47 @@ function EmployeeDetail() {
                 </div>
                 <div className="space-y-1">
                   <Label>Bank Name</Label>
-                  <Input value={payrollForm.bank_name || ""} onChange={(e) => setPayrollForm({ ...payrollForm, bank_name: e.target.value })} />
+                  <Input
+                    value={payrollForm.bank_name || ""}
+                    onChange={(e) => setPayrollForm({ ...payrollForm, bank_name: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Account Number</Label>
-                  <Input value={payrollForm.bank_account_number || ""} onChange={(e) => setPayrollForm({ ...payrollForm, bank_account_number: e.target.value })} />
+                  <Input
+                    value={payrollForm.bank_account_number || ""}
+                    onChange={(e) =>
+                      setPayrollForm({ ...payrollForm, bank_account_number: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>IBAN Number</Label>
-                  <Input value={payrollForm.iban_number || ""} onChange={(e) => setPayrollForm({ ...payrollForm, iban_number: e.target.value })} />
+                  <Input
+                    value={payrollForm.iban_number || ""}
+                    onChange={(e) =>
+                      setPayrollForm({ ...payrollForm, iban_number: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="space-y-1 col-span-full">
                   <Label>Remarks</Label>
-                  <Input value={payrollForm.remarks || ""} onChange={(e) => setPayrollForm({ ...payrollForm, remarks: e.target.value })} />
+                  <Input
+                    value={payrollForm.remarks || ""}
+                    onChange={(e) => setPayrollForm({ ...payrollForm, remarks: e.target.value })}
+                  />
                 </div>
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setPayrollOpen(false)}>Cancel</Button>
-                <Button onClick={() => savePayroll.mutate()} disabled={!payrollForm.basic_salary || savePayroll.isPending} style={{ background: "var(--gradient-brand)" }}>
+                <Button variant="outline" onClick={() => setPayrollOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => savePayroll.mutate()}
+                  disabled={!payrollForm.basic_salary || savePayroll.isPending}
+                  style={{ background: "var(--gradient-brand)" }}
+                >
                   {savePayroll.isPending ? "Saving…" : "Save Payroll"}
                 </Button>
               </DialogFooter>
@@ -873,7 +1313,7 @@ function EmployeeDetail() {
 function DetailCard({
   title,
   icon: Icon,
-  children
+  children,
 }: {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -900,7 +1340,7 @@ function DetailRow({
   onCopy,
   copied,
   className,
-  badge
+  badge,
 }: {
   label: string;
   value?: string | number | null;
@@ -911,12 +1351,15 @@ function DetailRow({
   className?: string;
   badge?: React.ReactNode;
 }) {
-  const displayVal = value !== undefined && value !== null && String(value).trim() !== "" ? String(value) : "—";
+  const displayVal =
+    value !== undefined && value !== null && String(value).trim() !== "" ? String(value) : "—";
   const hasValue = displayVal !== "—";
 
   return (
     <div className="group min-w-0">
-      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+        {label}
+      </p>
       <div className="flex items-center gap-1.5 mt-1">
         {isEmail && hasValue ? (
           <a
@@ -937,11 +1380,7 @@ function DetailRow({
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
             title={`Copy ${label}`}
           >
-            {copied ? (
-              <Check className="h-3 w-3 text-emerald-500" />
-            ) : (
-              <Copy className="h-3 w-3" />
-            )}
+            {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
           </button>
         )}
       </div>

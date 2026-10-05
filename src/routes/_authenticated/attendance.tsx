@@ -2,13 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
@@ -59,7 +53,9 @@ function formatTime(iso: string | null | undefined) {
 function formatDate(iso: string | null | undefined | Date) {
   if (!iso) return "—";
   const d = iso instanceof Date ? iso : new Date(iso);
-  return isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  return isNaN(d.getTime())
+    ? "—"
+    : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 function dayKey(d: Date) {
   const y = d.getFullYear();
@@ -152,12 +148,15 @@ function AttendancePage() {
     try {
       const c = await getLocation();
       setCoords(c);
-      
+
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${c.lat}&lon=${c.lon}`);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${c.lat}&lon=${c.lon}`,
+        );
         const data = await res.json();
         if (data && data.address) {
-          const { road, neighbourhood, suburb, city, town, village, state, postcode } = data.address;
+          const { road, neighbourhood, suburb, city, town, village, state, postcode } =
+            data.address;
           const street = road || neighbourhood;
           const locality = city || town || village || suburb;
           const parts = [street, locality, state, postcode].filter(Boolean);
@@ -170,7 +169,7 @@ function AttendancePage() {
       } catch (err) {
         // Silently fail, it will fallback to coords
       }
-      
+
       return c;
     } catch (e) {
       toast.error((e as Error).message);
@@ -255,8 +254,13 @@ function AttendancePage() {
             <div className="text-sm flex items-center gap-2 text-muted-foreground">
               <MapPin className="size-4 shrink-0" />
               {coords ? (
-                <span className="truncate" title={locationName || `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}>
-                  {locationName ? locationName : `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}
+                <span
+                  className="truncate"
+                  title={locationName || `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}
+                >
+                  {locationName
+                    ? locationName
+                    : `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`}
                 </span>
               ) : (
                 <span>Location not detected yet</span>
@@ -273,10 +277,7 @@ function AttendancePage() {
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button
-                onClick={() => clockIn.mutate()}
-                disabled={busy || isClockedIn}
-              >
+              <Button onClick={() => clockIn.mutate()} disabled={busy || isClockedIn}>
                 <LogIn className="size-4" />
                 {clockIn.isPending
                   ? "Clocking in…"
@@ -313,8 +314,8 @@ function AttendancePage() {
             <div className="col-span-2 text-sm text-muted-foreground border-t pt-3">
               {current ? (
                 <>
-                  Latest: {formatTime(current.clock_in_at)} → {formatTime(current.clock_out_at)}{" "}
-                  · {formatDuration(current.total_seconds)}
+                  Latest: {formatTime(current.clock_in_at)} → {formatTime(current.clock_out_at)} ·{" "}
+                  {formatDuration(current.total_seconds)}
                 </>
               ) : (
                 <>No attendance yet.</>

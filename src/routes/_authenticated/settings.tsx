@@ -8,11 +8,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { 
-  User, Lock, Building2, Save, KeyRound, 
-  Coins, Calendar, Mail, Phone, MapPin, 
-  CreditCard, Users, ShieldAlert, CheckCircle2 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  User,
+  Lock,
+  Building2,
+  Save,
+  KeyRound,
+  Coins,
+  Calendar,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  Users,
+  ShieldAlert,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,7 +41,12 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function initials(name?: string) {
   if (!name) return "?";
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 }
 
 function SettingsPage() {
@@ -98,19 +121,18 @@ function SettingsPage() {
 
   // --- Mutations ---
   const updateProfile = useMutation({
-    mutationFn: (data: typeof profileForm) => 
-      api("/profile/me", { method: "PUT", body: data }),
+    mutationFn: (data: typeof profileForm) => api("/profile/me", { method: "PUT", body: data }),
     onSuccess: () => {
       toast.success("Personal profile details updated successfully!");
       qc.invalidateQueries({ queryKey: ["profile-me"] });
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to update profile details.");
-    }
+    },
   });
 
   const changePassword = useMutation({
-    mutationFn: (data: typeof passwordForm) => 
+    mutationFn: (data: typeof passwordForm) =>
       api("/profile/change-password", { method: "POST", body: data }),
     onSuccess: () => {
       toast.success("Password changed successfully!");
@@ -118,11 +140,11 @@ function SettingsPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to change password. Please check your credentials.");
-    }
+    },
   });
 
   const updateCompany = useMutation({
-    mutationFn: (data: typeof companyForm) => 
+    mutationFn: (data: typeof companyForm) =>
       api("/settings/company", { method: "PUT", body: data }),
     onSuccess: () => {
       toast.success("Global company settings updated successfully!");
@@ -130,7 +152,7 @@ function SettingsPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to update company settings.");
-    }
+    },
   });
 
   const { data: leaveTypes, isLoading: isLoadingLeaveTypes } = useQuery({
@@ -149,7 +171,7 @@ function SettingsPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to add leave type.");
-    }
+    },
   });
 
   const handleProfileSubmit = (e: React.FormEvent) => {
@@ -180,7 +202,7 @@ function SettingsPage() {
     if (!newLeaveTypeName.trim() || !newLeaveTypeDays) return;
     addLeaveType.mutate({
       name: newLeaveTypeName,
-      default_days: Number(newLeaveTypeDays)
+      default_days: Number(newLeaveTypeDays),
     });
   };
 
@@ -228,9 +250,7 @@ function SettingsPage() {
                 <div className="h-24 bg-gradient-to-r from-primary/80 to-purple-600/80" />
                 <CardContent className="pt-0 pb-6 relative">
                   <div className="flex flex-col items-center -mt-12">
-                    <div 
-                      className="h-24 w-24 rounded-2xl border-4 border-card flex items-center justify-center text-white font-extrabold text-2xl shadow-md bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500"
-                    >
+                    <div className="h-24 w-24 rounded-2xl border-4 border-card flex items-center justify-center text-white font-extrabold text-2xl shadow-md bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
                       {initials(profile?.full_name)}
                     </div>
                     <h2 className="text-lg font-bold mt-4 tracking-tight">{profile?.full_name}</h2>
@@ -239,7 +259,7 @@ function SettingsPage() {
                     </p>
                     <p className="text-xs text-muted-foreground mt-1.5">{profile?.email}</p>
                   </div>
-                  
+
                   <div className="mt-6 pt-6 border-t border-border/50 space-y-3.5 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground font-medium">Department</span>
@@ -252,12 +272,19 @@ function SettingsPage() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground font-medium">Joined On</span>
                       <span className="font-bold text-foreground">
-                        {profile?.joining_date ? new Date(profile.joining_date).toLocaleDateString("en-US", { dateStyle: "medium" }) : "—"}
+                        {profile?.joining_date
+                          ? new Date(profile.joining_date).toLocaleDateString("en-US", {
+                              dateStyle: "medium",
+                            })
+                          : "—"}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground font-medium">Reporting Manager</span>
-                      <span className="font-bold text-foreground text-xs truncate max-w-[150px]" title={profile?.manager_email}>
+                      <span
+                        className="font-bold text-foreground text-xs truncate max-w-[150px]"
+                        title={profile?.manager_email}
+                      >
                         {profile?.manager_email || "N/A"}
                       </span>
                     </div>
@@ -272,26 +299,36 @@ function SettingsPage() {
                     <CardTitle className="text-sm font-bold flex items-center gap-2">
                       <Coins className="h-4 w-4 text-primary" /> Compensation Details
                     </CardTitle>
-                    <CardDescription className="text-xs">Your contracted pay structure (Read-only)</CardDescription>
+                    <CardDescription className="text-xs">
+                      Your contracted pay structure (Read-only)
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Basic Salary</span>
-                      <span className="font-bold text-foreground">{profile.basic_salary?.toLocaleString()} {currencySymbol}</span>
+                      <span className="font-bold text-foreground">
+                        {profile.basic_salary?.toLocaleString()} {currencySymbol}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">House Allowance (HRA)</span>
-                      <span className="font-bold text-foreground">{profile.hra?.toLocaleString()} {currencySymbol}</span>
+                      <span className="font-bold text-foreground">
+                        {profile.hra?.toLocaleString()} {currencySymbol}
+                      </span>
                     </div>
                     {profile.transportation > 0 && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Transportation</span>
-                        <span className="font-bold text-foreground">{profile.transportation?.toLocaleString()} {currencySymbol}</span>
+                        <span className="font-bold text-foreground">
+                          {profile.transportation?.toLocaleString()} {currencySymbol}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between pt-2 border-t border-border/50">
                       <span className="font-semibold text-foreground">Total Salary</span>
-                      <span className="font-extrabold text-primary text-base">{profile.total_salary?.toLocaleString()} {currencySymbol}</span>
+                      <span className="font-extrabold text-primary text-base">
+                        {profile.total_salary?.toLocaleString()} {currencySymbol}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -305,7 +342,8 @@ function SettingsPage() {
                   <CardHeader>
                     <CardTitle className="text-lg font-bold">Personal & Contact Settings</CardTitle>
                     <CardDescription>
-                      Update your personal contact details below. Keep this information accurate for emergency contacts and notifications.
+                      Update your personal contact details below. Keep this information accurate for
+                      emergency contacts and notifications.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -313,28 +351,34 @@ function SettingsPage() {
                       {/* Personal Email */}
                       <div className="space-y-1.5">
                         <Label htmlFor="personal_email" className="flex items-center gap-1.5">
-                          <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Personal Email Address
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Personal Email
+                          Address
                         </Label>
-                        <Input 
-                          id="personal_email" 
-                          type="email" 
-                          placeholder="e.g. personal@email.com" 
+                        <Input
+                          id="personal_email"
+                          type="email"
+                          placeholder="e.g. personal@email.com"
                           value={profileForm.personal_email}
-                          onChange={(e) => setProfileForm({ ...profileForm, personal_email: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({ ...profileForm, personal_email: e.target.value })
+                          }
                         />
                       </div>
 
                       {/* Contact Number */}
                       <div className="space-y-1.5">
                         <Label htmlFor="contact_number" className="flex items-center gap-1.5">
-                          <Phone className="h-3.5 w-3.5 text-muted-foreground" /> Contact / Mobile Number
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" /> Contact / Mobile
+                          Number
                         </Label>
-                        <Input 
-                          id="contact_number" 
-                          type="tel" 
-                          placeholder="e.g. +971 50 123 4567" 
+                        <Input
+                          id="contact_number"
+                          type="tel"
+                          placeholder="e.g. +971 50 123 4567"
                           value={profileForm.contact_number}
-                          onChange={(e) => setProfileForm({ ...profileForm, contact_number: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({ ...profileForm, contact_number: e.target.value })
+                          }
                         />
                       </div>
 
@@ -343,11 +387,13 @@ function SettingsPage() {
                         <Label htmlFor="marital_status" className="flex items-center gap-1.5">
                           <Users className="h-3.5 w-3.5 text-muted-foreground" /> Marital Status
                         </Label>
-                        <select 
+                        <select
                           id="marital_status"
                           className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                           value={profileForm.marital_status}
-                          onChange={(e) => setProfileForm({ ...profileForm, marital_status: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({ ...profileForm, marital_status: e.target.value })
+                          }
                         >
                           <option value="Single">Single</option>
                           <option value="Married">Married</option>
@@ -359,47 +405,66 @@ function SettingsPage() {
                       {/* Bank Account Number */}
                       <div className="space-y-1.5">
                         <Label htmlFor="bank_account_number" className="flex items-center gap-1.5">
-                          <CreditCard className="h-3.5 w-3.5 text-muted-foreground" /> Bank Account Number
+                          <CreditCard className="h-3.5 w-3.5 text-muted-foreground" /> Bank Account
+                          Number
                         </Label>
-                        <Input 
-                          id="bank_account_number" 
-                          placeholder="e.g. 1029384756" 
+                        <Input
+                          id="bank_account_number"
+                          placeholder="e.g. 1029384756"
                           value={profileForm.bank_account_number}
-                          onChange={(e) => setProfileForm({ ...profileForm, bank_account_number: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({ ...profileForm, bank_account_number: e.target.value })
+                          }
                         />
                       </div>
 
                       {/* Emergency Contact Name */}
                       <div className="space-y-1.5">
-                        <Label htmlFor="emergency_contact_name" className="flex items-center gap-1.5">
+                        <Label
+                          htmlFor="emergency_contact_name"
+                          className="flex items-center gap-1.5"
+                        >
                           Emergency Contact Name
                         </Label>
-                        <Input 
-                          id="emergency_contact_name" 
-                          placeholder="Full Name" 
+                        <Input
+                          id="emergency_contact_name"
+                          placeholder="Full Name"
                           value={profileForm.emergency_contact_name}
-                          onChange={(e) => setProfileForm({ ...profileForm, emergency_contact_name: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({
+                              ...profileForm,
+                              emergency_contact_name: e.target.value,
+                            })
+                          }
                         />
                       </div>
 
                       {/* Emergency Contact Phone */}
                       <div className="space-y-1.5">
-                        <Label htmlFor="emergency_contact_number" className="flex items-center gap-1.5">
+                        <Label
+                          htmlFor="emergency_contact_number"
+                          className="flex items-center gap-1.5"
+                        >
                           Emergency Contact Phone
                         </Label>
-                        <Input 
-                          id="emergency_contact_number" 
-                          placeholder="Phone Number" 
+                        <Input
+                          id="emergency_contact_number"
+                          placeholder="Phone Number"
                           value={profileForm.emergency_contact_number}
-                          onChange={(e) => setProfileForm({ ...profileForm, emergency_contact_number: e.target.value })}
+                          onChange={(e) =>
+                            setProfileForm({
+                              ...profileForm,
+                              emergency_contact_number: e.target.value,
+                            })
+                          }
                         />
                       </div>
                     </div>
 
                     <div className="pt-4 flex justify-end">
-                      <Button 
-                        type="submit" 
-                        disabled={updateProfile.isPending} 
+                      <Button
+                        type="submit"
+                        disabled={updateProfile.isPending}
                         className="cursor-pointer font-semibold shadow-sm"
                         style={{ background: "var(--gradient-brand)" }}
                       >
@@ -424,50 +489,57 @@ function SettingsPage() {
                     <KeyRound className="h-5 w-5 text-primary" /> Credentials & Password
                   </CardTitle>
                   <CardDescription>
-                    Update your password regularly to maintain a high level of security for your employee profile.
+                    Update your password regularly to maintain a high level of security for your
+                    employee profile.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="current_password">Current Password</Label>
-                    <Input 
-                      id="current_password" 
-                      type="password" 
-                      placeholder="••••••••" 
+                    <Input
+                      id="current_password"
+                      type="password"
+                      placeholder="••••••••"
                       value={passwordForm.current_password}
-                      onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
+                      onChange={(e) =>
+                        setPasswordForm({ ...passwordForm, current_password: e.target.value })
+                      }
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <Label htmlFor="new_password">New Password</Label>
-                    <Input 
-                      id="new_password" 
-                      type="password" 
-                      placeholder="At least 6 characters" 
+                    <Input
+                      id="new_password"
+                      type="password"
+                      placeholder="At least 6 characters"
                       value={passwordForm.new_password}
-                      onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
+                      onChange={(e) =>
+                        setPasswordForm({ ...passwordForm, new_password: e.target.value })
+                      }
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <Label htmlFor="confirm_password">Confirm New Password</Label>
-                    <Input 
-                      id="confirm_password" 
-                      type="password" 
-                      placeholder="At least 6 characters" 
+                    <Input
+                      id="confirm_password"
+                      type="password"
+                      placeholder="At least 6 characters"
                       value={passwordForm.confirm_password}
-                      onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
+                      onChange={(e) =>
+                        setPasswordForm({ ...passwordForm, confirm_password: e.target.value })
+                      }
                       required
                     />
                   </div>
 
                   <div className="pt-4 flex justify-end">
-                    <Button 
-                      type="submit" 
-                      disabled={changePassword.isPending} 
+                    <Button
+                      type="submit"
+                      disabled={changePassword.isPending}
                       className="cursor-pointer font-semibold shadow-sm"
                       style={{ background: "var(--gradient-brand)" }}
                     >
@@ -492,7 +564,8 @@ function SettingsPage() {
                       <Building2 className="h-5 w-5 text-primary" /> Global Organization Settings
                     </CardTitle>
                     <CardDescription>
-                      Configure company-wide policies, working hours, active currency, and official workdays. (HR & Admin Roles only)
+                      Configure company-wide policies, working hours, active currency, and official
+                      workdays. (HR & Admin Roles only)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -500,11 +573,13 @@ function SettingsPage() {
                       {/* Company Name */}
                       <div className="space-y-1.5 md:col-span-2">
                         <Label htmlFor="company_name">Company Name</Label>
-                        <Input 
-                          id="company_name" 
-                          placeholder="e.g. Aimploy Technologies Ltd." 
+                        <Input
+                          id="company_name"
+                          placeholder="e.g. Aimploy Technologies Ltd."
                           value={companyForm.company_name}
-                          onChange={(e) => setCompanyForm({ ...companyForm, company_name: e.target.value })}
+                          onChange={(e) =>
+                            setCompanyForm({ ...companyForm, company_name: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -512,11 +587,13 @@ function SettingsPage() {
                       {/* Office Start Time */}
                       <div className="space-y-1.5">
                         <Label htmlFor="office_start_time">Office Start Time</Label>
-                        <Input 
-                          id="office_start_time" 
-                          type="time" 
+                        <Input
+                          id="office_start_time"
+                          type="time"
                           value={companyForm.office_start_time}
-                          onChange={(e) => setCompanyForm({ ...companyForm, office_start_time: e.target.value })}
+                          onChange={(e) =>
+                            setCompanyForm({ ...companyForm, office_start_time: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -524,11 +601,13 @@ function SettingsPage() {
                       {/* Office End Time */}
                       <div className="space-y-1.5">
                         <Label htmlFor="office_end_time">Office End Time</Label>
-                        <Input 
-                          id="office_end_time" 
-                          type="time" 
+                        <Input
+                          id="office_end_time"
+                          type="time"
                           value={companyForm.office_end_time}
-                          onChange={(e) => setCompanyForm({ ...companyForm, office_end_time: e.target.value })}
+                          onChange={(e) =>
+                            setCompanyForm({ ...companyForm, office_end_time: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -536,11 +615,13 @@ function SettingsPage() {
                       {/* Default Currency */}
                       <div className="space-y-1.5">
                         <Label htmlFor="currency">Default Currency</Label>
-                        <Input 
-                          id="currency" 
-                          placeholder="e.g. USD" 
+                        <Input
+                          id="currency"
+                          placeholder="e.g. USD"
                           value={companyForm.currency}
-                          onChange={(e) => setCompanyForm({ ...companyForm, currency: e.target.value })}
+                          onChange={(e) =>
+                            setCompanyForm({ ...companyForm, currency: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -548,20 +629,22 @@ function SettingsPage() {
                       {/* Weekend Days */}
                       <div className="space-y-1.5">
                         <Label htmlFor="weekend_days">Weekend Days (Comma-separated)</Label>
-                        <Input 
-                          id="weekend_days" 
-                          placeholder="Saturday,Sunday" 
+                        <Input
+                          id="weekend_days"
+                          placeholder="Saturday,Sunday"
                           value={companyForm.weekend_days}
-                          onChange={(e) => setCompanyForm({ ...companyForm, weekend_days: e.target.value })}
+                          onChange={(e) =>
+                            setCompanyForm({ ...companyForm, weekend_days: e.target.value })
+                          }
                           required
                         />
                       </div>
                     </div>
 
                     <div className="pt-4 flex justify-end">
-                      <Button 
-                        type="submit" 
-                        disabled={updateCompany.isPending} 
+                      <Button
+                        type="submit"
+                        disabled={updateCompany.isPending}
                         className="cursor-pointer font-semibold shadow-sm"
                         style={{ background: "var(--gradient-brand)" }}
                       >
@@ -611,7 +694,12 @@ function SettingsPage() {
                       </div>
                     </div>
                     <div className="flex justify-end">
-                      <Button type="submit" disabled={addLeaveType.isPending} className="font-semibold shadow-sm" style={{ background: "var(--gradient-brand)" }}>
+                      <Button
+                        type="submit"
+                        disabled={addLeaveType.isPending}
+                        className="font-semibold shadow-sm"
+                        style={{ background: "var(--gradient-brand)" }}
+                      >
                         {addLeaveType.isPending ? "Adding..." : "Add Leave Type"}
                       </Button>
                     </div>
@@ -621,9 +709,13 @@ function SettingsPage() {
                   <div className="space-y-3">
                     <Label className="font-semibold text-sm">Active Leave Types</Label>
                     {isLoadingLeaveTypes ? (
-                      <p className="text-xs text-muted-foreground animate-pulse py-2 text-center">Loading leave types...</p>
+                      <p className="text-xs text-muted-foreground animate-pulse py-2 text-center">
+                        Loading leave types...
+                      </p>
                     ) : leaveTypes?.length === 0 ? (
-                      <p className="text-xs text-muted-foreground py-2 text-center">No custom leave types defined yet.</p>
+                      <p className="text-xs text-muted-foreground py-2 text-center">
+                        No custom leave types defined yet.
+                      </p>
                     ) : (
                       <div className="border rounded-md overflow-hidden bg-card">
                         <Table>
@@ -636,8 +728,12 @@ function SettingsPage() {
                           <TableBody>
                             {leaveTypes?.map((lt: any) => (
                               <TableRow key={lt.id} className="hover:bg-muted/5 transition-colors">
-                                <TableCell className="capitalize text-xs font-semibold">{lt.name} Leave</TableCell>
-                                <TableCell className="text-right pr-6 text-xs font-mono font-semibold">{lt.default_days} days</TableCell>
+                                <TableCell className="capitalize text-xs font-semibold">
+                                  {lt.name} Leave
+                                </TableCell>
+                                <TableCell className="text-right pr-6 text-xs font-mono font-semibold">
+                                  {lt.default_days} days
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>

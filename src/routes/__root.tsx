@@ -74,16 +74,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Aimploy HRMS" },
-      { name: "description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
+      {
+        name: "description",
+        content:
+          "People Hub is an HR management system for employee payroll, leave, and reimbursement processing.",
+      },
       { name: "author", content: "Aimploy" },
       { property: "og:title", content: "Aimploy HRMS" },
-      { property: "og:description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
+      {
+        property: "og:description",
+        content:
+          "People Hub is an HR management system for employee payroll, leave, and reimbursement processing.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Aimploy" },
       { name: "twitter:title", content: "Aimploy HRMS" },
-      { name: "twitter:description", content: "People Hub is an HR management system for employee payroll, leave, and reimbursement processing." },
-
+      {
+        name: "twitter:description",
+        content:
+          "People Hub is an HR management system for employee payroll, leave, and reimbursement processing.",
+      },
     ],
     links: [
       {

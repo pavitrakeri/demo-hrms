@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ArrowLeft, Trash2, Play, Square, Clock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -46,7 +52,16 @@ function TaskDetail() {
 
   const save = useMutation({
     mutationFn: () =>
-      api(`/tasks/${taskId}`, { method: "PUT", body: { title, description, status, start_date: startDate || null, due_date: dueDate || null } }),
+      api(`/tasks/${taskId}`, {
+        method: "PUT",
+        body: {
+          title,
+          description,
+          status,
+          start_date: startDate || null,
+          due_date: dueDate || null,
+        },
+      }),
     onSuccess: () => {
       toast.success("Task updated");
       qc.invalidateQueries({ queryKey: ["task", taskId] });
@@ -88,11 +103,16 @@ function TaskDetail() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <Link to="/tasks" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+      <Link
+        to="/tasks"
+        className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+      >
         <ArrowLeft className="h-3 w-3" /> Back to tasks
       </Link>
       <Card>
-        <CardHeader><CardTitle>Edit task</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Edit task</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
@@ -100,25 +120,45 @@ function TaskDetail() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="desc">Description</Label>
-            <Textarea id="desc" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Textarea
+              id="desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label>Status</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {STATUSES.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
+                {STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="start_date">Start Date</Label>
-              <Input id="start_date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <Input
+                id="start_date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="due_date">Due Date</Label>
-              <Input id="due_date" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              <Input
+                id="due_date"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
             </div>
           </div>
           {task && (
@@ -127,19 +167,25 @@ function TaskDetail() {
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Time Tracked</p>
-                  <p className="text-xs text-muted-foreground">{formatTime(task.time_spent_seconds || 0)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatTime(task.time_spent_seconds || 0)}
+                  </p>
                 </div>
               </div>
-              <Button 
-                variant={task.timer_started_at ? "destructive" : "secondary"} 
-                size="sm" 
+              <Button
+                variant={task.timer_started_at ? "destructive" : "secondary"}
+                size="sm"
                 onClick={() => toggleTimer.mutate()}
                 disabled={toggleTimer.isPending}
               >
                 {task.timer_started_at ? (
-                  <><Square className="h-4 w-4 mr-1.5" /> Stop Timer</>
+                  <>
+                    <Square className="h-4 w-4 mr-1.5" /> Stop Timer
+                  </>
                 ) : (
-                  <><Play className="h-4 w-4 mr-1.5" /> Start Timer</>
+                  <>
+                    <Play className="h-4 w-4 mr-1.5" /> Start Timer
+                  </>
                 )}
               </Button>
             </div>

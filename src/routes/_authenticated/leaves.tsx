@@ -3,13 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -49,7 +43,7 @@ import {
   ChevronRight,
   Info,
   CalendarDays,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/leaves")({
@@ -60,7 +54,7 @@ export const Route = createFileRoute("/_authenticated/leaves")({
 function LeavesPage() {
   const qc = useQueryClient();
   const { role } = useAuth();
-  
+
   const userRole = (role ?? "").toLowerCase().trim();
   const canApprove = ["admin", "hr", "cfo"].includes(userRole);
 
@@ -129,8 +123,8 @@ function LeavesPage() {
 
   const balancesList = useMemo(() => {
     if (!balanceData) return [];
-    return Array.isArray(balanceData) 
-      ? balanceData 
+    return Array.isArray(balanceData)
+      ? balanceData
       : (balanceData.balances ?? balanceData.items ?? []);
   }, [balanceData]);
 
@@ -261,7 +255,10 @@ function LeavesPage() {
     switch (status?.toLowerCase()) {
       case "approved":
         return (
-          <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1" variant="outline">
+          <Badge
+            className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1"
+            variant="outline"
+          >
             <CheckCircle2 className="size-3.5" /> Approved
           </Badge>
         );
@@ -300,7 +297,10 @@ function LeavesPage() {
 
           <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
             <DialogTrigger asChild>
-              <Button className="shadow-[var(--shadow-brand)] cursor-pointer" style={{ background: "var(--gradient-brand)" }}>
+              <Button
+                className="shadow-[var(--shadow-brand)] cursor-pointer"
+                style={{ background: "var(--gradient-brand)" }}
+              >
                 <Plus className="h-4 w-4 mr-2" /> Apply Leave
               </Button>
             </DialogTrigger>
@@ -311,7 +311,9 @@ function LeavesPage() {
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="leave-type">Leave Type <span className="text-destructive">*</span></Label>
+                  <Label htmlFor="leave-type">
+                    Leave Type <span className="text-destructive">*</span>
+                  </Label>
                   <select
                     id="leave-type"
                     value={leaveTypeId}
@@ -319,10 +321,16 @@ function LeavesPage() {
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                   >
                     {isLoadingLeaveTypes ? (
-                      <option value="" className="text-black bg-background">Loading leave types...</option>
+                      <option value="" className="text-black bg-background">
+                        Loading leave types...
+                      </option>
                     ) : (
                       leaveTypes?.map((lt: any) => (
-                        <option key={lt.id} value={String(lt.id)} className="text-black bg-background">
+                        <option
+                          key={lt.id}
+                          value={String(lt.id)}
+                          className="text-black bg-background"
+                        >
                           {lt.name.charAt(0).toUpperCase() + lt.name.slice(1)} Leave
                         </option>
                       ))
@@ -332,12 +340,26 @@ function LeavesPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="start-date">Start Date <span className="text-destructive">*</span></Label>
-                    <Input id="start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <Label htmlFor="start-date">
+                      Start Date <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="start-date"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="end-date">End Date <span className="text-destructive">*</span></Label>
-                    <Input id="end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                    <Label htmlFor="end-date">
+                      End Date <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="end-date"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
                   </div>
                 </div>
 
@@ -345,14 +367,17 @@ function LeavesPage() {
                   <div className="flex items-center space-x-2 border rounded-md p-2 bg-muted/20">
                     <Info className="size-4 text-muted-foreground shrink-0" />
                     <span className="text-xs text-muted-foreground font-medium">
-                      Duration: <strong className="text-foreground">{daysCount}</strong> {daysCount === 1 ? "day" : "days"}
+                      Duration: <strong className="text-foreground">{daysCount}</strong>{" "}
+                      {daysCount === 1 ? "day" : "days"}
                     </span>
                   </div>
                 )}
 
                 <div className="space-y-2 border rounded-md p-3">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="half-day" className="cursor-pointer text-sm font-semibold">Half Day Application</Label>
+                    <Label htmlFor="half-day" className="cursor-pointer text-sm font-semibold">
+                      Half Day Application
+                    </Label>
                     <input
                       id="half-day"
                       type="checkbox"
@@ -370,8 +395,12 @@ function LeavesPage() {
                         onChange={(e) => setHalfDaySlot(e.target.value)}
                         className="flex h-8 w-full rounded-md border border-input bg-transparent px-2.5 py-0.5 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
                       >
-                        <option value="first_half" className="text-black bg-background">First Half (Morning)</option>
-                        <option value="second_half" className="text-black bg-background">Second Half (Afternoon)</option>
+                        <option value="first_half" className="text-black bg-background">
+                          First Half (Morning)
+                        </option>
+                        <option value="second_half" className="text-black bg-background">
+                          Second Half (Afternoon)
+                        </option>
                       </select>
                     </div>
                   )}
@@ -388,15 +417,17 @@ function LeavesPage() {
                   />
                 </div>
 
-
-
                 {showFileWarning && (
                   <div className="space-y-2 border border-blue-200/50 bg-blue-50/10 rounded-md p-3">
                     <div className="flex gap-2">
                       <FileText className="size-4.5 text-blue-500 shrink-0 mt-0.5" />
                       <div className="text-xs space-y-1">
-                        <p className="font-semibold text-blue-600 dark:text-blue-500">Medical Document Required</p>
-                        <p className="text-muted-foreground">Since sick leave exceeds 1 day, please attach a medical certificate.</p>
+                        <p className="font-semibold text-blue-600 dark:text-blue-500">
+                          Medical Document Required
+                        </p>
+                        <p className="text-muted-foreground">
+                          Since sick leave exceeds 1 day, please attach a medical certificate.
+                        </p>
                       </div>
                     </div>
                     <div className="pt-2 border-t border-blue-200/30 flex items-center justify-between gap-4">
@@ -425,14 +456,13 @@ function LeavesPage() {
                 )}
               </div>
               <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setIsApplyOpen(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => setIsApplyOpen(false)}>
+                  Cancel
+                </Button>
                 <Button
                   onClick={() => applyLeave.mutate()}
                   disabled={
-                    !startDate || 
-                    !endDate || 
-                    (showFileWarning && !file) || 
-                    applyLeave.isPending
+                    !startDate || !endDate || (showFileWarning && !file) || applyLeave.isPending
                   }
                   style={{ background: "var(--gradient-brand)" }}
                 >
@@ -445,7 +475,9 @@ function LeavesPage() {
 
         {/* Tabs Control */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-          <TabsList className={`grid w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40 ${canApprove ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <TabsList
+            className={`grid w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40 ${canApprove ? "grid-cols-3" : "grid-cols-2"}`}
+          >
             <TabsTrigger value="my_leaves" className="text-xs font-semibold rounded-lg gap-2">
               <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
               My Leaves
@@ -468,11 +500,22 @@ function LeavesPage() {
             <div className="grid gap-4 md:grid-cols-2 max-w-4xl">
               {balancesList.map((b: any) => {
                 const leaveTypeName = b.leave_type?.toLowerCase();
-                const displayName = leaveTypeName === "sick" ? "Sick Leave" : leaveTypeName === "casual" ? "Casual Leave" : b.leave_type;
-                
+                const displayName =
+                  leaveTypeName === "sick"
+                    ? "Sick Leave"
+                    : leaveTypeName === "casual"
+                      ? "Casual Leave"
+                      : b.leave_type;
+
                 return (
-                  <Card key={b.leave_type} className="border border-border/60 shadow-sm relative overflow-hidden bg-card">
-                    <div className="absolute right-0 top-0 h-24 w-24 translate-x-6 -translate-y-6 rounded-full opacity-5 blur-xl" style={{ background: "var(--gradient-brand)" }} />
+                  <Card
+                    key={b.leave_type}
+                    className="border border-border/60 shadow-sm relative overflow-hidden bg-card"
+                  >
+                    <div
+                      className="absolute right-0 top-0 h-24 w-24 translate-x-6 -translate-y-6 rounded-full opacity-5 blur-xl"
+                      style={{ background: "var(--gradient-brand)" }}
+                    />
                     <CardHeader className="pb-3 border-b border-border/40 py-4">
                       <CardTitle className="text-sm font-semibold flex items-center justify-between">
                         <span className="capitalize">{displayName}</span>
@@ -484,11 +527,15 @@ function LeavesPage() {
                     <CardContent className="pt-4 space-y-3">
                       <div className="grid grid-cols-2 gap-2 text-center text-xs">
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase font-semibold">Entitled</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Entitled
+                          </p>
                           <p className="text-sm font-bold mt-0.5">{b.total_entitled}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase font-semibold">Used</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            Used
+                          </p>
                           <p className="text-sm font-bold mt-0.5 text-rose-500">{b.used_days}</p>
                         </div>
                       </div>
@@ -514,7 +561,9 @@ function LeavesPage() {
               </CardHeader>
               <CardContent className="p-0">
                 {isLoadingMyLeaves ? (
-                  <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">Loading leave logs…</p>
+                  <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">
+                    Loading leave logs…
+                  </p>
                 ) : myLeaves.length === 0 ? (
                   <div className="py-12 text-center text-sm text-muted-foreground space-y-2">
                     <CalendarIcon className="size-8 text-muted-foreground/60 mx-auto" />
@@ -542,32 +591,42 @@ function LeavesPage() {
                           <TableCell className="align-middle text-xs font-semibold whitespace-nowrap text-muted-foreground">
                             {l.start_date} <span className="mx-1 font-normal">to</span> {l.end_date}
                           </TableCell>
-                          <TableCell className="align-middle text-xs max-w-[200px] truncate" title={l.reason}>
+                          <TableCell
+                            className="align-middle text-xs max-w-[200px] truncate"
+                            title={l.reason}
+                          >
                             {l.reason || "—"}
                           </TableCell>
-                          <TableCell className="align-middle">
-                            {getStatusBadge(l.status)}
-                          </TableCell>
+                          <TableCell className="align-middle">{getStatusBadge(l.status)}</TableCell>
                           <TableCell className="align-middle">
                             {l.approvals && l.approvals.length > 0 ? (
                               <div className="flex flex-wrap gap-1.5">
                                 {l.approvals.map((ap: any, idx: number) => {
                                   let color = "bg-muted text-muted-foreground";
-                                  if (ap.decision === "approved") color = "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
-                                  if (ap.decision === "rejected") color = "bg-rose-500/10 text-rose-700 dark:text-rose-400";
-                                  
+                                  if (ap.decision === "approved")
+                                    color =
+                                      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
+                                  if (ap.decision === "rejected")
+                                    color = "bg-rose-500/10 text-rose-700 dark:text-rose-400";
+
                                   return (
                                     <Tooltip key={idx}>
                                       <TooltipTrigger asChild>
-                                        <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border border-border/20 uppercase tracking-wide cursor-help ${color}`}>
+                                        <span
+                                          className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded border border-border/20 uppercase tracking-wide cursor-help ${color}`}
+                                        >
                                           {ap.approver_role}
                                         </span>
                                       </TooltipTrigger>
                                       <TooltipContent className="max-w-[220px] text-xs">
                                         <p className="font-bold">{ap.approver_email}</p>
-                                        <p className="text-muted-foreground text-[10px] mt-0.5 capitalize">Decision: {ap.decision}</p>
+                                        <p className="text-muted-foreground text-[10px] mt-0.5 capitalize">
+                                          Decision: {ap.decision}
+                                        </p>
                                         {ap.decided_at && (
-                                          <p className="text-muted-foreground text-[9px] mt-0.5">Time: {new Date(ap.decided_at).toLocaleString()}</p>
+                                          <p className="text-muted-foreground text-[9px] mt-0.5">
+                                            Time: {new Date(ap.decided_at).toLocaleString()}
+                                          </p>
                                         )}
                                       </TooltipContent>
                                     </Tooltip>
@@ -585,7 +644,11 @@ function LeavesPage() {
                                 size="sm"
                                 className="h-8 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => {
-                                  if (window.confirm("Are you sure you want to cancel this leave application?")) {
+                                  if (
+                                    window.confirm(
+                                      "Are you sure you want to cancel this leave application?",
+                                    )
+                                  ) {
                                     cancelLeave.mutate(l.leave_id);
                                   }
                                 }}
@@ -613,7 +676,9 @@ function LeavesPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                   {isLoadingApprovals ? (
-                    <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">Loading approvals…</p>
+                    <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">
+                      Loading approvals…
+                    </p>
                   ) : approvals.length === 0 ? (
                     <div className="py-12 text-center text-sm text-muted-foreground space-y-2">
                       <CheckCircle2 className="size-8 text-emerald-500 mx-auto" />
@@ -634,7 +699,10 @@ function LeavesPage() {
                       </TableHeader>
                       <TableBody>
                         {approvals.map((ap: any) => (
-                          <TableRow key={ap.leave_id} className="hover:bg-muted/10 transition-colors">
+                          <TableRow
+                            key={ap.leave_id}
+                            className="hover:bg-muted/10 transition-colors"
+                          >
                             <TableCell className="font-semibold text-xs align-middle">
                               {ap.applicant_email}
                             </TableCell>
@@ -642,13 +710,17 @@ function LeavesPage() {
                               {ap.leave_type}
                             </TableCell>
                             <TableCell className="align-middle text-xs font-semibold whitespace-nowrap text-muted-foreground">
-                              {ap.start_date} <span className="mx-1 font-normal">to</span> {ap.end_date}
+                              {ap.start_date} <span className="mx-1 font-normal">to</span>{" "}
+                              {ap.end_date}
                             </TableCell>
                             <TableCell className="align-middle">
                               {getStatusBadge(ap.status)}
                             </TableCell>
                             <TableCell className="align-middle">
-                              <Badge variant={ap.my_decision === "pending" ? "outline" : "secondary"} className="capitalize font-medium text-[10px]">
+                              <Badge
+                                variant={ap.my_decision === "pending" ? "outline" : "secondary"}
+                                className="capitalize font-medium text-[10px]"
+                              >
                                 {ap.my_decision}
                               </Badge>
                             </TableCell>
@@ -692,11 +764,16 @@ function LeavesPage() {
 
               {/* Action Dialog Form */}
               {actingLeaveId && (
-                <Dialog open={!!actingLeaveId} onOpenChange={(open) => !open && setActingLeaveId(null)}>
+                <Dialog
+                  open={!!actingLeaveId}
+                  onOpenChange={(open) => !open && setActingLeaveId(null)}
+                >
                   <DialogContent className="max-w-sm">
                     <DialogHeader>
                       <DialogTitle className="capitalize">{actionType} Leave Request</DialogTitle>
-                      <DialogDescription>Submit your review comment for this leave application.</DialogDescription>
+                      <DialogDescription>
+                        Submit your review comment for this leave application.
+                      </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-3 pt-2">
                       <Label htmlFor="review-comment">Approver Comment</Label>
@@ -709,13 +786,27 @@ function LeavesPage() {
                       />
                     </div>
                     <DialogFooter className="mt-4">
-                      <Button variant="outline" onClick={() => { setActingLeaveId(null); setActionType(null); }}>Cancel</Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setActingLeaveId(null);
+                          setActionType(null);
+                        }}
+                      >
+                        Cancel
+                      </Button>
                       <Button
                         onClick={handleDecisionSubmit}
                         disabled={approveMutation.isPending || rejectMutation.isPending}
-                        className={actionType === "approve" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"}
+                        className={
+                          actionType === "approve"
+                            ? "bg-emerald-600 hover:bg-emerald-700"
+                            : "bg-rose-600 hover:bg-rose-700"
+                        }
                       >
-                        {approveMutation.isPending || rejectMutation.isPending ? "Submitting…" : `Confirm ${actionType}`}
+                        {approveMutation.isPending || rejectMutation.isPending
+                          ? "Submitting…"
+                          : `Confirm ${actionType}`}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -734,33 +825,51 @@ function LeavesPage() {
                   </CardTitle>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevMonth}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={handlePrevMonth}
+                  >
                     <ChevronLeft className="size-4" />
                   </Button>
                   <span className="text-xs font-bold font-mono px-2 select-none">
                     {currentMonth}
                   </span>
-                  <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleNextMonth}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={handleNextMonth}
+                  >
                     <ChevronRight className="size-4" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0 divide-y divide-border/40">
                 {isLoadingCalendar ? (
-                  <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">Loading schedule…</p>
+                  <p className="p-6 text-sm text-muted-foreground animate-pulse text-center">
+                    Loading schedule…
+                  </p>
                 ) : (
                   <div className="grid gap-0 md:grid-cols-2 divide-x divide-border/40 min-h-[220px]">
                     {/* Public Holidays Column */}
                     <div className="p-5 space-y-3">
                       <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-blue-500" /> Public Holidays ({calendar.holidays?.length ?? 0})
+                        <span className="size-2 rounded-full bg-blue-500" /> Public Holidays (
+                        {calendar.holidays?.length ?? 0})
                       </h3>
                       {calendar.holidays?.length === 0 ? (
-                        <p className="text-xs text-muted-foreground italic py-4">No holidays declared for this month.</p>
+                        <p className="text-xs text-muted-foreground italic py-4">
+                          No holidays declared for this month.
+                        </p>
                       ) : (
                         <div className="space-y-2.5">
                           {calendar.holidays.map((h: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-muted/10 hover:bg-muted/20 transition-all select-none">
+                            <div
+                              key={i}
+                              className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-muted/10 hover:bg-muted/20 transition-all select-none"
+                            >
                               <span className="font-semibold">{h.name}</span>
                               <span className="font-mono text-muted-foreground">{h.date}</span>
                             </div>
@@ -772,17 +881,25 @@ function LeavesPage() {
                     {/* Approved Leaves Column */}
                     <div className="p-5 space-y-3">
                       <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" /> Team on Leave ({calendar.approved_leaves?.length ?? 0})
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" /> Team
+                        on Leave ({calendar.approved_leaves?.length ?? 0})
                       </h3>
                       {calendar.approved_leaves?.length === 0 ? (
-                        <p className="text-xs text-muted-foreground italic py-4">Nobody is scheduled for leave this month.</p>
+                        <p className="text-xs text-muted-foreground italic py-4">
+                          Nobody is scheduled for leave this month.
+                        </p>
                       ) : (
                         <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
                           {calendar.approved_leaves.map((al: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-card hover:bg-muted/10 transition-all">
+                            <div
+                              key={i}
+                              className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-card hover:bg-muted/10 transition-all"
+                            >
                               <div className="space-y-0.5">
                                 <p className="font-semibold">{al.employee}</p>
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{al.leave_type} Leave</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                                  {al.leave_type} Leave
+                                </p>
                               </div>
                               <span className="font-mono text-[11px] text-muted-foreground shrink-0 ml-4">
                                 {al.start_date} → {al.end_date}

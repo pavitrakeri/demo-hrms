@@ -1,4 +1,3 @@
-
 ## Goal
 
 Rebuild `src/routes/_authenticated/attendance.tsx` so it is professional, useful, and matches the API contract — replacing the raw JSON dumps with structured UI, gating clock actions behind device geolocation, and adding a calendar to browse past attendance.
@@ -37,6 +36,7 @@ Only `src/routes/_authenticated/attendance.tsx`. Minor token tweaks in `src/styl
 ## Behavior
 
 **1. Geolocation-gated clock in/out**
+
 - On click of Clock in/out: call `navigator.geolocation.getCurrentPosition` first.
 - While waiting: button shows "Detecting location…" and is disabled.
 - On success: POST `/attendance/clockin` (or `/clockout`) with `{ lat, lon, device: navigator.userAgent }`.
@@ -46,12 +46,14 @@ Only `src/routes/_authenticated/attendance.tsx`. Minor token tweaks in `src/styl
 - Current state (clocked in vs out) is derived from latest record: if `clock_in_at` exists and `clock_out_at` is null → clocked in; disable Clock in, enable Clock out (and vice versa).
 
 **2. Latest attendance — structured display (no JSON)**
+
 - Replace `<pre>{JSON.stringify(...)}</pre>` with a shadcn `Table`.
 - Columns: Date, Clock in, Clock out, Duration (from `total_seconds`), Status badge (Completed / In progress).
 - Fetched via existing `GET /attendance/latest?limit=30`.
 - Empty state: "No attendance records yet."
 
 **3. Calendar view of past attendance**
+
 - shadcn `Calendar` (single-select, month view) on the left.
 - Days that have any record get a dot marker (via `modifiers` + `modifiersClassNames`); today highlighted by default.
 - Selecting a date filters the right-side panel to that day's sessions (date, in, out, duration). Compute by grouping the records from `/attendance/latest` by local date.

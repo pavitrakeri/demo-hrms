@@ -105,7 +105,7 @@ export function useVoiceAssistant(options: UseVoiceAssistantOptions = {}) {
   const setupAudioAnalyser = async () => {
     try {
       if (!navigator.mediaDevices?.getUserMedia) return;
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       mediaStreamRef.current = stream;
 
@@ -172,7 +172,9 @@ export function useVoiceAssistant(options: UseVoiceAssistantOptions = {}) {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      toast.error("Speech recognition is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Safari.");
+      toast.error(
+        "Speech recognition is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Safari.",
+      );
       return;
     }
 
@@ -348,8 +350,10 @@ export function useVoiceAssistant(options: UseVoiceAssistantOptions = {}) {
               v.name.includes("Samantha") ||
               v.name.includes("Daniel") ||
               v.name.includes("Jenny") ||
-              v.name.includes("Guy"))
-        ) || voices.find((v) => v.lang.startsWith("en")) || voices[0];
+              v.name.includes("Guy")),
+        ) ||
+        voices.find((v) => v.lang.startsWith("en")) ||
+        voices[0];
 
       if (naturalVoice) {
         utterance.voice = naturalVoice;

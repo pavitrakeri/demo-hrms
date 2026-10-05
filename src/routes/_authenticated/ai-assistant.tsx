@@ -23,7 +23,7 @@ import {
   ChevronRight,
   Radio,
   Mic,
-  MicOff
+  MicOff,
 } from "lucide-react";
 import { VoiceModeModal } from "@/components/ai/voice-mode-modal";
 import { useVoiceAssistant } from "@/hooks/use-voice-assistant";
@@ -33,7 +33,7 @@ import {
   getAiMessages,
   deleteAiConversation,
   AiMessage,
-  AiConversation
+  AiConversation,
 } from "@/lib/api";
 import { ChatMessage } from "@/components/ai/chat-message";
 import { PromptChips } from "@/components/ai/prompt-chips";
@@ -57,7 +57,8 @@ const HERO_CARDS = [
     title: "Attendance & Hours",
     description: "Verify today's clock-in status, total work hours, and location log",
     prompt: "Did I clock in today and what is my logged work time?",
-    color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800",
+    color:
+      "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800",
   },
   {
     icon: BookOpen,
@@ -71,7 +72,8 @@ const HERO_CARDS = [
     title: "Task Management",
     description: "Review your active deliverables, deadlines, and project assignments",
     prompt: "Show all my pending tasks across active projects.",
-    color: "text-purple-500 bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800",
+    color:
+      "text-purple-500 bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800",
   },
 ];
 
@@ -173,7 +175,8 @@ function AiAssistantPage() {
       const errorMsg: AiMessage = {
         id: `err-${Date.now()}`,
         sender: "assistant",
-        content: "Sorry, I ran into an issue communicating with the assistant service. Please try again.",
+        content:
+          "Sorry, I ran into an issue communicating with the assistant service. Please try again.",
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -199,12 +202,16 @@ function AiAssistantPage() {
               </span>
               Aimploy AI Copilot
             </h1>
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs font-semibold">
+            <Badge
+              variant="outline"
+              className="bg-primary/10 text-primary border-primary/20 text-xs font-semibold"
+            >
               Gemini 3.6
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Intelligent HR operations, company policy retrieval, leave requests, and workforce assistant
+            Intelligent HR operations, company policy retrieval, leave requests, and workforce
+            assistant
           </p>
         </div>
 
@@ -251,7 +258,9 @@ function AiAssistantPage() {
               <div className="text-center py-10 px-4 text-muted-foreground text-xs space-y-1">
                 <Bot className="h-6 w-6 mx-auto text-muted-foreground/50 mb-2" />
                 <p className="font-medium">No previous sessions</p>
-                <p className="text-[11px]">Start a new conversation to ask questions or request leaves.</p>
+                <p className="text-[11px]">
+                  Start a new conversation to ask questions or request leaves.
+                </p>
               </div>
             ) : (
               conversations.map((c) => {
@@ -274,7 +283,10 @@ function AiAssistantPage() {
                             active ? "text-primary-foreground/70" : "text-muted-foreground"
                           }`}
                         >
-                          {new Date(c.updated_at).toLocaleDateString([], { month: "short", day: "numeric" })}
+                          {new Date(c.updated_at).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </div>
                       )}
                     </div>
@@ -286,7 +298,9 @@ function AiAssistantPage() {
                         deleteMutation.mutate(c.id);
                       }}
                       className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/20 transition-opacity ${
-                        active ? "text-primary-foreground" : "text-muted-foreground hover:text-destructive"
+                        active
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground hover:text-destructive"
                       }`}
                       title="Delete chat"
                     >
@@ -315,9 +329,12 @@ function AiAssistantPage() {
                   <div className="inline-flex h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 items-center justify-center text-primary shadow-sm mb-2">
                     <Sparkles className="h-6 w-6" />
                   </div>
-                  <h2 className="text-xl font-bold text-foreground">Welcome to Aimploy AI Copilot</h2>
+                  <h2 className="text-xl font-bold text-foreground">
+                    Welcome to Aimploy AI Copilot
+                  </h2>
                   <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                    Your personal HR copilot grounded in company policies, live attendance records, leave balances, and project tasks.
+                    Your personal HR copilot grounded in company policies, live attendance records,
+                    leave balances, and project tasks.
                   </p>
                 </div>
 
@@ -338,7 +355,9 @@ function AiAssistantPage() {
                             {card.title}
                             <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{card.description}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">
+                            {card.description}
+                          </p>
                         </div>
                       </div>
                     </button>
@@ -352,7 +371,9 @@ function AiAssistantPage() {
                   key={m.id}
                   message={m}
                   onActionComplete={() => {
-                    queryClient.invalidateQueries({ queryKey: ["ai_messages", selectedConversationId] });
+                    queryClient.invalidateQueries({
+                      queryKey: ["ai_messages", selectedConversationId],
+                    });
                   }}
                 />
               ))
@@ -407,7 +428,11 @@ function AiAssistantPage() {
                 disabled={!input.trim() || sending}
                 className="h-11 w-11 shrink-0 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-md font-semibold"
               >
-                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {sending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </Button>
             </form>
           </div>
@@ -421,8 +446,19 @@ function AiAssistantPage() {
         onNewMessage={(userText, aiText, actionCard) => {
           setMessages((prev) => [
             ...prev,
-            { id: `user-${Date.now()}`, sender: "user", content: userText, created_at: new Date().toISOString() },
-            { id: `ai-${Date.now()}`, sender: "assistant", content: aiText, created_at: new Date().toISOString(), action_card: actionCard },
+            {
+              id: `user-${Date.now()}`,
+              sender: "user",
+              content: userText,
+              created_at: new Date().toISOString(),
+            },
+            {
+              id: `ai-${Date.now()}`,
+              sender: "assistant",
+              content: aiText,
+              created_at: new Date().toISOString(),
+              action_card: actionCard,
+            },
           ]);
           queryClient.invalidateQueries({ queryKey: ["ai_conversations"] });
         }}

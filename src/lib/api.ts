@@ -1,6 +1,8 @@
-const BASE_URL = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-  ? "http://localhost:8000"
-  : "https://hrms-2-t02s.onrender.com";
+const BASE_URL =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8000"
+    : "https://hrms-2-t02s.onrender.com";
 const TOKEN_KEY = "hrms_token";
 
 export function getToken(): string | null {
@@ -58,7 +60,9 @@ export async function api<T = unknown>(path: string, opts: RequestOpts = {}): Pr
 
   const res = await fetch(url, { method: opts.method ?? "GET", headers, body });
   const ct = res.headers.get("content-type") ?? "";
-  const payload = ct.includes("application/json") ? await res.json().catch(() => null) : await res.text();
+  const payload = ct.includes("application/json")
+    ? await res.json().catch(() => null)
+    : await res.text();
 
   if (!res.ok) {
     if (res.status === 401) {
@@ -127,14 +131,20 @@ export type AiConversation = {
   updated_at: string | null;
 };
 
-export async function sendAiMessage(message: string, conversationId?: string): Promise<AiChatResponse> {
+export async function sendAiMessage(
+  message: string,
+  conversationId?: string,
+): Promise<AiChatResponse> {
   return api<AiChatResponse>("/ai/chat", {
     method: "POST",
     body: { message, conversation_id: conversationId },
   });
 }
 
-export async function confirmAiAction(actionId: string, confirm: boolean): Promise<{ status: string; message: string; leave_id?: string }> {
+export async function confirmAiAction(
+  actionId: string,
+  confirm: boolean,
+): Promise<{ status: string; message: string; leave_id?: string }> {
   return api("/ai/confirm-action", {
     method: "POST",
     body: { action_id: actionId, confirm },
@@ -145,7 +155,9 @@ export async function getAiConversations(): Promise<AiConversation[]> {
   return api<AiConversation[]>("/ai/conversations");
 }
 
-export async function getAiMessages(conversationId: string): Promise<{ conversation_id: string; messages: AiMessage[] }> {
+export async function getAiMessages(
+  conversationId: string,
+): Promise<{ conversation_id: string; messages: AiMessage[] }> {
   return api(`/ai/conversations/${conversationId}/messages`);
 }
 

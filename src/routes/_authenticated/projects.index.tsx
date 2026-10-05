@@ -7,14 +7,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, FolderKanban, Calendar, Users, ListTodo, Search, ArrowRight, Building, LayoutGrid, List } from "lucide-react";
+import {
+  Plus,
+  FolderKanban,
+  Calendar,
+  Users,
+  ListTodo,
+  Search,
+  ArrowRight,
+  Building,
+  LayoutGrid,
+  List,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/projects/")({
@@ -24,7 +50,12 @@ export const Route = createFileRoute("/_authenticated/projects/")({
 
 function initials(name?: string) {
   if (!name) return "?";
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 }
 
 function ProjectsPage() {
@@ -61,17 +92,19 @@ function ProjectsPage() {
   // Data helpers
   const projects: any[] = useMemo(() => {
     if (!projectsData) return [];
-    return Array.isArray(projectsData) ? projectsData : projectsData.projects ?? projectsData.items ?? [];
+    return Array.isArray(projectsData)
+      ? projectsData
+      : (projectsData.projects ?? projectsData.items ?? []);
   }, [projectsData]);
 
   const departments: any[] = useMemo(() => {
     if (!deptsData) return [];
-    return Array.isArray(deptsData) ? deptsData : deptsData.departments ?? deptsData.items ?? [];
+    return Array.isArray(deptsData) ? deptsData : (deptsData.departments ?? deptsData.items ?? []);
   }, [deptsData]);
 
   const employees: any[] = useMemo(() => {
     if (!empsData) return [];
-    const list = Array.isArray(empsData) ? empsData : empsData.employees ?? empsData.items ?? [];
+    const list = Array.isArray(empsData) ? empsData : (empsData.employees ?? empsData.items ?? []);
     return list.filter((e: any) => e.is_active !== false);
   }, [empsData]);
 
@@ -81,7 +114,7 @@ function ProjectsPage() {
     return employees.filter(
       (e) =>
         (e.full_name ?? e.name ?? "").toLowerCase().includes(q) ||
-        (e.email ?? "").toLowerCase().includes(q)
+        (e.email ?? "").toLowerCase().includes(q),
     );
   }, [employees, memberSearch]);
 
@@ -119,7 +152,10 @@ function ProjectsPage() {
   // Split assigned members string into array
   const getMemberNames = (assignedToStr?: string) => {
     if (!assignedToStr) return [];
-    return assignedToStr.split(",").map((s) => s.trim()).filter(Boolean);
+    return assignedToStr
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   };
 
   return (
@@ -135,8 +171,12 @@ function ProjectsPage() {
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="shadow-[var(--shadow-brand)]" style={{ background: "var(--gradient-brand)" }}>
-                <Plus className="h-4 w-4 mr-2" />New project
+              <Button
+                className="shadow-[var(--shadow-brand)]"
+                style={{ background: "var(--gradient-brand)" }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New project
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
@@ -146,12 +186,24 @@ function ProjectsPage() {
               </DialogHeader>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="p-name">Project Name <span className="text-destructive">*</span></Label>
-                  <Input id="p-name" placeholder="e.g. Website Redesign" value={name} onChange={(e) => setName(e.target.value)} />
+                  <Label htmlFor="p-name">
+                    Project Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="p-name"
+                    placeholder="e.g. Website Redesign"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="p-desc">Description</Label>
-                  <Textarea id="p-desc" placeholder="Describe the project scope and deliverables..." value={description} onChange={(e) => setDescription(e.target.value)} />
+                  <Textarea
+                    id="p-desc"
+                    placeholder="Describe the project scope and deliverables..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="p-dept">Department</Label>
@@ -161,7 +213,9 @@ function ProjectsPage() {
                     onChange={(e) => setDepartmentId(e.target.value)}
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   >
-                    <option value="" className="text-black bg-background">Select a department...</option>
+                    <option value="" className="text-black bg-background">
+                      Select a department...
+                    </option>
                     {departments.map((dept) => (
                       <option key={dept.id} value={dept.id} className="text-black bg-background">
                         {dept.name}
@@ -171,11 +225,21 @@ function ProjectsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="p-start">Start Date</Label>
-                  <Input id="p-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                  <Input
+                    id="p-start"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="p-deadline">Deadline</Label>
-                  <Input id="p-deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+                  <Input
+                    id="p-deadline"
+                    type="date"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2 border-t pt-3 mt-1">
                   <Label className="text-base font-semibold">Assign Project Members</Label>
@@ -190,7 +254,9 @@ function ProjectsPage() {
                   </div>
                   <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2 bg-muted/20">
                     {filteredEmployees.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">No employees found.</p>
+                      <p className="text-xs text-muted-foreground text-center py-4">
+                        No employees found.
+                      </p>
                     ) : (
                       filteredEmployees.map((emp) => {
                         const empId = String(emp.id ?? emp.employee_id ?? emp._id);
@@ -207,7 +273,10 @@ function ProjectsPage() {
                                 }
                               }}
                             />
-                            <Label htmlFor={`emp-${empId}`} className="text-xs cursor-pointer flex flex-col">
+                            <Label
+                              htmlFor={`emp-${empId}`}
+                              className="text-xs cursor-pointer flex flex-col"
+                            >
                               <span className="font-medium">{emp.full_name ?? emp.name}</span>
                               <span className="text-muted-foreground text-[10px]">{emp.email}</span>
                             </Label>
@@ -224,7 +293,9 @@ function ProjectsPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
                 <Button
                   onClick={() => createProject.mutate()}
                   disabled={!name || createProject.isPending}
@@ -254,7 +325,10 @@ function ProjectsPage() {
                 checked={includeArchived}
                 onCheckedChange={setIncludeArchived}
               />
-              <Label htmlFor="include-archived" className="text-xs font-medium cursor-pointer text-muted-foreground">
+              <Label
+                htmlFor="include-archived"
+                className="text-xs font-medium cursor-pointer text-muted-foreground"
+              >
                 Include archived
               </Label>
             </div>
@@ -303,7 +377,8 @@ function ProjectsPage() {
                 </p>
               </div>
               <Button onClick={() => setOpen(true)} className="mt-2">
-                <Plus className="h-4 w-4 mr-2" />New project
+                <Plus className="h-4 w-4 mr-2" />
+                New project
               </Button>
             </CardContent>
           </Card>
@@ -327,11 +402,12 @@ function ProjectsPage() {
                     const id = p.id ?? p.project_id ?? p._id;
                     const isActive = p.status !== "archived";
                     const memberNames = getMemberNames(p.assigned_to);
-                    
+
                     // Task calculations
-                    const taskPercentage = p.task_count > 0 
-                      ? Math.round(((p.task_count - p.open_task_count) / p.task_count) * 100)
-                      : 0;
+                    const taskPercentage =
+                      p.task_count > 0
+                        ? Math.round(((p.task_count - p.open_task_count) / p.task_count) * 100)
+                        : 0;
 
                     return (
                       <TableRow key={id} className="hover:bg-muted/10 transition-colors group">
@@ -377,7 +453,8 @@ function ProjectsPage() {
                           <div className="flex items-center gap-1 text-muted-foreground">
                             <Calendar className="h-3.5 w-3.5 shrink-0" />
                             <span>
-                              {p.start_date ?? "—"} <span className="text-[10px] mx-0.5">to</span> {p.deadline ?? "—"}
+                              {p.start_date ?? "—"} <span className="text-[10px] mx-0.5">to</span>{" "}
+                              {p.deadline ?? "—"}
                             </span>
                           </div>
                         </TableCell>
@@ -390,9 +467,7 @@ function ProjectsPage() {
                               {memberNames.slice(0, 4).map((name, idx) => (
                                 <Tooltip key={idx}>
                                   <TooltipTrigger asChild>
-                                    <div
-                                      className="inline-flex h-6 w-6 rounded-full ring-2 ring-background bg-gradient-to-tr from-slate-200 to-slate-100 text-slate-700 flex items-center justify-center text-[10px] font-bold cursor-help"
-                                    >
+                                    <div className="inline-flex h-6 w-6 rounded-full ring-2 ring-background bg-gradient-to-tr from-slate-200 to-slate-100 text-slate-700 flex items-center justify-center text-[10px] font-bold cursor-help">
                                       {initials(name)}
                                     </div>
                                   </TooltipTrigger>
@@ -404,9 +479,7 @@ function ProjectsPage() {
                               {memberNames.length > 4 && (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div
-                                      className="inline-flex h-6 w-6 rounded-full ring-2 ring-background bg-slate-800 text-white flex items-center justify-center text-[9px] font-bold cursor-help"
-                                    >
+                                    <div className="inline-flex h-6 w-6 rounded-full ring-2 ring-background bg-slate-800 text-white flex items-center justify-center text-[9px] font-bold cursor-help">
                                       +{memberNames.length - 4}
                                     </div>
                                   </TooltipTrigger>
@@ -454,18 +527,27 @@ function ProjectsPage() {
               const id = p.id ?? p.project_id ?? p._id;
               const isActive = p.status !== "archived";
               const memberNames = getMemberNames(p.assigned_to);
-              
+
               // Task calculations
-              const taskPercentage = p.task_count > 0 
-                ? Math.round(((p.task_count - p.open_task_count) / p.task_count) * 100)
-                : 0;
+              const taskPercentage =
+                p.task_count > 0
+                  ? Math.round(((p.task_count - p.open_task_count) / p.task_count) * 100)
+                  : 0;
 
               return (
-                <Link key={id} to="/projects/$projectId" params={{ projectId: String(id) }} className="group">
+                <Link
+                  key={id}
+                  to="/projects/$projectId"
+                  params={{ projectId: String(id) }}
+                  className="group"
+                >
                   <Card className="hover:shadow-[var(--shadow-brand)] hover:-translate-y-1 transition-all h-full border border-border/60 hover:border-primary/30 flex flex-col justify-between overflow-hidden bg-card">
                     <div>
                       {/* Status Border accent */}
-                      <div className={`h-1 w-full ${isActive ? "bg-gradient-to-r from-indigo-500 to-brand" : "bg-slate-400"}`} style={isActive ? { backgroundImage: "var(--gradient-brand)" } : undefined} />
+                      <div
+                        className={`h-1 w-full ${isActive ? "bg-gradient-to-r from-indigo-500 to-brand" : "bg-slate-400"}`}
+                        style={isActive ? { backgroundImage: "var(--gradient-brand)" } : undefined}
+                      />
                       <CardHeader className="p-5 pb-3">
                         <div className="flex justify-between items-start gap-2">
                           <CardTitle className="text-base font-bold truncate group-hover:text-primary transition-colors">
@@ -518,9 +600,7 @@ function ProjectsPage() {
                             {memberNames.slice(0, 3).map((name, idx) => (
                               <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
-                                  <div
-                                    className="inline-flex h-5 w-5 rounded-full ring-2 ring-background bg-slate-200 text-slate-700 flex items-center justify-center text-[8px] font-bold cursor-help"
-                                  >
+                                  <div className="inline-flex h-5 w-5 rounded-full ring-2 ring-background bg-slate-200 text-slate-700 flex items-center justify-center text-[8px] font-bold cursor-help">
                                     {initials(name)}
                                   </div>
                                 </TooltipTrigger>
@@ -530,9 +610,7 @@ function ProjectsPage() {
                               </Tooltip>
                             ))}
                             {memberNames.length > 3 && (
-                              <div
-                                className="inline-flex h-5 w-5 rounded-full ring-2 ring-background bg-slate-800 text-white flex items-center justify-center text-[8px] font-bold"
-                              >
+                              <div className="inline-flex h-5 w-5 rounded-full ring-2 ring-background bg-slate-800 text-white flex items-center justify-center text-[8px] font-bold">
                                 +{memberNames.length - 3}
                               </div>
                             )}

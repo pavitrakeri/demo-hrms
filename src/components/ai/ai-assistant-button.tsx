@@ -12,7 +12,8 @@ export function AiAssistantButton({ onClick }: AiAssistantButtonProps) {
         onClick={onClick}
         className="group relative flex items-center gap-2.5 h-12 px-4 rounded-full bg-primary hover:bg-primary/95 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
         style={{
-          boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.4), 0 8px 10px -6px rgba(99, 102, 241, 0.3)",
+          boxShadow:
+            "0 10px 25px -5px rgba(99, 102, 241, 0.4), 0 8px 10px -6px rgba(99, 102, 241, 0.3)",
         }}
       >
         <div className="relative flex items-center justify-center">

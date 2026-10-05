@@ -7,9 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -27,7 +42,7 @@ import {
   Calendar,
   DollarSign,
   Fingerprint,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getRoleFromToken, getToken, getPermissionsFromToken } from "@/lib/auth";
@@ -47,10 +62,22 @@ export const Route = createFileRoute("/_authenticated/employees/")({
 
 function initials(name?: string) {
   if (!name) return "?";
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 }
 
-const CSV_COLS = ["full_name", "email", "role", "department", "manager_email", "is_active"] as const;
+const CSV_COLS = [
+  "full_name",
+  "email",
+  "role",
+  "department",
+  "manager_email",
+  "is_active",
+] as const;
 
 function toCSV(rows: any[]): string {
   const esc = (v: unknown) => {
@@ -59,25 +86,35 @@ function toCSV(rows: any[]): string {
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const header = CSV_COLS.join(",");
-  const body = rows.map((r) => CSV_COLS.map((c) => esc(r[c] ?? (c === "full_name" ? r.name : ""))).join(",")).join("\n");
+  const body = rows
+    .map((r) => CSV_COLS.map((c) => esc(r[c] ?? (c === "full_name" ? r.name : ""))).join(","))
+    .join("\n");
   return header + "\n" + body;
 }
 
 function parseCSV(text: string): Record<string, string>[] {
-  const lines = text.replace(/\r\n?/g, "\n").split("\n").filter((l) => l.trim().length > 0);
+  const lines = text
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .filter((l) => l.trim().length > 0);
   if (lines.length === 0) return [];
   const parseLine = (line: string) => {
     const out: string[] = [];
-    let cur = "", inQ = false;
+    let cur = "",
+      inQ = false;
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
       if (inQ) {
-        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-        else if (ch === '"') inQ = false;
+        if (ch === '"' && line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else if (ch === '"') inQ = false;
         else cur += ch;
       } else {
-        if (ch === ',') { out.push(cur); cur = ""; }
-        else if (ch === '"') inQ = true;
+        if (ch === ",") {
+          out.push(cur);
+          cur = "";
+        } else if (ch === '"') inQ = true;
         else cur += ch;
       }
     }
@@ -88,7 +125,9 @@ function parseCSV(text: string): Record<string, string>[] {
   return lines.slice(1).map((l) => {
     const cells = parseLine(l);
     const row: Record<string, string> = {};
-    headers.forEach((h, i) => { row[h] = (cells[i] ?? "").trim(); });
+    headers.forEach((h, i) => {
+      row[h] = (cells[i] ?? "").trim();
+    });
     return row;
   });
 }
@@ -200,7 +239,12 @@ function EmployeesPage() {
       payload.mobile = Number(payload.mobile) || 0;
       payload.transportation = Number(payload.transportation) || 0;
       payload.other = Number(payload.other) || 0;
-      payload.total_salary = payload.basic_salary + payload.hra + payload.mobile + payload.transportation + payload.other;
+      payload.total_salary =
+        payload.basic_salary +
+        payload.hra +
+        payload.mobile +
+        payload.transportation +
+        payload.other;
 
       // Convert empty strings to null so Pydantic/FastAPI parses them as None/null
       Object.keys(payload).forEach((key) => {
@@ -223,12 +267,12 @@ function EmployeesPage() {
 
   const employees: any[] = useMemo(() => {
     if (!data) return [];
-    return Array.isArray(data) ? data : data.employees ?? data.items ?? [];
+    return Array.isArray(data) ? data : (data.employees ?? data.items ?? []);
   }, [data]);
 
   const apiDepartments: any[] = useMemo(() => {
     if (!deptsData) return [];
-    return Array.isArray(deptsData) ? deptsData : deptsData.departments ?? deptsData.items ?? [];
+    return Array.isArray(deptsData) ? deptsData : (deptsData.departments ?? deptsData.items ?? []);
   }, [deptsData]);
 
   const departments = useMemo(() => {
@@ -252,7 +296,10 @@ function EmployeesPage() {
   const activeCount = employees.filter((e) => e.is_active !== false).length;
 
   const handleExport = () => {
-    if (filtered.length === 0) { toast.error("No employees to export"); return; }
+    if (filtered.length === 0) {
+      toast.error("No employees to export");
+      return;
+    }
     const csv = toCSV(filtered);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -260,7 +307,9 @@ function EmployeesPage() {
     const stamp = new Date().toISOString().slice(0, 10);
     a.href = url;
     a.download = `employees-${deptFilter !== "all" ? deptFilter + "-" : ""}${stamp}.csv`;
-    document.body.appendChild(a); a.click(); a.remove();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     URL.revokeObjectURL(url);
     toast.success(`Exported ${filtered.length} employee(s)`);
   };
@@ -270,8 +319,12 @@ function EmployeesPage() {
     try {
       const text = await file.text();
       const rows = parseCSV(text);
-      if (rows.length === 0) { toast.error("CSV is empty"); return; }
-      let ok = 0, fail = 0;
+      if (rows.length === 0) {
+        toast.error("CSV is empty");
+        return;
+      }
+      let ok = 0,
+        fail = 0;
       for (const r of rows) {
         // Fallback fields for basic CSV imports to satisfy AddEmployeeRequest
         const payload: Record<string, unknown> = {
@@ -285,11 +338,16 @@ function EmployeesPage() {
           hr_email: "",
           is_active: r.is_active ? !/^(false|0|no)$/i.test(r.is_active) : true,
         };
-        if (!payload.email || !payload.full_name) { fail++; continue; }
+        if (!payload.email || !payload.full_name) {
+          fail++;
+          continue;
+        }
         try {
           await api("/employees/add", { method: "POST", body: payload });
           ok++;
-        } catch { fail++; }
+        } catch {
+          fail++;
+        }
       }
       qc.invalidateQueries({ queryKey: ["employees"] });
       toast.success(`Imported ${ok} employee(s)${fail ? `, ${fail} failed` : ""}`);
@@ -319,13 +377,23 @@ function EmployeesPage() {
               type="file"
               accept=".csv,text/csv"
               className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImportFile(f); }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleImportFile(f);
+              }}
             />
-            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)} disabled={importing}>
-              <Upload className="h-4 w-4 mr-2" />{importing ? "Importing…" : "Import CSV"}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImportOpen(true)}
+              disabled={importing}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {importing ? "Importing…" : "Import CSV"}
             </Button>
             <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />Export CSV
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
             </Button>
 
             {/* Import CSV Explanation & Formatting Dialog */}
@@ -342,23 +410,42 @@ function EmployeesPage() {
 
                 <div className="space-y-4 my-3 text-sm">
                   <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
-                    <p className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Required CSV Columns:</p>
+                    <p className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+                      Required CSV Columns:
+                    </p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                      <span className="font-mono font-bold text-foreground">full_name</span> <span className="text-muted-foreground">e.g. John Doe</span>
-                      <span className="font-mono font-bold text-foreground">email</span> <span className="text-muted-foreground">e.g. john@company.com</span>
-                      <span className="font-mono font-bold text-foreground">role</span> <span className="text-muted-foreground">employee, line_manager, hr, admin</span>
-                      <span className="font-mono font-bold text-foreground">department</span> <span className="text-muted-foreground">e.g. Engineering</span>
-                      <span className="font-mono font-bold text-foreground">manager_email</span> <span className="text-muted-foreground">e.g. manager@company.com</span>
-                      <span className="font-mono font-bold text-foreground">is_active</span> <span className="text-muted-foreground">true / false</span>
+                      <span className="font-mono font-bold text-foreground">full_name</span>{" "}
+                      <span className="text-muted-foreground">e.g. John Doe</span>
+                      <span className="font-mono font-bold text-foreground">email</span>{" "}
+                      <span className="text-muted-foreground">e.g. john@company.com</span>
+                      <span className="font-mono font-bold text-foreground">role</span>{" "}
+                      <span className="text-muted-foreground">
+                        employee, line_manager, hr, admin
+                      </span>
+                      <span className="font-mono font-bold text-foreground">department</span>{" "}
+                      <span className="text-muted-foreground">e.g. Engineering</span>
+                      <span className="font-mono font-bold text-foreground">
+                        manager_email
+                      </span>{" "}
+                      <span className="text-muted-foreground">e.g. manager@company.com</span>
+                      <span className="font-mono font-bold text-foreground">is_active</span>{" "}
+                      <span className="text-muted-foreground">true / false</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between border-t border-b py-3">
                     <div>
                       <p className="font-bold text-xs">Need the correct format?</p>
-                      <p className="text-xs text-muted-foreground">Download our pre-formatted template.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Download our pre-formatted template.
+                      </p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={downloadTemplate} className="cursor-pointer">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={downloadTemplate}
+                      className="cursor-pointer"
+                    >
                       <Download className="h-3.5 w-3.5 mr-1.5" /> Template
                     </Button>
                   </div>
@@ -372,27 +459,37 @@ function EmployeesPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-sm">Click to select CSV file</p>
-                      <p className="text-xs text-muted-foreground mt-1">Make sure it matches the format columns</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Make sure it matches the format columns
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <DialogFooter>
-                  <Button variant="ghost" onClick={() => setImportOpen(false)}>Cancel</Button>
+                  <Button variant="ghost" onClick={() => setImportOpen(false)}>
+                    Cancel
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
 
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button className="shadow-[var(--shadow-brand)]" style={{ background: "var(--gradient-brand)" }}>
-                  <Plus className="h-4 w-4 mr-2" />Add employee
+                <Button
+                  className="shadow-[var(--shadow-brand)]"
+                  style={{ background: "var(--gradient-brand)" }}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add employee
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Add New Employee</DialogTitle>
-                  <DialogDescription>Create a new employee profile with full organizational and payroll setup.</DialogDescription>
+                  <DialogDescription>
+                    Create a new employee profile with full organizational and payroll setup.
+                  </DialogDescription>
                 </DialogHeader>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -412,22 +509,55 @@ function EmployeesPage() {
                   </TabsList>
 
                   {/* 1. Basic Info Tab */}
-                  <TabsContent value="basic" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="basic"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
-                      <Label htmlFor="full_name">Full Name <span className="text-destructive">*</span></Label>
-                      <Input id="full_name" placeholder="John Doe" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                      <Label htmlFor="full_name">
+                        Full Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="full_name"
+                        placeholder="John Doe"
+                        value={form.full_name}
+                        onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="email">Login Email <span className="text-destructive">*</span></Label>
-                      <Input id="email" type="email" placeholder="john.doe@aimploy.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                      <Label htmlFor="email">
+                        Login Email <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="john.doe@aimploy.com"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="password">Temporary Password <span className="text-destructive">*</span></Label>
-                      <Input id="password" type="password" placeholder="Min. 8 characters" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                      <Label htmlFor="password">
+                        Temporary Password <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Min. 8 characters"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="role">System Role <span className="text-destructive">*</span></Label>
-                      <select id="role" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <Label htmlFor="role">
+                        System Role <span className="text-destructive">*</span>
+                      </Label>
+                      <select
+                        id="role"
+                        value={form.role}
+                        onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="employee">Employee</option>
                         <option value="line_manager">Line Manager</option>
                         <option value="hr">HR Personnel</option>
@@ -437,7 +567,12 @@ function EmployeesPage() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="employment_status">Employment Status</Label>
-                      <select id="employment_status" value={form.employment_status || "Full Time"} onChange={(e) => setForm({ ...form, employment_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="employment_status"
+                        value={form.employment_status || "Full Time"}
+                        onChange={(e) => setForm({ ...form, employment_status: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-background dark:bg-zinc-950 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Full Time">Full Time</option>
                         <option value="Part Time">Part Time</option>
                         <option value="Contract">Contract</option>
@@ -447,7 +582,12 @@ function EmployeesPage() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="designation">Designation</Label>
-                      <Input id="designation" placeholder="e.g. Software Engineer" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} />
+                      <Input
+                        id="designation"
+                        placeholder="e.g. Software Engineer"
+                        value={form.designation}
+                        onChange={(e) => setForm({ ...form, designation: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="department">Department</Label>
@@ -497,27 +637,54 @@ function EmployeesPage() {
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="joining_date">Joining Date <span className="text-destructive">*</span></Label>
-                      <Input id="joining_date" type="date" value={form.joining_date} onChange={(e) => setForm({ ...form, joining_date: e.target.value })} />
+                      <Label htmlFor="joining_date">
+                        Joining Date <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="joining_date"
+                        type="date"
+                        value={form.joining_date}
+                        onChange={(e) => setForm({ ...form, joining_date: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="office_location">Office Location</Label>
-                      <Input id="office_location" value={form.office_location} onChange={(e) => setForm({ ...form, office_location: e.target.value })} />
+                      <Input
+                        id="office_location"
+                        value={form.office_location}
+                        onChange={(e) => setForm({ ...form, office_location: e.target.value })}
+                      />
                     </div>
                     <div className="flex items-center justify-between rounded-md border p-3.5 sm:col-span-2">
                       <div>
-                        <Label htmlFor="is_active" className="cursor-pointer text-sm font-semibold">Active Status</Label>
-                        <p className="text-[10px] text-muted-foreground">Inactive employees cannot log in or participate in schedules.</p>
+                        <Label htmlFor="is_active" className="cursor-pointer text-sm font-semibold">
+                          Active Status
+                        </Label>
+                        <p className="text-[10px] text-muted-foreground">
+                          Inactive employees cannot log in or participate in schedules.
+                        </p>
                       </div>
-                      <Switch id="is_active" checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
+                      <Switch
+                        id="is_active"
+                        checked={form.is_active}
+                        onCheckedChange={(v) => setForm({ ...form, is_active: v })}
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 2. Personal Info Tab */}
-                  <TabsContent value="personal" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="personal"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
                       <Label htmlFor="gender">Gender</Label>
-                      <select id="gender" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="gender"
+                        value={form.gender}
+                        onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
@@ -525,11 +692,21 @@ function EmployeesPage() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="date_of_birth">Date of Birth</Label>
-                      <Input id="date_of_birth" type="date" value={form.date_of_birth} onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })} />
+                      <Input
+                        id="date_of_birth"
+                        type="date"
+                        value={form.date_of_birth}
+                        onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="marital_status">Marital Status</Label>
-                      <select id="marital_status" value={form.marital_status} onChange={(e) => setForm({ ...form, marital_status: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                      <select
+                        id="marital_status"
+                        value={form.marital_status}
+                        onChange={(e) => setForm({ ...form, marital_status: e.target.value })}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
                         <option value="Single">Single</option>
                         <option value="Married">Married</option>
                         <option value="Divorced">Divorced</option>
@@ -538,109 +715,270 @@ function EmployeesPage() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="nationality">Nationality</Label>
-                      <Input id="nationality" placeholder="e.g. United Arab Emirates" value={form.nationality} onChange={(e) => setForm({ ...form, nationality: e.target.value })} />
+                      <Input
+                        id="nationality"
+                        placeholder="e.g. United Arab Emirates"
+                        value={form.nationality}
+                        onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="contact_number">Contact Number</Label>
-                      <Input id="contact_number" placeholder="e.g. +971 50 123 4567" value={form.contact_number} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
+                      <Input
+                        id="contact_number"
+                        placeholder="e.g. +971 50 123 4567"
+                        value={form.contact_number}
+                        onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="personal_email">Personal Email</Label>
-                      <Input id="personal_email" type="email" placeholder="personal@email.com" value={form.personal_email} onChange={(e) => setForm({ ...form, personal_email: e.target.value })} />
+                      <Input
+                        id="personal_email"
+                        type="email"
+                        placeholder="personal@email.com"
+                        value={form.personal_email}
+                        onChange={(e) => setForm({ ...form, personal_email: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
                       <Label htmlFor="work_email">Secondary Work Email</Label>
-                      <Input id="work_email" type="email" placeholder="work.alt@company.com" value={form.work_email} onChange={(e) => setForm({ ...form, work_email: e.target.value })} />
+                      <Input
+                        id="work_email"
+                        type="email"
+                        placeholder="work.alt@company.com"
+                        value={form.work_email}
+                        onChange={(e) => setForm({ ...form, work_email: e.target.value })}
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 3. Legal & Identity Tab */}
-                  <TabsContent value="visa" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="visa"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
                       <Label htmlFor="aadhaar_card_number">Aadhaar Card Number</Label>
-                      <Input id="aadhaar_card_number" placeholder="Aadhaar Card Number" value={form.aadhaar_card_number} onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })} />
+                      <Input
+                        id="aadhaar_card_number"
+                        placeholder="Aadhaar Card Number"
+                        value={form.aadhaar_card_number}
+                        onChange={(e) => setForm({ ...form, aadhaar_card_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="pan_card_number">PAN Card Number</Label>
-                      <Input id="pan_card_number" placeholder="PAN Card Number" value={form.pan_card_number} onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })} />
+                      <Input
+                        id="pan_card_number"
+                        placeholder="PAN Card Number"
+                        value={form.pan_card_number}
+                        onChange={(e) => setForm({ ...form, pan_card_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="pf_account_number">PF / EPF Account Number</Label>
-                      <Input id="pf_account_number" placeholder="PF / EPF Account Number" value={form.pf_account_number} onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })} />
+                      <Input
+                        id="pf_account_number"
+                        placeholder="PF / EPF Account Number"
+                        value={form.pf_account_number}
+                        onChange={(e) => setForm({ ...form, pf_account_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="esi_number">ESI Number</Label>
-                      <Input id="esi_number" placeholder="ESI Number" value={form.esi_number} onChange={(e) => setForm({ ...form, esi_number: e.target.value })} />
+                      <Input
+                        id="esi_number"
+                        placeholder="ESI Number"
+                        value={form.esi_number}
+                        onChange={(e) => setForm({ ...form, esi_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="bank_account_number">Bank Account Number</Label>
-                      <Input id="bank_account_number" placeholder="Bank Account Number" value={form.bank_account_number} onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })} />
+                      <Input
+                        id="bank_account_number"
+                        placeholder="Bank Account Number"
+                        value={form.bank_account_number}
+                        onChange={(e) => setForm({ ...form, bank_account_number: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="ifsc_code">Bank IFSC Code</Label>
-                      <Input id="ifsc_code" placeholder="Bank IFSC Code" value={form.ifsc_code} onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })} />
+                      <Input
+                        id="ifsc_code"
+                        placeholder="Bank IFSC Code"
+                        value={form.ifsc_code}
+                        onChange={(e) => setForm({ ...form, ifsc_code: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="emergency_contact_name">Emergency Contact Name</Label>
-                      <Input id="emergency_contact_name" placeholder="Emergency Contact Name" value={form.emergency_contact_name} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} />
+                      <Input
+                        id="emergency_contact_name"
+                        placeholder="Emergency Contact Name"
+                        value={form.emergency_contact_name}
+                        onChange={(e) =>
+                          setForm({ ...form, emergency_contact_name: e.target.value })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="emergency_contact_number">Emergency Contact Number</Label>
-                      <Input id="emergency_contact_number" placeholder="Emergency Contact Number" value={form.emergency_contact_number} onChange={(e) => setForm({ ...form, emergency_contact_number: e.target.value })} />
+                      <Input
+                        id="emergency_contact_number"
+                        placeholder="Emergency Contact Number"
+                        value={form.emergency_contact_number}
+                        onChange={(e) =>
+                          setForm({ ...form, emergency_contact_number: e.target.value })
+                        }
+                      />
                     </div>
                   </TabsContent>
 
                   {/* 4. Financial & Payroll Tab */}
-                  <TabsContent value="financial" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <TabsContent
+                    value="financial"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 max-h-[50vh] overflow-y-auto pr-1"
+                  >
                     <div className="space-y-1">
-                      <Label htmlFor="basic_salary">Basic Salary {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="basic_salary" type="number" min="0" value={form.basic_salary} onChange={(e) => setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="basic_salary">
+                        Basic Salary {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="basic_salary"
+                        type="number"
+                        min="0"
+                        value={form.basic_salary}
+                        onChange={(e) =>
+                          setForm({ ...form, basic_salary: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="hra">Housing Allowance (HRA) {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="hra" type="number" min="0" value={form.hra} onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="hra">
+                        Housing Allowance (HRA) {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="hra"
+                        type="number"
+                        min="0"
+                        value={form.hra}
+                        onChange={(e) => setForm({ ...form, hra: parseFloat(e.target.value) || 0 })}
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="mobile_allowance">Mobile Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="mobile_allowance" type="number" min="0" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="mobile_allowance">
+                        Mobile Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="mobile_allowance"
+                        type="number"
+                        min="0"
+                        value={form.mobile}
+                        onChange={(e) =>
+                          setForm({ ...form, mobile: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="trans_allowance">Transportation Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="trans_allowance" type="number" min="0" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="trans_allowance">
+                        Transportation Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="trans_allowance"
+                        type="number"
+                        min="0"
+                        value={form.transportation}
+                        onChange={(e) =>
+                          setForm({ ...form, transportation: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="other_allowance">Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}</Label>
-                      <Input id="other_allowance" type="number" min="0" value={form.other} onChange={(e) => setForm({ ...form, other: parseFloat(e.target.value) || 0 })} />
+                      <Label htmlFor="other_allowance">
+                        Other Allowance {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
+                      <Input
+                        id="other_allowance"
+                        type="number"
+                        min="0"
+                        value={form.other}
+                        onChange={(e) =>
+                          setForm({ ...form, other: parseFloat(e.target.value) || 0 })
+                        }
+                      />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
-                      <Label>Total Computed Salary {currencySymbol ? `(${currencySymbol})` : ""}</Label>
+                      <Label>
+                        Total Computed Salary {currencySymbol ? `(${currencySymbol})` : ""}
+                      </Label>
                       <div className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm items-center text-muted-foreground font-semibold">
-                        {((form.basic_salary || 0) + (form.hra || 0) + (form.mobile || 0) + (form.transportation || 0) + (form.other || 0)).toLocaleString()}
+                        {(
+                          (form.basic_salary || 0) +
+                          (form.hra || 0) +
+                          (form.mobile || 0) +
+                          (form.transportation || 0) +
+                          (form.other || 0)
+                        ).toLocaleString()}
                       </div>
-                      <p className="text-[10px] text-muted-foreground">Auto-calculated from above fields. This will be used to initialize the payroll setup.</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Auto-calculated from above fields. This will be used to initialize the
+                        payroll setup.
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="wps">WPS Payment Status</Label>
-                      <Input id="wps" placeholder="e.g. Yes / No / Exempt" value={form.wps} onChange={(e) => setForm({ ...form, wps: e.target.value })} />
+                      <Input
+                        id="wps"
+                        placeholder="e.g. Yes / No / Exempt"
+                        value={form.wps}
+                        onChange={(e) => setForm({ ...form, wps: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="wps_unique_id">WPS Unique ID</Label>
-                      <Input id="wps_unique_id" placeholder="WPS unique identification code" value={form.wps_unique_id} onChange={(e) => setForm({ ...form, wps_unique_id: e.target.value })} />
+                      <Input
+                        id="wps_unique_id"
+                        placeholder="WPS unique identification code"
+                        value={form.wps_unique_id}
+                        onChange={(e) => setForm({ ...form, wps_unique_id: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="flight_ticket">Flight Ticket Benefits</Label>
-                      <Input id="flight_ticket" placeholder="e.g. Annual / Bi-annual" value={form.flight_ticket} onChange={(e) => setForm({ ...form, flight_ticket: e.target.value })} />
+                      <Input
+                        id="flight_ticket"
+                        placeholder="e.g. Annual / Bi-annual"
+                        value={form.flight_ticket}
+                        onChange={(e) => setForm({ ...form, flight_ticket: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
                       <Label htmlFor="med_insurance">Medical Insurance Category</Label>
-                      <Input id="med_insurance" placeholder="e.g. VIP, Standard, Enhanced" value={form.medical_insurance_category} onChange={(e) => setForm({ ...form, medical_insurance_category: e.target.value })} />
+                      <Input
+                        id="med_insurance"
+                        placeholder="e.g. VIP, Standard, Enhanced"
+                        value={form.medical_insurance_category}
+                        onChange={(e) =>
+                          setForm({ ...form, medical_insurance_category: e.target.value })
+                        }
+                      />
                     </div>
                   </TabsContent>
                 </Tabs>
 
                 <DialogFooter className="mt-4">
-                  <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                  <Button onClick={() => addEmployee.mutate()} disabled={!form.email || !form.full_name || !form.password || addEmployee.isPending} style={{ background: "var(--gradient-brand)" }}>
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => addEmployee.mutate()}
+                    disabled={
+                      !form.email || !form.full_name || !form.password || addEmployee.isPending
+                    }
+                    style={{ background: "var(--gradient-brand)" }}
+                  >
                     {addEmployee.isPending ? "Creating…" : "Add employee"}
                   </Button>
                 </DialogFooter>
@@ -676,7 +1014,9 @@ function EmployeesPage() {
               >
                 <option value="all">All departments</option>
                 {departments.map((d) => (
-                  <option key={d} value={d}>{d}</option>
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
                 ))}
               </select>
             </div>
@@ -709,13 +1049,17 @@ function EmployeesPage() {
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="animate-pulse"><CardContent className="h-32" /></Card>
+              <Card key={i} className="animate-pulse">
+                <CardContent className="h-32" />
+              </Card>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <Card><CardContent className="p-12 text-center text-sm text-muted-foreground">
-            No employees match your filters.
-          </CardContent></Card>
+          <Card>
+            <CardContent className="p-12 text-center text-sm text-muted-foreground">
+              No employees match your filters.
+            </CardContent>
+          </Card>
         ) : viewMode === "list" ? (
           /* List View (Table layout) */
           <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
@@ -755,7 +1099,9 @@ function EmployeesPage() {
                               >
                                 {name}
                               </Link>
-                              <span className="text-xs text-muted-foreground block truncate">{e.email ?? "—"}</span>
+                              <span className="text-xs text-muted-foreground block truncate">
+                                {e.email ?? "—"}
+                              </span>
                             </div>
                           </div>
                         </TableCell>
@@ -785,10 +1131,23 @@ function EmployeesPage() {
                         <TableCell className="align-middle">
                           <Badge
                             className="font-normal text-[10px] px-1.5 py-0"
-                            style={active ? { background: "color-mix(in oklab, var(--success) 15%, transparent)", color: "var(--success)" } : undefined}
+                            style={
+                              active
+                                ? {
+                                    background:
+                                      "color-mix(in oklab, var(--success) 15%, transparent)",
+                                    color: "var(--success)",
+                                  }
+                                : undefined
+                            }
                             variant={active ? "secondary" : "outline"}
                           >
-                            <span className={"h-1.5 w-1.5 rounded-full mr-1.5 " + (active ? "bg-emerald-500" : "bg-muted-foreground")} />
+                            <span
+                              className={
+                                "h-1.5 w-1.5 rounded-full mr-1.5 " +
+                                (active ? "bg-emerald-500" : "bg-muted-foreground")
+                              }
+                            />
                             {active ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
@@ -832,7 +1191,9 @@ function EmployeesPage() {
                           {initials(name)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">{name}</p>
+                          <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">
+                            {name}
+                          </p>
                           <p className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-0.5">
                             <Mail className="h-3 w-3" /> {e.email ?? "—"}
                           </p>
@@ -840,14 +1201,37 @@ function EmployeesPage() {
                         <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border/40">
-                        {e.role && <Badge variant="secondary" className="font-normal text-[10px]"><Briefcase className="h-3 w-3 mr-1 text-muted-foreground" />{e.role}</Badge>}
-                        {e.department && <Badge variant="outline" className="font-normal text-[10px]"><Building2 className="h-3 w-3 mr-1 text-muted-foreground" />{e.department}</Badge>}
+                        {e.role && (
+                          <Badge variant="secondary" className="font-normal text-[10px]">
+                            <Briefcase className="h-3 w-3 mr-1 text-muted-foreground" />
+                            {e.role}
+                          </Badge>
+                        )}
+                        {e.department && (
+                          <Badge variant="outline" className="font-normal text-[10px]">
+                            <Building2 className="h-3 w-3 mr-1 text-muted-foreground" />
+                            {e.department}
+                          </Badge>
+                        )}
                         <Badge
                           className="font-normal text-[10px] ml-auto"
-                          style={active ? { background: "color-mix(in oklab, var(--success) 15%, transparent)", color: "var(--success)" } : undefined}
+                          style={
+                            active
+                              ? {
+                                  background:
+                                    "color-mix(in oklab, var(--success) 15%, transparent)",
+                                  color: "var(--success)",
+                                }
+                              : undefined
+                          }
                           variant={active ? "secondary" : "outline"}
                         >
-                          <span className={"h-1.5 w-1.5 rounded-full mr-1.5 " + (active ? "bg-emerald-500" : "bg-muted-foreground")} />
+                          <span
+                            className={
+                              "h-1.5 w-1.5 rounded-full mr-1.5 " +
+                              (active ? "bg-emerald-500" : "bg-muted-foreground")
+                            }
+                          />
                           {active ? "Active" : "Inactive"}
                         </Badge>
                       </div>
@@ -863,7 +1247,17 @@ function EmployeesPage() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, accent }: { icon: any; label: string; value: number; accent?: boolean }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: any;
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
   return (
     <Card className="border-border/60 shadow-sm bg-card">
       <CardContent className="p-4 flex items-center gap-3">

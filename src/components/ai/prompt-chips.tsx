@@ -10,7 +10,7 @@ const PROMPT_SUGGESTIONS = [
   "Did I clock in today?",
   "Show my pending tasks for this week",
   "What is our company sick leave policy?",
-  "Apply for annual leave next Monday"
+  "Apply for annual leave next Monday",
 ];
 
 export function PromptChips({ onSelect, disabled }: PromptChipsProps) {

@@ -13,7 +13,7 @@ import {
   Square,
   Radio,
   AudioLines,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { useVoiceAssistant } from "@/hooks/use-voice-assistant";
 import { sendAiMessage, AiActionCard } from "@/lib/api";
@@ -40,7 +40,9 @@ export function VoiceModeModal({
   conversationId,
   onNewMessage,
 }: VoiceModeModalProps) {
-  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "thinking" | "speaking">("idle");
+  const [voiceStatus, setVoiceStatus] = useState<"idle" | "listening" | "thinking" | "speaking">(
+    "idle",
+  );
   const [lastUserSpeech, setLastUserSpeech] = useState("");
   const [lastAiResponse, setLastAiResponse] = useState("");
   const [currentActionCard, setCurrentActionCard] = useState<AiActionCard | null>(null);
@@ -232,7 +234,9 @@ export function VoiceModeModal({
           {!isSupported && (
             <div className="mb-4 flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs px-3.5 py-2 rounded-xl">
               <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Web Speech API is not supported in this browser. Please use Chrome, Edge, or Safari.</span>
+              <span>
+                Web Speech API is not supported in this browser. Please use Chrome, Edge, or Safari.
+              </span>
             </div>
           )}
 
@@ -249,10 +253,10 @@ export function VoiceModeModal({
               voiceStatus === "listening"
                 ? "bg-cyan-500/30 scale-125"
                 : voiceStatus === "thinking"
-                ? "bg-indigo-600/30 animate-pulse scale-100"
-                : voiceStatus === "speaking"
-                ? "bg-purple-600/35 scale-125"
-                : "bg-slate-800/20 scale-75"
+                  ? "bg-indigo-600/30 animate-pulse scale-100"
+                  : voiceStatus === "speaking"
+                    ? "bg-purple-600/35 scale-125"
+                    : "bg-slate-800/20 scale-75"
             }`}
           />
 
@@ -293,18 +297,16 @@ export function VoiceModeModal({
               onClick={handleToggleMic}
               style={{
                 transform:
-                  voiceStatus === "listening"
-                    ? `scale(${1 + audioLevel * 0.25})`
-                    : undefined,
+                  voiceStatus === "listening" ? `scale(${1 + audioLevel * 0.25})` : undefined,
               }}
               className={`relative z-10 h-32 w-32 rounded-full flex flex-col items-center justify-center shadow-2xl transition-all duration-300 cursor-pointer ${
                 voiceStatus === "listening"
                   ? "bg-gradient-to-tr from-cyan-500 to-indigo-600 shadow-cyan-500/50 ring-4 ring-cyan-400/40"
                   : voiceStatus === "thinking"
-                  ? "bg-gradient-to-tr from-indigo-700 to-purple-600 shadow-purple-500/40 animate-spin"
-                  : voiceStatus === "speaking"
-                  ? "bg-gradient-to-tr from-purple-600 to-pink-600 shadow-pink-500/40 scale-105"
-                  : "bg-slate-900 border-2 border-slate-700 hover:border-slate-500 text-slate-400"
+                    ? "bg-gradient-to-tr from-indigo-700 to-purple-600 shadow-purple-500/40 animate-spin"
+                    : voiceStatus === "speaking"
+                      ? "bg-gradient-to-tr from-purple-600 to-pink-600 shadow-pink-500/40 scale-105"
+                      : "bg-slate-900 border-2 border-slate-700 hover:border-slate-500 text-slate-400"
               }`}
             >
               {voiceStatus === "listening" ? (
@@ -393,7 +395,9 @@ export function VoiceModeModal({
 
             {!liveDisplayText && !lastUserSpeech && !lastAiResponse && (
               <div className="text-slate-400 text-center py-1">
-                <p className="font-medium text-slate-300 mb-1">I'm ready! Speak clearly into your mic.</p>
+                <p className="font-medium text-slate-300 mb-1">
+                  I'm ready! Speak clearly into your mic.
+                </p>
                 <p className="text-[11px] text-slate-500">Or pick a quick suggestion below:</p>
               </div>
             )}
