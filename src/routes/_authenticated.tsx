@@ -33,6 +33,7 @@ import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NotificationBell } from "@/components/notification-bell";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { AiAssistantButton } from "@/components/ai/ai-assistant-button";
@@ -325,10 +326,29 @@ function AuthenticatedLayout() {
             </Sheet>
             <img src={aimployLogo} alt="Aimploy" className="h-6 w-auto" />
           </div>
-          <Button variant="ghost" size="sm" onClick={onLogout}>
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <NotificationBell />
+            <Button variant="ghost" size="sm" onClick={onLogout}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </header>
+
+        <header className="hidden md:flex h-14 border-b bg-background/80 backdrop-blur sticky top-0 z-10 px-8 items-center justify-between">
+          <div className="text-xs text-muted-foreground flex items-center gap-2">
+            <span>Signed in as</span>
+            <span className="font-semibold text-foreground">{email}</span>
+            {role && (
+              <span className="ml-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-primary/10 text-primary border border-primary/20">
+                {role}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+          </div>
+        </header>
+
         <main className="flex-1 px-4 md:px-8 py-6 md:py-8 max-w-6xl w-full">
           <Outlet />
         </main>

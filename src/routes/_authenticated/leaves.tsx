@@ -44,6 +44,9 @@ import {
   Info,
   CalendarDays,
   UserCheck,
+  UserPlus,
+  CalendarPlus,
+  Trash2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/leaves")({
@@ -57,6 +60,7 @@ function LeavesPage() {
 
   const userRole = (role ?? "").toLowerCase().trim();
   const canApprove = ["admin", "hr", "cfo"].includes(userRole);
+  const isAdminOrHr = ["admin", "hr"].includes(userRole);
 
   const [activeTab, setActiveTab] = useState("my_leaves");
 
@@ -69,6 +73,23 @@ function LeavesPage() {
   const [halfDaySlot, setHalfDaySlot] = useState("first_half");
   const [reason, setReason] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
+  // Add Holiday State
+  const [isAddHolidayOpen, setIsAddHolidayOpen] = useState(false);
+  const [holidayName, setHolidayName] = useState("");
+  const [holidayDate, setHolidayDate] = useState("");
+  const [notifyAllUsers, setNotifyAllUsers] = useState(true);
+
+  // Assign Leave State (Admin / HR only)
+  const [isAssignLeaveOpen, setIsAssignLeaveOpen] = useState(false);
+  const [assignEmployeeId, setAssignEmployeeId] = useState("");
+  const [assignLeaveTypeId, setAssignLeaveTypeId] = useState("");
+  const [assignStartDate, setAssignStartDate] = useState("");
+  const [assignEndDate, setAssignEndDate] = useState("");
+  const [assignHalfDay, setAssignHalfDay] = useState(false);
+  const [assignHalfDaySlot, setAssignHalfDaySlot] = useState("first_half");
+  const [assignReason, setAssignReason] = useState("");
+  const [assignDeductBalance, setAssignDeductBalance] = useState(true);
 
   // Approval/Rejection Dialog States
   const [actingLeaveId, setActingLeaveId] = useState<string | null>(null);
@@ -110,11 +131,21 @@ function LeavesPage() {
     queryFn: () => api<any[]>("/settings/leave-types"),
   });
 
+  const { data: employeesData } = useQuery({
+    queryKey: ["employees", "list"],
+    queryFn: () => api<{ employees: any[] }>("/employees/list"),
+    enabled: isAdminOrHr,
+  });
+  const employeesList = employeesData?.employees ?? [];
+
   useEffect(() => {
     if (leaveTypes && leaveTypes.length > 0 && !leaveTypeId) {
       setLeaveTypeId(String(leaveTypes[0].id));
     }
-  }, [leaveTypes, leaveTypeId]);
+    if (leaveTypes && leaveTypes.length > 0 && !assignLeaveTypeId) {
+      setAssignLeaveTypeId(String(leaveTypes[0].id));
+    }
+  }, [leaveTypes, leaveTypeId, assignLeaveTypeId]);
 
   // Memos & Data Parsers
   const myLeaves = myLeavesData ?? [];
@@ -223,6 +254,65 @@ function LeavesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const addHolidayMutation = useMutation({
+    mutationFn: () =>
+      api("/leave/holidays", {
+        method: "POST",
+        body: {
+          name: holidayName,
+          date: holidayDate,
+          notify_all: notifyAllUsers,
+        },
+      }),
+    onSuccess: () => {
+      toast.success("Holiday added and announced to all employees!");
+      qc.invalidateQueries({ queryKey: ["leaves", "calendar"] });
+      setIsAddHolidayOpen(false);
+      setHolidayName("");
+      setHolidayDate("");
+    },
+    onError: (e: any) => toast.error(e.data?.detail || e.message || "Failed to add holiday"),
+  });
+
+  const deleteHolidayMutation = useMutation({
+    mutationFn: (holidayId: string) =>
+      api(`/leave/holidays/${holidayId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Holiday removed successfully");
+      qc.invalidateQueries({ queryKey: ["leaves", "calendar"] });
+    },
+    onError: (e: any) => toast.error(e.data?.detail || e.message || "Failed to delete holiday"),
+  });
+
+  const assignLeaveMutation = useMutation({
+    mutationFn: () =>
+      api("/leaves/assign", {
+        method: "POST",
+        body: {
+          employee_id: assignEmployeeId,
+          leave_type_id: Number(assignLeaveTypeId),
+          start_date: assignStartDate,
+          end_date: assignEndDate,
+          half_day: assignHalfDay,
+          half_day_slot: assignHalfDay ? assignHalfDaySlot : null,
+          reason: assignReason,
+          deduct_balance: assignDeductBalance,
+          status: "approved",
+        },
+      }),
+    onSuccess: () => {
+      toast.success("Leave successfully assigned to employee!");
+      qc.invalidateQueries({ queryKey: ["leaves"] });
+      setIsAssignLeaveOpen(false);
+      setAssignEmployeeId("");
+      setAssignStartDate("");
+      setAssignEndDate("");
+      setAssignReason("");
+      setAssignHalfDay(false);
+    },
+    onError: (e: any) => toast.error(e.data?.detail || e.message || "Failed to assign leave"),
+  });
+
   // Action decision dispatch
   const handleDecisionSubmit = () => {
     if (!actingLeaveId || !actionType) return;
@@ -295,16 +385,189 @@ function LeavesPage() {
             </p>
           </div>
 
-          <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
-            <DialogTrigger asChild>
-              <Button
-                className="shadow-[var(--shadow-brand)] cursor-pointer"
-                style={{ background: "var(--gradient-brand)" }}
-              >
-                <Plus className="h-4 w-4 mr-2" /> Apply Leave
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
+          <div className="flex items-center gap-3">
+            {isAdminOrHr && (
+              <Dialog open={isAssignLeaveOpen} onOpenChange={setIsAssignLeaveOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="cursor-pointer gap-2 border-border/80 hover:bg-muted/60">
+                    <UserPlus className="h-4 w-4 text-primary" /> Assign Leave
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <UserPlus className="size-5 text-primary" />
+                      Assign Leave to Employee
+                    </DialogTitle>
+                    <DialogDescription>
+                      Admin/HR can directly grant and register leave on behalf of any employee.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="assign-employee">
+                        Employee <span className="text-destructive">*</span>
+                      </Label>
+                      <select
+                        id="assign-employee"
+                        value={assignEmployeeId}
+                        onChange={(e) => setAssignEmployeeId(e.target.value)}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                      >
+                        <option value="" className="text-black bg-background">
+                          -- Select Employee --
+                        </option>
+                        {employeesList.map((emp: any) => (
+                          <option key={emp.id} value={emp.id} className="text-black bg-background">
+                            {emp.full_name} ({emp.email}) - {emp.department || "General"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="assign-leave-type">
+                        Leave Type <span className="text-destructive">*</span>
+                      </Label>
+                      <select
+                        id="assign-leave-type"
+                        value={assignLeaveTypeId}
+                        onChange={(e) => setAssignLeaveTypeId(e.target.value)}
+                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground dark:text-zinc-50"
+                      >
+                        <option value="" className="text-black bg-background">
+                          -- Select Leave Type --
+                        </option>
+                        {leaveTypes?.map((lt: any) => (
+                          <option key={lt.id} value={String(lt.id)} className="text-black bg-background">
+                            {lt.name.charAt(0).toUpperCase() + lt.name.slice(1)} Leave
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="assign-start-date">
+                          Start Date <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="assign-start-date"
+                          type="date"
+                          value={assignStartDate}
+                          onChange={(e) => setAssignStartDate(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="assign-end-date">
+                          End Date <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="assign-end-date"
+                          type="date"
+                          value={assignEndDate}
+                          min={assignStartDate}
+                          onChange={(e) => setAssignEndDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-border/40 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="assign-half-day" className="text-xs font-semibold cursor-pointer">Half-day Leave</Label>
+                          <p className="text-[10px] text-muted-foreground">Applies when single date is selected</p>
+                        </div>
+                        <input
+                          id="assign-half-day"
+                          type="checkbox"
+                          checked={assignHalfDay}
+                          onChange={(e) => setAssignHalfDay(e.target.checked)}
+                          className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                        />
+                      </div>
+
+                      {assignHalfDay && (
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <Button
+                            type="button"
+                            variant={assignHalfDaySlot === "first_half" ? "default" : "outline"}
+                            size="sm"
+                            className="text-xs h-8"
+                            onClick={() => setAssignHalfDaySlot("first_half")}
+                          >
+                            First Half
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={assignHalfDaySlot === "second_half" ? "default" : "outline"}
+                            size="sm"
+                            className="text-xs h-8"
+                            onClick={() => setAssignHalfDaySlot("second_half")}
+                          >
+                            Second Half
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2 pt-1">
+                        <input
+                          type="checkbox"
+                          id="assign-deduct"
+                          checked={assignDeductBalance}
+                          onChange={(e) => setAssignDeductBalance(e.target.checked)}
+                          className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                        />
+                        <Label htmlFor="assign-deduct" className="text-xs cursor-pointer">
+                          Deduct from employee leave balance
+                        </Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="assign-reason">Reason / Remarks</Label>
+                      <Textarea
+                        id="assign-reason"
+                        placeholder="Reason for assigning this leave (e.g. Approved offline, emergency, compensatory off)"
+                        value={assignReason}
+                        onChange={(e) => setAssignReason(e.target.value)}
+                        rows={2}
+                        className="text-xs"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="mt-4">
+                    <Button variant="outline" onClick={() => setIsAssignLeaveOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => assignLeaveMutation.mutate()}
+                      disabled={
+                        !assignEmployeeId ||
+                        !assignLeaveTypeId ||
+                        !assignStartDate ||
+                        !assignEndDate ||
+                        assignLeaveMutation.isPending
+                      }
+                      style={{ background: "var(--gradient-brand)" }}
+                    >
+                      {assignLeaveMutation.isPending ? "Assigning…" : "Assign & Approve"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="shadow-[var(--shadow-brand)] cursor-pointer"
+                  style={{ background: "var(--gradient-brand)" }}
+                >
+                  <Plus className="h-4 w-4 mr-2" /> Apply Leave
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Apply for Leave</DialogTitle>
                 <DialogDescription>Submit a new leave request for authorization.</DialogDescription>
@@ -472,6 +735,7 @@ function LeavesPage() {
             </DialogContent>
           </Dialog>
         </div>
+      </div>
 
         {/* Tabs Control */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
@@ -825,10 +1089,21 @@ function LeavesPage() {
                   </CardTitle>
                 </div>
                 <div className="flex items-center gap-2">
+                  {isAdminOrHr && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs gap-1.5 cursor-pointer border-primary/30 text-primary hover:bg-primary/10"
+                      onClick={() => setIsAddHolidayOpen(true)}
+                    >
+                      <CalendarPlus className="size-3.5" />
+                      Add Holiday
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     onClick={handlePrevMonth}
                   >
                     <ChevronLeft className="size-4" />
@@ -839,7 +1114,7 @@ function LeavesPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     onClick={handleNextMonth}
                   >
                     <ChevronRight className="size-4" />
@@ -868,10 +1143,30 @@ function LeavesPage() {
                           {calendar.holidays.map((h: any, i: number) => (
                             <div
                               key={i}
-                              className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-muted/10 hover:bg-muted/20 transition-all select-none"
+                              className="flex justify-between items-center text-xs border p-2.5 rounded-lg bg-muted/10 hover:bg-muted/20 transition-all select-none group"
                             >
-                              <span className="font-semibold">{h.name}</span>
-                              <span className="font-mono text-muted-foreground">{h.date}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold">{h.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-muted-foreground">{h.date}</span>
+                                {isAdminOrHr && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 opacity-60 hover:opacity-100 hover:text-destructive transition-all cursor-pointer"
+                                    title="Delete holiday"
+                                    disabled={deleteHolidayMutation.isPending}
+                                    onClick={() => {
+                                      if (confirm(`Remove '${h.name}' from the holiday calendar?`)) {
+                                        deleteHolidayMutation.mutate(h.id || h.date);
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -915,6 +1210,75 @@ function LeavesPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Add Holiday Dialog (Admin / HR only) */}
+        {isAdminOrHr && (
+          <Dialog open={isAddHolidayOpen} onOpenChange={setIsAddHolidayOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <CalendarPlus className="size-5 text-primary" />
+                  Add Public / Company Holiday
+                </DialogTitle>
+                <DialogDescription>
+                  Declare an official holiday on the calendar. All portal users will receive an in-app & email notification immediately.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="holiday-name">
+                    Holiday Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="holiday-name"
+                    placeholder="e.g. National Day, New Year, Eid al-Fitr"
+                    value={holidayName}
+                    onChange={(e) => setHolidayName(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="holiday-date">
+                    Holiday Date <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="holiday-date"
+                    type="date"
+                    value={holidayDate}
+                    onChange={(e) => setHolidayDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2 pt-2 border-t border-border/40">
+                  <input
+                    type="checkbox"
+                    id="notify-all-users"
+                    checked={notifyAllUsers}
+                    onChange={(e) => setNotifyAllUsers(e.target.checked)}
+                    className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                  />
+                  <Label htmlFor="notify-all-users" className="text-xs cursor-pointer">
+                    Broadcast announcement to all employees (in-app + email)
+                  </Label>
+                </div>
+              </div>
+
+              <DialogFooter className="mt-4">
+                <Button variant="outline" onClick={() => setIsAddHolidayOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => addHolidayMutation.mutate()}
+                  disabled={!holidayName.trim() || !holidayDate || addHolidayMutation.isPending}
+                  style={{ background: "var(--gradient-brand)" }}
+                >
+                  {addHolidayMutation.isPending ? "Announcing…" : "Add & Announce"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </TooltipProvider>
   );
