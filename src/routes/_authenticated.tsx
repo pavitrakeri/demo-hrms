@@ -30,8 +30,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import aimwearTypoWhite from "@/assets/AIMWEAR TYPO WHITE.svg";
-import aimwearTypoBlack from "@/assets/AIMWEAR TYPO BLACK.svg";
+import aimployLogo from "@/assets/aimploy-logo.png";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,9 +136,9 @@ function AuthenticatedLayout() {
         <div className="px-6 py-5 border-b border-sidebar-border">
           <Link to="/dashboard" className="block focus:outline-none">
             <img
-              src={aimwearTypoWhite}
-              alt="AIMWEAR"
-              className="h-5.5 w-auto max-w-full object-contain"
+              src={aimployLogo}
+              alt="AiMPLOY"
+              className="h-7 w-auto max-w-full object-contain"
             />
           </Link>
         </div>
@@ -248,9 +247,9 @@ function AuthenticatedLayout() {
                       className="block focus:outline-none"
                     >
                       <img
-                        src={aimwearTypoWhite}
-                        alt="AIMWEAR"
-                        className="h-5.5 w-auto max-w-full object-contain"
+                        src={aimployLogo}
+                        alt="AiMPLOY"
+                        className="h-7 w-auto max-w-full object-contain"
                       />
                     </Link>
                   </div>
@@ -351,14 +350,9 @@ function AuthenticatedLayout() {
             </Sheet>
             <Link to="/dashboard" className="block focus:outline-none">
               <img
-                src={aimwearTypoBlack}
-                alt="AIMWEAR"
-                className="h-5 w-auto object-contain dark:hidden"
-              />
-              <img
-                src={aimwearTypoWhite}
-                alt="AIMWEAR"
-                className="h-5 w-auto object-contain hidden dark:block"
+                src={aimployLogo}
+                alt="AiMPLOY"
+                className="h-6 w-auto object-contain"
               />
             </Link>
           </div>

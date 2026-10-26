@@ -6,75 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import teamImg from "@/assets/team-collaboration.jpg";
-import { AimwearLogo } from "@/components/aimwear-logo";
-import {
-  Eye,
-  EyeOff,
-  User,
-  Lock,
-  Calendar,
-  Leaf,
-  CreditCard,
-  Users,
-  Search,
-  FileText,
-  Globe,
-  ChevronDown,
-} from "lucide-react";
+import aimployLogo from "@/assets/aimploy-logo.png";
+import loginBg from "@/assets/login-bg.png";
+import { Eye, EyeOff, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Sign In — Aimwear HRMS" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Aimploy HRMS" }] }),
   beforeLoad: () => {
     if (getToken()) throw redirect({ to: "/dashboard" });
   },
   component: LoginPage,
 });
-
-const FEATURES = [
-  {
-    icon: Calendar,
-    title: "Attendance",
-    subtitle: "& GPS Tracking",
-    bgColor: "bg-purple-100",
-    iconColor: "text-purple-600",
-  },
-  {
-    icon: Leaf,
-    title: "Leave",
-    subtitle: "Management",
-    bgColor: "bg-emerald-100",
-    iconColor: "text-emerald-600",
-  },
-  {
-    icon: CreditCard,
-    title: "Payroll",
-    subtitle: "& Compliance",
-    bgColor: "bg-orange-100",
-    iconColor: "text-orange-600",
-  },
-  {
-    icon: Users,
-    title: "Employee",
-    subtitle: "Management",
-    bgColor: "bg-blue-100",
-    iconColor: "text-blue-600",
-  },
-  {
-    icon: Search,
-    title: "Recruitment",
-    subtitle: "& Hiring",
-    bgColor: "bg-rose-100",
-    iconColor: "text-rose-600",
-  },
-  {
-    icon: FileText,
-    title: "Documents",
-    subtitle: "& Policies",
-    bgColor: "bg-teal-100",
-    iconColor: "text-teal-600",
-  },
-];
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -82,9 +24,10 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem("aimwear_remembered_email");
+    const savedEmail = localStorage.getItem("aimploy_remembered_email");
     if (savedEmail) {
       setEmail(savedEmail);
     }
@@ -93,15 +36,19 @@ function LoginPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      toast.error("Please enter your email and password");
+      toast.error("Please enter both email and password.");
       return;
     }
 
     setLoading(true);
     try {
       await login(email.trim(), password);
-      localStorage.setItem("aimwear_remembered_email", email.trim());
-      toast.success("Welcome back! Redirecting to workspace...");
+      if (rememberMe) {
+        localStorage.setItem("aimploy_remembered_email", email.trim());
+      } else {
+        localStorage.removeItem("aimploy_remembered_email");
+      }
+      toast.success("Welcome back to Aimploy HRMS!");
       navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed. Please check your credentials.");
@@ -111,210 +58,241 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] lg:h-[100dvh] w-full flex items-center justify-center bg-[#EBE8FC] p-3 sm:p-5 lg:p-6 font-sans select-none overflow-y-auto lg:overflow-hidden">
-      {/* Soft Background Canvas Card Container - Screen-filling */}
-      <div className="w-full max-w-6xl xl:max-w-7xl lg:h-[88vh] lg:max-h-[860px] bg-gradient-to-br from-[#F6F4FE] via-[#FAF9FF] to-[#EAE6FC] rounded-2xl sm:rounded-3xl shadow-xl shadow-indigo-900/10 border border-white/80 p-5 sm:p-7 lg:p-8 relative overflow-hidden flex flex-col justify-between my-auto">
-        
-        {/* Ambient Organic Curve Shapes */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-purple-200/40 via-indigo-100/30 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-80 h-80 bg-gradient-to-tr from-purple-200/30 via-pink-100/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+    <>
+      <style>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        .glass-card {
+          background: rgba(255, 255, 255, 0.78);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          box-shadow: 0 25px 60px -15px rgba(109, 40, 217, 0.15), 0 0 1px 1px rgba(255, 255, 255, 0.7);
+        }
+        .dark .glass-card {
+          background: rgba(20, 20, 26, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+          background: rgba(255, 255, 255, 0.65) !important;
+          border: 1px solid rgba(139, 92, 246, 0.18) !important;
+          color: #1e1b4b !important;
+          transition: all 0.25s ease;
+        }
+        .dark .glass-input {
+          background: rgba(15, 15, 20, 0.45) !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          color: white !important;
+        }
+        .glass-input:focus {
+          border-color: rgba(124, 58, 237, 0.6) !important;
+          box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12) !important;
+          background: rgba(255, 255, 255, 0.95) !important;
+        }
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
 
-        {/* Top Header Row: Compatible Aimwear Brand Logo */}
-        <div className="relative z-10 flex items-center justify-between w-full mb-3 lg:mb-4">
-          <AimwearLogo size="lg" variant="light" />
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#07060F]">
+        {/* Fullscreen Tech AI Background Image */}
+        <div
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: `url(${loginBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.92,
+          }}
+        />
 
-          {/* Language Selector */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white/80 hover:bg-white px-3 py-1.5 rounded-full border border-slate-200/60 shadow-2xs backdrop-blur-sm cursor-pointer transition-all">
-            <Globe className="h-4 w-4 text-slate-500" />
-            <span>English</span>
-            <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-          </div>
-        </div>
+        {/* Ambient Subtle Grid & Glow */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/10 via-transparent to-indigo-900/10 pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
 
-        {/* Main 2-Column Content */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center flex-1 my-auto">
-          
-          {/* Left Hero Column */}
-          <div className="lg:col-span-7 xl:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5">
-            {/* Pill Badge */}
-            <div className="w-fit">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#E5DDFE] text-[#5432D3] text-xs font-bold tracking-wide">
-                All-in-one HR Management
-              </span>
-            </div>
+        {/* Floating Ambient Blobs */}
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl animate-blob pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl animate-blob animation-delay-2000 pointer-events-none" />
 
-            {/* Subtitle */}
-            <p className="text-sm sm:text-base text-slate-600 max-w-xl font-medium leading-relaxed">
-              Simplify HR operations, empower your people, and build a better workplace with Aimwear HRMS.
-            </p>
+        {/* Login Card */}
+        <div className="w-full max-w-md relative z-10 px-5 sm:px-0 my-8">
+          <div className="glass-card rounded-3xl p-7 sm:p-10 overflow-hidden relative">
+            {/* Subtle top glare highlight */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-purple-300/40 to-transparent" />
 
-            {/* 6 Features Grid (2 columns x 3 rows on small, 3 cols on medium/large) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
-              {FEATURES.map((item) => (
-                <div
-                  key={item.title}
-                  className="flex items-center gap-2.5 p-1.5 rounded-lg"
-                >
-                  <div
-                    className={`h-8 w-8 rounded-lg ${item.bgColor} ${item.iconColor} flex items-center justify-center shrink-0 shadow-2xs`}
-                  >
-                    <item.icon className="h-4 w-4" />
-                  </div>
-                  <div className="text-xs font-bold text-slate-800 leading-tight">
-                    <div>{item.title}</div>
-                    <div className="text-slate-500 font-medium text-[10px] sm:text-[11px]">{item.subtitle}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Testimonial / Team Photo Card */}
-            <div className="pt-1">
-              <div className="bg-white/85 backdrop-blur-md rounded-xl p-3 sm:p-3.5 border border-white/90 shadow-sm shadow-purple-900/5 flex flex-col sm:flex-row items-center justify-between gap-3 max-w-lg">
-                <div className="space-y-1.5 text-left">
-                  <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
-                    “A smarter workplace<br />for a brighter tomorrow.”
-                  </p>
-                  <div className="h-0.5 w-6 bg-[#5432D3] rounded-full" />
-                </div>
-                <div className="w-full sm:w-40 h-16 sm:h-18 rounded-lg overflow-hidden shadow-inner shrink-0">
-                  <img
-                    src={teamImg}
-                    alt="Aimwear Team"
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
+            <div className="text-center space-y-4 mb-7">
+              {/* AiMPLOY Logo */}
+              <div className="flex justify-center items-center">
+                <img
+                  src={aimployLogo}
+                  alt="AiMPLOY"
+                  className="h-9 sm:h-10 w-auto object-contain drop-shadow-xs"
+                />
               </div>
-            </div>
-          </div>
 
-          {/* Right Login Card Column */}
-          <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md bg-white rounded-2xl p-6 sm:p-7 lg:p-8 shadow-xl shadow-purple-900/10 border border-slate-100 space-y-4">
-              
-              {/* Card Header */}
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-                  Welcome Back
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                  Sign in to your Aimwear HRMS account
+              {/* Title & Badge */}
+              <div className="space-y-1.5 pt-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-100/80 text-purple-700 text-[11px] font-semibold tracking-wide">
+                  <Sparkles className="h-3 w-3 text-purple-600" />
+                  <span>Next-Gen HR & Operations</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                  Welcome back
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  Enter your credentials to access your workspace
                 </p>
               </div>
+            </div>
 
-              {/* Login Form */}
-              <form onSubmit={onSubmit} className="space-y-3.5 pt-1">
-                {/* Email or Mobile Number */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-bold text-slate-800">
-                    Email or Mobile Number
-                  </Label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                      <User className="h-4 w-4" />
-                    </div>
-                    <Input
-                      id="email"
-                      type="text"
-                      autoComplete="username"
-                      placeholder="Enter your email or mobile number"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-10 pl-9 rounded-lg bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#5432D3] focus:ring-2 focus:ring-purple-500/10 text-xs sm:text-sm font-medium transition-all"
-                    />
-                  </div>
-                </div>
+            <form onSubmit={onSubmit} className="space-y-4.5">
+              {/* Email Field */}
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="email"
+                  className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1"
+                >
+                  Email address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="name@company.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 rounded-xl glass-input placeholder:text-slate-400 font-medium text-sm"
+                />
+              </div>
 
-                {/* Password */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-xs font-bold text-slate-800">
+              {/* Password Field */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between ml-1 mr-1">
+                  <Label
+                    htmlFor="password"
+                    className="text-xs font-bold text-slate-700 dark:text-slate-300"
+                  >
                     Password
                   </Label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                      <Lock className="h-4 w-4" />
-                    </div>
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      placeholder="Enter your password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-10 pl-9 pr-10 rounded-lg bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#5432D3] focus:ring-2 focus:ring-purple-500/10 text-xs sm:text-sm font-medium transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
-                      tabIndex={-1}
-                      title={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Forgot password */}
-                <div className="flex justify-end pt-0.5">
                   <button
                     type="button"
+                    className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors cursor-pointer"
                     onClick={() =>
-                      toast.info("Please contact your Aimwear system administrator to reset your password.")
+                      toast.info("Please contact your Aimploy System Administrator to reset your password.")
                     }
-                    className="text-xs font-semibold text-[#5432D3] hover:text-[#4321B8] transition-colors"
                   >
                     Forgot password?
                   </button>
                 </div>
-
-                {/* Sign In Button */}
-                <div className="pt-1">
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-10 rounded-lg bg-[#5432D3] hover:bg-[#4524BD] text-white font-bold text-xs sm:text-sm shadow-sm shadow-purple-500/20 transition-all cursor-pointer"
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="h-3.5 w-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                        <span>Signing In...</span>
-                      </span>
-                    ) : (
-                      <span>Sign In</span>
-                    )}
-                  </Button>
-                </div>
-              </form>
-
-              {/* Bottom Footer Note */}
-              <div className="text-center pt-2.5 border-t border-slate-100">
-                <p className="text-xs text-slate-500 font-medium">
-                  New to Aimwear HRMS?{" "}
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-11 rounded-xl glass-input pr-11 placeholder:text-slate-400 font-medium text-sm"
+                  />
                   <button
                     type="button"
-                    onClick={() =>
-                      toast.info("Please request your HR Manager or System Administrator to grant access.")
-                    }
-                    className="text-[#5432D3] font-bold hover:underline transition-colors"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-600 transition-colors p-1 cursor-pointer"
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    Contact administrator
+                    {showPassword ? (
+                      <EyeOff className="h-4.5 w-4.5" />
+                    ) : (
+                      <Eye className="h-4.5 w-4.5" />
+                    )}
                   </button>
-                </p>
+                </div>
               </div>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center justify-between pt-0.5 px-1">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                  />
+                  <span>Remember my email</span>
+                </label>
+                <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Secure SSL</span>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  className="w-full h-11 text-white font-bold rounded-xl border-0 shadow-[0_4px_20px_rgba(124,58,237,0.3)] hover:shadow-[0_6px_26px_rgba(124,58,237,0.45)] group transition-all duration-300 overflow-hidden relative cursor-pointer"
+                  style={{ background: "linear-gradient(135deg, #7C3AED, #6366F1)" }}
+                  disabled={loading}
+                >
+                  <div className="absolute inset-0 -translate-x-[150%] group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
+
+                  {loading ? (
+                    <span className="flex items-center gap-2 relative z-10 text-sm">
+                      <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Authenticating...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 relative z-10 text-sm font-semibold">
+                      Sign in to Aimploy
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  )}
+                </Button>
+              </div>
+            </form>
+
+            {/* Bottom Footer Note */}
+            <div className="mt-7 text-center pt-5 border-t border-slate-200/60 dark:border-slate-800">
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                New to Aimploy HRMS?{" "}
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast.info("Please request your HR Manager or System Administrator to grant access.")
+                  }
+                  className="text-purple-600 dark:text-purple-400 font-bold hover:underline transition-colors cursor-pointer"
+                >
+                  Request access
+                </button>
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
-
-export default LoginPage;
-

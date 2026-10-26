@@ -53,7 +53,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/attendance-report")({
-  head: () => ({ meta: [{ title: "Attendance Report — Aimwear HRMS" }] }),
+  head: () => ({ meta: [{ title: "Attendance Report — Aimploy HRMS" }] }),
   beforeLoad: () => {
     if (typeof window !== "undefined" && !getToken()) {
       throw redirect({ to: "/login" });
