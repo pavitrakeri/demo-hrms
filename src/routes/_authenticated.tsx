@@ -37,8 +37,6 @@ import { Label } from "@/components/ui/label";
 import { NotificationBell } from "@/components/notification-bell";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { AiAssistantButton } from "@/components/ai/ai-assistant-button";
-import { AiChatDrawer } from "@/components/ai/ai-chat-drawer";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ location }) => {
@@ -86,7 +84,6 @@ function AuthenticatedLayout() {
     pathname.startsWith("/departments") || pathname.startsWith("/roles"),
   );
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
 
   const allowedNavItems = useMemo(() => {
     const userRole = (role ?? "").toLowerCase().trim();
@@ -382,8 +379,6 @@ function AuthenticatedLayout() {
         <main className="flex-1 px-4 md:px-8 py-6 md:py-8 max-w-6xl w-full">
           <Outlet />
         </main>
-        <AiAssistantButton onClick={() => setAiDrawerOpen(true)} />
-        <AiChatDrawer open={aiDrawerOpen} onOpenChange={setAiDrawerOpen} />
       </div>
     </div>
   );
