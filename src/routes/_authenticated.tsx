@@ -27,9 +27,11 @@ import {
   Menu,
   Wallet,
   Sparkles,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import aimployLogo from "@/assets/aimploy-logo.png";
+import aimwearTypoWhite from "@/assets/AIMWEAR TYPO WHITE.svg";
+import aimwearTypoBlack from "@/assets/AIMWEAR TYPO BLACK.svg";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,6 +62,7 @@ const navItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/attendance", label: "Attendance", icon: Clock },
+  { to: "/attendance-report", label: "Attendance Report", icon: FileSpreadsheet },
   { to: "/leaves", label: "Leaves", icon: Calendar },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/tasks", label: "My Tasks", icon: ListTodo },
@@ -89,7 +92,17 @@ function AuthenticatedLayout() {
   const allowedNavItems = useMemo(() => {
     const userRole = (role ?? "").toLowerCase().trim();
     const isSystemAdmin = userRole === "admin";
+    const isHr = userRole === "hr";
+
     return navItems.filter((item) => {
+      if (item.label === "Attendance Report") {
+        return (
+          isSystemAdmin ||
+          isHr ||
+          permissions.includes("manage_attendance") ||
+          permissions.includes("manage_employees")
+        );
+      }
       if (item.label === "Employees") {
         return isSystemAdmin || permissions.includes("manage_employees");
       }
@@ -121,9 +134,13 @@ function AuthenticatedLayout() {
         className="hidden md:flex w-64 flex-col text-sidebar-foreground sticky top-0 h-screen"
         style={{ background: "var(--gradient-sidebar)" }}
       >
-        <div className="px-6 py-6 border-b border-sidebar-border">
-          <Link to="/dashboard" className="block">
-            <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto" />
+        <div className="px-6 py-5 border-b border-sidebar-border">
+          <Link to="/dashboard" className="block focus:outline-none">
+            <img
+              src={aimwearTypoWhite}
+              alt="AIMWEAR"
+              className="h-5.5 w-auto max-w-full object-contain"
+            />
           </Link>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -224,9 +241,17 @@ function AuthenticatedLayout() {
                 style={{ background: "var(--gradient-sidebar)" }}
               >
                 <div className="flex flex-col h-full">
-                  <div className="px-6 py-6 border-b border-sidebar-border">
-                    <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block">
-                      <img src={aimployLogo} alt="Aimploy" className="h-8 w-auto" />
+                  <div className="px-6 py-5 border-b border-sidebar-border">
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="block focus:outline-none"
+                    >
+                      <img
+                        src={aimwearTypoWhite}
+                        alt="AIMWEAR"
+                        className="h-5.5 w-auto max-w-full object-contain"
+                      />
                     </Link>
                   </div>
                   <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -324,7 +349,18 @@ function AuthenticatedLayout() {
                 </div>
               </SheetContent>
             </Sheet>
-            <img src={aimployLogo} alt="Aimploy" className="h-6 w-auto" />
+            <Link to="/dashboard" className="block focus:outline-none">
+              <img
+                src={aimwearTypoBlack}
+                alt="AIMWEAR"
+                className="h-5 w-auto object-contain dark:hidden"
+              />
+              <img
+                src={aimwearTypoWhite}
+                alt="AIMWEAR"
+                className="h-5 w-auto object-contain hidden dark:block"
+              />
+            </Link>
           </div>
           <div className="flex items-center gap-1.5">
             <NotificationBell />
