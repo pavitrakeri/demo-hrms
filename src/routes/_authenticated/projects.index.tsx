@@ -386,7 +386,7 @@ function ProjectsPage() {
           /* List View Mode (Professional Table) */
           <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
             <CardContent className="p-0">
-              <Table>
+              <Table className="min-w-[650px]">
                 <TableHeader className="bg-muted/10">
                   <TableRow>
                     <TableHead className="w-[30%]">Project</TableHead>

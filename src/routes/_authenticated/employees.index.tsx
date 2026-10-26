@@ -484,7 +484,7 @@ function EmployeesPage() {
                   Add employee
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
                 <DialogHeader>
                   <DialogTitle>Add New Employee</DialogTitle>
                   <DialogDescription>
@@ -1064,7 +1064,7 @@ function EmployeesPage() {
           /* List View (Table layout) */
           <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
             <CardContent className="p-0">
-              <Table>
+              <Table className="min-w-[700px]">
                 <TableHeader className="bg-muted/10">
                   <TableRow>
                     <TableHead className="w-[30%]">Employee</TableHead>

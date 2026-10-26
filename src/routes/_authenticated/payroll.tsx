@@ -109,7 +109,7 @@ function PayrollPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4">
+        <TabsList className="w-full sm:w-auto flex flex-wrap sm:inline-flex h-auto gap-1 mb-4">
           <TabsTrigger value="my-payslips">My Payslips</TabsTrigger>
           <TabsTrigger value="my-requests">My Requests</TabsTrigger>
           {isFinanceOrAdmin && <TabsTrigger value="administration">Administration</TabsTrigger>}
@@ -173,7 +173,7 @@ function PayrollPage() {
               <CardTitle>Payslip History</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
+              <Table className="min-w-[600px]">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
                     <TableHead className="pl-6">Month</TableHead>
@@ -288,7 +288,7 @@ function PayrollPage() {
 
           <Card className="border-border/60 shadow-soft">
             <CardContent className="p-0">
-              <Table>
+              <Table className="min-w-[600px]">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
                     <TableHead className="pl-6">Type</TableHead>

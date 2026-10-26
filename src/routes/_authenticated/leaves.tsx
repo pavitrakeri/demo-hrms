@@ -740,7 +740,7 @@ function LeavesPage() {
         {/* Tabs Control */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
           <TabsList
-            className={`grid w-full h-11 p-1 bg-muted/40 rounded-xl border border-border/40 ${canApprove ? "grid-cols-3" : "grid-cols-2"}`}
+            className={`flex flex-wrap sm:grid w-full h-auto sm:h-11 p-1 bg-muted/40 rounded-xl border border-border/40 gap-1 ${canApprove ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
           >
             <TabsTrigger value="my_leaves" className="text-xs font-semibold rounded-lg gap-2">
               <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
@@ -835,7 +835,7 @@ function LeavesPage() {
                     <p className="text-xs">Your submitted leaves will appear here.</p>
                   </div>
                 ) : (
-                  <Table>
+                  <Table className="min-w-[650px]">
                     <TableHeader className="bg-muted/10">
                       <TableRow>
                         <TableHead>Type</TableHead>
@@ -950,7 +950,7 @@ function LeavesPage() {
                       <p className="text-xs">No pending leave requests require your review.</p>
                     </div>
                   ) : (
-                    <Table>
+                    <Table className="min-w-[650px]">
                       <TableHeader className="bg-muted/10">
                         <TableRow>
                           <TableHead>Applicant</TableHead>

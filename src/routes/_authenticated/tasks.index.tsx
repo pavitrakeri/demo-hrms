@@ -635,7 +635,7 @@ function MyTasksPage() {
             ) : (
               <Card className="border border-border/60 overflow-hidden bg-card shadow-sm">
                 <CardContent className="p-0">
-                  <Table>
+                  <Table className="min-w-[650px]">
                     <TableHeader className="bg-muted/10">
                       <TableRow>
                         <TableHead className="w-[45%]">Task Details</TableHead>

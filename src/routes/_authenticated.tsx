@@ -222,7 +222,7 @@ function AuthenticatedLayout() {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
         <header className="md:hidden border-b bg-background sticky top-0 z-10 px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -376,7 +376,7 @@ function AuthenticatedLayout() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 max-w-6xl w-full">
+        <main className="flex-1 px-3 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 w-full max-w-7xl mx-auto min-w-0">
           <Outlet />
         </main>
       </div>

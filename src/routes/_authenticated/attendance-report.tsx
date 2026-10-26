@@ -403,7 +403,7 @@ export function AttendanceReportPage() {
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <Card className="shadow-2xs">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
@@ -461,7 +461,7 @@ export function AttendanceReportPage() {
         </Card>
 
         <Card
-          className={`shadow-2xs cursor-pointer transition-all ${
+          className={`shadow-2xs cursor-pointer transition-all col-span-2 sm:col-span-1 ${
             pendingRegsCount > 0 ? "border-amber-300 bg-amber-50/40 dark:bg-amber-950/20" : ""
           }`}
           onClick={() => setActiveTab("regularisations")}
@@ -604,22 +604,22 @@ export function AttendanceReportPage() {
             </div>
 
             {/* Date Range Inputs */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
               <Label className="text-xs font-semibold text-muted-foreground">Date Range</Label>
-              <div className="flex items-center gap-1.5">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5">
                 <Input
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="h-9 text-xs px-2"
+                  className="h-9 text-xs px-1.5 min-w-0"
                   title="From date"
                 />
-                <span className="text-xs text-muted-foreground">to</span>
+                <span className="text-xs text-muted-foreground text-center">to</span>
                 <Input
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="h-9 text-xs px-2"
+                  className="h-9 text-xs px-1.5 min-w-0"
                   title="To date"
                 />
               </div>
@@ -630,7 +630,7 @@ export function AttendanceReportPage() {
 
       {/* Tabs: Detailed Log vs Regularisation Approvals */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-muted/70 p-1 rounded-lg">
+        <TabsList className="bg-muted/70 p-1 rounded-lg w-full sm:w-auto flex flex-wrap sm:inline-flex h-auto gap-1">
           <TabsTrigger value="logs" className="text-xs font-bold gap-2">
             <Clock className="h-3.5 w-3.5" />
             Attendance Logs ({records.length})
@@ -669,7 +669,7 @@ export function AttendanceReportPage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <Table>
+                  <Table className="min-w-[780px]">
                     <TableHeader>
                       <TableRow className="bg-muted/30">
                         <TableHead className="text-xs font-bold">Employee</TableHead>
@@ -776,7 +776,7 @@ export function AttendanceReportPage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <Table>
+                  <Table className="min-w-[780px]">
                     <TableHeader>
                       <TableRow className="bg-muted/30">
                         <TableHead className="text-xs font-bold">Employee</TableHead>

@@ -481,7 +481,7 @@ function AttendancePage() {
 
       {/* Tabs: Calendar & Logs vs My Regularisation Requests */}
       <Tabs defaultValue="calendar" className="space-y-4">
-        <TabsList className="bg-muted/70 p-1 rounded-lg">
+        <TabsList className="bg-muted/70 p-1 rounded-lg w-full sm:w-auto flex flex-wrap sm:inline-flex h-auto gap-1">
           <TabsTrigger value="calendar" className="text-xs font-bold gap-2">
             <CalendarDays className="h-3.5 w-3.5" />
             Attendance Calendar & History
@@ -502,7 +502,7 @@ function AttendancePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 lg:grid-cols-[auto_1fr]">
-              <div className="rounded-md border bg-card p-2 w-fit">
+              <div className="rounded-md border bg-card p-2 w-full max-w-sm mx-auto lg:mx-0 flex justify-center">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -698,7 +698,7 @@ function AttendancePage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <Table>
+                  <Table className="min-w-[650px]">
                     <TableHeader>
                       <TableRow className="bg-muted/30">
                         <TableHead className="text-xs font-bold">Target Date</TableHead>

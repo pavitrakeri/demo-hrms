@@ -335,7 +335,7 @@ function RolesPage() {
       ) : (
         <Card className="border border-border/60 overflow-hidden bg-card shadow-soft">
           <CardContent className="p-0">
-            <Table>
+            <Table className="min-w-[650px]">
               <TableHeader className="bg-muted/5 border-b border-border/40">
                 <TableRow>
                   <TableHead className="w-[30%] text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-6">
