@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedAiAssistantRouteImport } from './routes/_authenticated/ai-assistant'
 import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
+import { Route as AuthenticatedAttendanceReportRouteImport } from './routes/_authenticated/attendance-report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDepartmentsRouteImport } from './routes/_authenticated/departments'
 import { Route as AuthenticatedLeavesRouteImport } from './routes/_authenticated/leaves'
@@ -52,6 +53,12 @@ const AuthenticatedAttendanceRoute = AuthenticatedAttendanceRouteImport.update({
   path: '/attendance',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAttendanceReportRoute =
+  AuthenticatedAttendanceReportRouteImport.update({
+    id: '/attendance-report',
+    path: '/attendance-report',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/attendance': typeof AuthenticatedAttendanceRoute
+  '/attendance-report': typeof AuthenticatedAttendanceReportRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/departments': typeof AuthenticatedDepartmentsRoute
   '/leaves': typeof AuthenticatedLeavesRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/attendance': typeof AuthenticatedAttendanceRoute
+  '/attendance-report': typeof AuthenticatedAttendanceReportRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/departments': typeof AuthenticatedDepartmentsRoute
   '/leaves': typeof AuthenticatedLeavesRoute
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/ai-assistant': typeof AuthenticatedAiAssistantRoute
   '/_authenticated/attendance': typeof AuthenticatedAttendanceRoute
+  '/_authenticated/attendance-report': typeof AuthenticatedAttendanceReportRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/departments': typeof AuthenticatedDepartmentsRoute
   '/_authenticated/leaves': typeof AuthenticatedLeavesRoute
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/ai-assistant'
     | '/attendance'
+    | '/attendance-report'
     | '/dashboard'
     | '/departments'
     | '/leaves'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/ai-assistant'
     | '/attendance'
+    | '/attendance-report'
     | '/dashboard'
     | '/departments'
     | '/leaves'
@@ -219,6 +231,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/ai-assistant'
     | '/_authenticated/attendance'
+    | '/_authenticated/attendance-report'
     | '/_authenticated/dashboard'
     | '/_authenticated/departments'
     | '/_authenticated/leaves'
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/attendance'
       fullPath: '/attendance'
       preLoaderRoute: typeof AuthenticatedAttendanceRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/attendance-report': {
+      id: '/_authenticated/attendance-report'
+      path: '/attendance-report'
+      fullPath: '/attendance-report'
+      preLoaderRoute: typeof AuthenticatedAttendanceReportRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -366,6 +386,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedAiAssistantRoute: typeof AuthenticatedAiAssistantRoute
   AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRoute
+  AuthenticatedAttendanceReportRoute: typeof AuthenticatedAttendanceReportRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDepartmentsRoute: typeof AuthenticatedDepartmentsRoute
   AuthenticatedLeavesRoute: typeof AuthenticatedLeavesRoute
@@ -383,6 +404,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAiAssistantRoute: AuthenticatedAiAssistantRoute,
   AuthenticatedAttendanceRoute: AuthenticatedAttendanceRoute,
+  AuthenticatedAttendanceReportRoute: AuthenticatedAttendanceReportRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDepartmentsRoute: AuthenticatedDepartmentsRoute,
   AuthenticatedLeavesRoute: AuthenticatedLeavesRoute,
